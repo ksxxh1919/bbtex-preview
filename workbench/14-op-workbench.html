@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作台 · 状态维护 · BBTEX</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+:root{
+  --font:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --font-id:"Inter","Noto Sans SC",sans-serif;
+  --side:360px;
+  --top-h:55px;
+  --sp1:8px; --sp2:13px; --sp3:21px; --sp4:34px;
+  --r:8px; --r-lg:13px;
+  --qb-nav:#2C3038; --qb-nav-hi:#363B45; --qb-nav-active:#3D4450;
+  --qb-nav-text:#C8CDD6; --qb-nav-mute:#8B929E; --qb-green:#2CA01C;
+  --accent:#2E7BE5; --accent-text:#1A5FB4; --accent-tint:#E8F1FC;
+  --bg:#F0F2F5; --surface:#fff; --sunken:#F4F5F7;
+  --line:#E3E6EB; --line-soft:#ECEEF2;
+  --t1:#1A1D23; --t2:#3A3F4A; --t3:#5C6370; --t4:#7A8290;
+  --ok:#2CA01C; --ok-bg:#E8F6E8;
+  --warn:#B86E00; --warn-bg:#FFF8EB;
+  --danger:#C62828; --danger-bg:#FDEDED;
+  --sh-card:0 0 0 1px rgba(26,29,35,.06),0 1px 2px rgba(26,29,35,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);height:100vh;min-width:1180px}
+.rail{background:var(--qb-nav);color:var(--qb-nav-text);display:flex;flex-direction:column;height:100vh;min-width:0;padding:var(--sp2) var(--sp1) var(--sp1)}
+.rail-top{flex:none;padding:2px var(--sp1) var(--sp2)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{width:28px;height:28px;border-radius:var(--r);background:var(--qb-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.brand b{display:block;font-size:13px;font-weight:650;line-height:18px;color:#fff}
+.brand small{display:block;font-size:13px;color:var(--qb-nav-mute);line-height:18px}
+.rail-mid{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;padding:0 4px}
+.ni,a.ni{display:flex;align-items:center;gap:10px;height:36px;padding:0 12px;border-radius:var(--r);color:var(--qb-nav-text);font-size:14px;position:relative;margin:1px 0;user-select:none;width:100%;border:0;background:transparent;text-align:left;text-decoration:none}
+.ni:hover{background:var(--qb-nav-hi);color:#fff}
+.ni.on{background:var(--qb-nav-active);color:#fff;font-weight:600}
+.ni.on::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 2px 2px 0;background:var(--qb-green)}
+.ni .badge{margin-left:auto;font-size:13px;font-weight:650;background:rgba(255,255,255,.12);color:#E8EAEE;padding:0 6px;height:18px;line-height:18px;border-radius:9px;font-variant-numeric:tabular-nums}
+.ni.quiet{color:var(--qb-nav-mute);font-size:13px}
+.grp{font-size:13px;font-weight:650;color:var(--qb-nav-mute);letter-spacing:.04em;padding:var(--sp3) 12px var(--sp1)}
+.sec-h{display:flex;align-items:center;gap:8px;width:calc(100% - 8px);height:36px;margin:2px 4px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:#C8CDD6;font:inherit;font-size:13px;font-weight:650;text-align:left}
+.sec-h:hover{background:rgba(255,255,255,.05);color:#fff}
+.sec-h .car{font-size:13px;width:14px;color:var(--qb-nav-mute);transition:transform .15s}
+.sec-h.fold .car{transform:rotate(-90deg)}
+.sec-h .gc{margin-left:auto;min-width:18px;height:18px;padding:0 6px;border-radius:9px;background:rgba(255,255,255,.1);color:#E8EAEE;font-size:13px;font-weight:650;line-height:18px;text-align:center;font-variant-numeric:tabular-nums}
+.sec-h.today{color:#fff}
+.sec-h.done{color:#8FCB86}
+.sec-h.done .gc{background:rgba(44,160,28,.28);color:#C8F0C0}
+.q-body{display:none;padding:0 4px 4px}
+.q-body.open{display:block}
+.task{display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:4px;align-items:start;width:100%;padding:6px 6px 6px 6px;border-bottom:1px solid rgba(255,255,255,.06);border-radius:6px;position:relative}
+.task.on{background:rgba(255,255,255,.12)}
+.task.on::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--qb-green)}
+.task .ck{margin-top:6px;width:14px;height:14px;accent-color:#7CB6FF}
+.hit{display:grid;grid-template-columns:10px minmax(0,1fr) auto;column-gap:8px;align-items:start;width:100%;border:0;background:transparent;color:#E8EAEE;text-align:left;padding:2px 2px;min-width:0}
+.hit:hover{color:#fff}
+.task .dot{width:8px;height:8px;border-radius:50%;background:#8B929E;margin-top:5px}
+.task .dot.hot{background:var(--danger);border-radius:2px}
+.task .dot.due{background:#C47A00}
+.task .dot.ok{background:var(--qb-green)}
+.task .dot.wait{background:#7A8699}
+.task .mid{min-width:0;display:flex;flex-direction:column;gap:2px}
+.task .cid{font-family:var(--font-id);font-weight:650;font-size:13px;color:#F2F4F7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:18px}
+.task .sub{font-size:13px;color:#A8B0BC;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task .tag{font-size:13px;font-weight:650;height:22px;line-height:22px;padding:0 7px;border-radius:4px;background:rgba(255,255,255,.1);color:#E8EAEE;white-space:nowrap}
+.task .tag.hot{background:rgba(198,40,40,.42);color:#FFD6D6}
+.task .tag.due{background:rgba(196,122,0,.34);color:#FFE3B0}
+.task .tag.ok{background:rgba(44,160,28,.28);color:#C8F0C0}
+.task .tag.wait{background:rgba(255,255,255,.08);color:#C8CDD6}
+.empty{padding:8px 12px 13px;font-size:13px;color:var(--qb-nav-mute)}
+.nav-foot{flex:none;border-top:1px solid rgba(255,255,255,.08);margin-top:var(--sp1);padding-top:var(--sp1);position:relative;z-index:6}
+.role-anchor{position:relative}
+.role-pop{display:none;position:absolute;left:8px;right:8px;bottom:100%;margin-bottom:4px;background:#fff;color:var(--t1);border-radius:var(--r-lg);box-shadow:0 0 0 1px rgba(26,29,35,.08),0 8px 24px -6px rgba(26,29,35,.18);padding:8px;z-index:8}
+.role-pop.open{display:block}
+.role-pop .rh{font-size:13px;color:var(--t4);padding:4px 8px 8px}
+.role-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;border:0;background:transparent;border-radius:8px;padding:8px;text-align:left}
+.role-opt:hover{background:var(--sunken)}
+.role-opt.on{background:var(--accent-tint)}
+.role-opt b{font-size:14px;font-weight:650;color:var(--t1)}
+.role-opt span{font-size:13px;color:var(--t3)}
+.me{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:inherit;padding:8px;text-align:left;border-radius:8px}
+.me:hover{background:rgba(255,255,255,.05)}
+.me .av{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex:none}
+.me b{display:block;font-size:14px;line-height:18px;color:#E8EAEE}
+.me small{display:block;font-size:13px;color:var(--qb-nav-mute)}
+.me .chev{margin-left:auto;color:var(--qb-nav-mute);font-size:13px}
+.main{min-width:0;display:flex;flex-direction:column;height:100vh;background:var(--bg)}
+.top{height:var(--top-h);flex:none;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:var(--sp2);padding:0 var(--sp4);min-width:0}
+.who{flex:none;min-width:0}
+.who b{display:block;font-size:14px;font-weight:650;line-height:18px}
+.who small{display:block;font-size:13px;color:var(--t4);line-height:16px}
+.top-focus{flex:1;min-width:0;border:0;background:transparent;text-align:left;font-size:14px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0}
+.top-focus:hover{color:var(--accent-text)}
+.top-focus.clear{color:var(--ok)}
+.ringbox{flex:none;display:flex;align-items:center;gap:8px}
+.ringbox .rl{font-size:13px;color:var(--t3);line-height:16px}
+.ringbox .rl b{display:block;font-size:14px;color:var(--t1);font-variant-numeric:tabular-nums;font-weight:650}
+.ringbox.clear .rl b{color:var(--ok)}
+.cols{flex:1;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:13px;padding:var(--sp3) var(--sp4)}
+.hero,.side{min-width:0;min-height:0;overflow-x:hidden;overflow-y:auto}
+.card{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-card);padding:var(--sp3)}
+.kicker{font-size:13px;font-weight:650;color:var(--t4);margin-bottom:8px}
+.h-id{font-family:var(--font-id);font-size:22px;font-weight:650;letter-spacing:.01em;line-height:28px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:4px;font-size:13px;font-weight:650;background:var(--sunken);color:var(--t2)}
+.chip.hot{background:var(--danger-bg);color:var(--danger)}
+.chip.due{background:var(--warn-bg);color:var(--warn)}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.meta{margin-top:8px;font-size:13px;color:var(--t3);line-height:20px}
+.action{margin-top:8px;font-size:16px;font-weight:650;line-height:24px}
+.dots{display:flex;align-items:center;gap:8px;margin-top:13px}
+.dots .row{display:flex;gap:5px;align-items:center}
+.nd{width:8px;height:8px;border-radius:50%;background:#E3E6EB;flex:none}
+.nd.d{background:var(--ok)}
+.nd.c{width:10px;height:10px;background:var(--accent)}
+.nd.fin{background:transparent;border:1.5px dashed #C5CDD8}
+.dots .nm{font-size:13px;color:var(--t2);font-weight:600}
+.steps{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:13px}
+.st{font-size:13px;color:var(--t4);background:var(--sunken);border-radius:4px;padding:2px 8px}
+.st.d{background:var(--ok-bg);color:var(--ok);font-weight:650}
+.st.c{background:var(--accent-tint);color:var(--accent-text);font-weight:650}
+.arr{font-style:normal;color:var(--t4);font-size:13px}
+.batch{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:13px;padding:10px 12px;border-radius:8px;background:var(--sunken);font-size:13px;color:var(--t2)}
+.batch select,.batch input{height:34px;border:1px solid var(--line);border-radius:6px;padding:0 8px;background:#fff;font-size:14px;min-width:0}
+.batch input{width:140px}
+.secnav{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px;position:sticky;top:0;z-index:2;background:var(--surface);padding-bottom:8px}
+.secnav button{height:34px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:650;color:var(--t2)}
+.secnav button.on{background:var(--accent-tint);border-color:#C5D9F5;color:var(--accent-text)}
+.secnav button .muted{font-weight:500;color:var(--t4)}
+.block{margin-top:8px;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.block.shut{display:none}
+.block.own{border-color:#C5D9F5}
+.block-h{display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--sunken);font-size:14px;font-weight:650}
+.block.own .block-h{background:var(--accent-tint)}
+.block-h .sum{margin-left:auto;font-size:13px;font-weight:500;color:var(--t3)}
+.qbtns{display:flex;flex-wrap:wrap;gap:8px;padding:8px 13px 0}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;padding:13px}
+.fv{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fv.wide{grid-column:1/-1}
+.fv .lab{font-size:13px;font-weight:600;color:var(--t3);line-height:1.4;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.gate-tag,.next-tag{font-style:normal;font-weight:650;font-size:13px;color:var(--accent-text)}
+.next-tag{background:var(--accent);color:#fff;border-radius:4px;padding:0 6px;line-height:20px}
+.fv input,.fv select{height:34px;padding:0 10px;border-radius:6px;border:1px dashed var(--line);background:#fff;font-size:14px;width:100%;min-width:0;outline:none}
+.fv.filled input,.fv.filled select{border-style:solid;border-color:#B7D7A8;background:#F6FBF6}
+.fv.next input,.fv.next select{border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,123,229,.15);background:#fff}
+.fv input:focus,.fv select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,123,229,.12)}
+.fv input:disabled,.fv select:disabled{background:var(--sunken);color:var(--t2);border-style:solid}
+.file-row{display:flex;gap:8px;min-width:0}
+.file-row input{flex:1}
+.banner{margin:13px 13px 0;padding:8px 10px;border-radius:8px;font-size:13px;line-height:1.45}
+.banner.hot{background:var(--danger-bg);color:var(--danger)}
+.banner.lock{background:var(--warn-bg);color:var(--warn)}
+.gfoot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:13px;background:#FAFBFE;border-top:1px solid var(--line-soft)}
+.gfoot .nx{flex:1;min-width:180px;font-size:13px;color:var(--t3);line-height:1.45}
+.btn{height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--t1);font-size:14px;font-weight:650}
+.btn:hover{background:var(--sunken)}
+.btn.primary{background:var(--qb-green);border-color:var(--qb-green);color:#fff}
+.btn.primary:hover{background:#248A16}
+.btn.sm{height:34px;padding:0 10px}
+.side{display:flex;flex-direction:column;gap:13px}
+.side h3{font-size:13px;font-weight:650;color:var(--t4);margin-bottom:8px}
+.ai{font-size:14px;color:var(--t2);line-height:1.55}
+.ai b{color:var(--accent-text);font-weight:650}
+.msg{display:flex;gap:8px;padding:8px 0;border-top:1px solid var(--line-soft)}
+.msg:first-of-type{border-top:0;padding-top:0}
+.msg .av{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:650;display:flex;align-items:center;justify-content:center;flex:none}
+.msg .tx{min-width:0;font-size:13px;color:var(--t2);line-height:1.5}
+.msg .tx b{font-weight:650}
+.msg .tm{color:var(--t4)}
+.tools{display:flex;flex-direction:column;gap:8px}
+.tool{display:flex;align-items:center;justify-content:space-between;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:600;text-align:left}
+.tool:hover{background:var(--accent-tint);border-color:#C5D9F5;color:var(--accent-text)}
+.note{font-size:13px;color:var(--t4);line-height:1.5}
+.toast{position:fixed;left:50%;bottom:21px;transform:translateX(-50%);background:#2C3038;color:#fff;font-size:14px;padding:10px 16px;border-radius:8px;z-index:40;max-width:min(560px,calc(100vw - 48px));display:none}
+.toast.on{display:block}
+@media (max-width:1360px){
+  .cols{grid-template-columns:minmax(0,1fr) 240px;padding:13px 21px}
+  .fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="rail-top">
+      <div class="brand"><div class="logo">B</div><div><b>BBTEX</b><small>工作台 · 演示</small></div></div>
+    </div>
+    <div class="rail-mid">
+      <button type="button" class="ni on" id="navWb"><span>工作台</span><span class="badge" id="wbCount">0</span></button>
+      <div id="nest"></div>
+      <div class="grp">其他</div>
+      <a class="ni quiet" href="../order-platform/13-order-mgmt-qb.html#/todo">订单平台</a>
+      <button type="button" class="ni quiet" data-act="plat">提柜平台</button>
+      <button type="button" class="ni quiet" data-act="plat">仓管平台</button>
+      <button type="button" class="ni quiet" data-act="plat">派送平台</button>
+    </div>
+    <div class="nav-foot">
+      <div class="role-anchor">
+        <div class="role-pop" id="roleMenu">
+          <div class="rh">换岗位，只看自己那段状态维护</div>
+          <button type="button" class="role-opt" data-act="pick" data-role="isf"><b>ISF岗 · 陈静</b><span>填 ISF申报</span></button>
+          <button type="button" class="role-opt" data-act="pick" data-role="tr"><b>转关提柜岗 · 赵磊</b><span>填 转关申报</span></button>
+          <button type="button" class="role-opt" data-act="pick" data-role="wh"><b>仓库 · 刘洋</b><span>填 仓库操作</span></button>
+          <button type="button" class="role-opt" data-act="pick" data-role="dl"><b>清关派送岗 · Maria</b><span>填 清关派送</span></button>
+        </div>
+        <button type="button" class="me" id="roleBtn" data-act="role-menu">
+          <span class="av" id="roleAv">陈</span>
+          <span><b id="roleName">陈静</b><small id="roleTitle">ISF岗 · 点这里换岗位</small></span>
+          <span class="chev">▾</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <div class="who" id="whoBlock"></div>
+      <button type="button" class="top-focus" id="focusLine" data-act="jump-first"></button>
+      <div class="ringbox" id="ringBox"></div>
+    </header>
+    <div class="cols">
+      <section class="hero" id="hero"></section>
+      <aside class="side" id="side"></aside>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const NODES = ['订单审核','ISF 申报','财务开票','转关到港','提柜完成','到仓拆柜','转装出仓','清关过境','派送签收','催款回款'];
+const TODAY_LABEL = '2026-10-05';
+const CHG = ['已提交','待审批','待执行','完成'];
+
+const SECS = [
+  {id:'isf', title:'ISF申报', buttons:[]},
+  {id:'tr', title:'转关申报', buttons:['转关DO','邮件']},
+  {id:'wh', title:'仓库操作', buttons:['BOL','拆柜单']},
+  {id:'dl', title:'清关派送', buttons:['清关DO','POD邮件']}
+];
+
+const FIELDS = [
+  {k:'consignee', l:'CONSIGNEE', sec:'isf', demo:'DEMO Consignee'},
+  {k:'recisf', l:'Rec-ISF Doc', sec:'isf', g:'recisf', demo:'09/24'},
+  {k:'isdone', l:'ISF完成', sec:'isf', g:'isdone', demo:'09/25'},
+  {k:'isno', l:'ISF回执单号', sec:'isf', demo:'ISF-DEMO-7781'},
+  {k:'isco', l:'ISF申报公司', sec:'isf', demo:'DEMO-ISF-01'},
+  {k:'isdate', l:'ISF回执日期', sec:'isf', demo:'09/26'},
+  {k:'isfile', l:'ISF回执文件', sec:'isf', t:'file', demo:'isf-receipt-demo.pdf'},
+  {k:'recvdoc', l:'Receive Doc', sec:'isf', demo:'09/24'},
+  {k:'sendte', l:'Send T&E DOC', sec:'isf', demo:'09/27'},
+  {k:'laemail', l:'LA出仓邮件', sec:'isf', demo:'已发'},
+  {k:'ordnote', l:'订单备注', sec:'isf', wide:1, demo:'DEMO 备注'},
+  {k:'arr', l:'Arrival Date', sec:'tr', g:'arr', demo:'10/04'},
+  {k:'term', l:'码头', sec:'tr', demo:'DEMO-TML-2'},
+  {k:'ted', l:'转关日期', sec:'tr', demo:'10/04'},
+  {k:'teclose', l:'TE关闭日期', sec:'tr', demo:'10/06'},
+  {k:'teno', l:'T&E号码', sec:'tr', demo:'TE-DEMO-5520'},
+  {k:'teco', l:'转关公司', sec:'tr', demo:'DEMO-转关-01'},
+  {k:'tmode', l:'运输方式', sec:'tr', t:'sel', opts:['火车','卡车'], demo:'火车'},
+  {k:'box', l:'货柜状态', sec:'tr', add:1, wide:1, demo:'10/03 在码头'},
+  {k:'av', l:'可提柜日期', sec:'tr', g:'av', demo:'10/02'},
+  {k:'plan', l:'预计提柜时间', sec:'tr', g:'plan', demo:'10/05 09:00'},
+  {k:'lfd', l:'货柜LFD', sec:'tr', demo:'10/05'},
+  {k:'pkdone', l:'提柜完成', sec:'tr', g:'pkdone', demo:'10/05'},
+  {k:'pkco', l:'提柜公司', sec:'tr', demo:'DEMO-拖车-03'},
+  {k:'destwh', l:'目的仓库', sec:'tr', demo:'DEMO-仓-LA1'},
+  {k:'nostack', l:'不码柜', sec:'tr', t:'check', demo:''},
+  {k:'shorttruck', l:'短驳卡车公司', sec:'tr', demo:'DEMO-短驳-01'},
+  {k:'rtn', l:'还柜完成', sec:'tr', demo:'10/06'},
+  {k:'trnote', l:'备注', sec:'tr', demo:''},
+  {k:'trfile', l:'文件上传', sec:'tr', t:'file', demo:'transit-demo.pdf'},
+  {k:'wh', l:'操作仓库', sec:'wh', demo:'DEMO-仓-LA1'},
+  {k:'indate', l:'入仓日期', sec:'wh', g:'indate', demo:'10/04'},
+  {k:'hold', l:'拦截指令', sec:'wh', demo:'不拦截'},
+  {k:'holdgo', l:'启动仓库拦截', sec:'wh', t:'check', demo:''},
+  {k:'devand', l:'拆柜日期', sec:'wh', g:'devand', demo:'10/04'},
+  {k:'devqty', l:'拆柜数量(托/件)', sec:'wh', demo:'18 / 1120'},
+  {k:'shortover', l:'少/多(件)', sec:'wh', demo:'0'},
+  {k:'devco', l:'拆柜公司', sec:'wh', demo:'DEMO-拆柜-01'},
+  {k:'dv', l:"53'DV#", sec:'wh', demo:'DV-DEMO-5301'},
+  {k:'trarr', l:'Trailer到达', sec:'wh', g:'trarr', demo:'10/05 08:00'},
+  {k:'loadqty', l:'装柜数量(托/件)', sec:'wh', demo:'18 / 1120'},
+  {k:'loadco', l:'装柜公司', sec:'wh', demo:'DEMO-装柜-01'},
+  {k:'split', l:'[分]拆分数据', sec:'wh', demo:'无'},
+  {k:'merge', l:'[合]并入数据', sec:'wh', demo:'无'},
+  {k:'loadd', l:'装柜日期', sec:'wh', g:'loadd', demo:'10/05'},
+  {k:'outd', l:'出仓日期', sec:'wh', g:'outd', demo:'10/05'},
+  {k:'gps', l:'GPS设备', sec:'wh', demo:'GPS-DEMO-118'},
+  {k:'trtrans', l:'Trailer转运', sec:'wh', demo:'DEMO-TR-09'},
+  {k:'mode', l:'实际运输方式', sec:'wh', t:'sel', opts:['火车','卡车'], demo:'火车'},
+  {k:'seal', l:'seal号码', sec:'wh', demo:'SEAL-DEMO-0912'},
+  {k:'cd', l:'清关完成', sec:'dl', g:'cd', demo:'10/03'},
+  {k:'cval', l:'清关货值', sec:'dl', demo:'DEMO'},
+  {k:'decl', l:'报关单号', sec:'dl', demo:'PED-DEMO-4471'},
+  {k:'raild', l:'配车厢日期', sec:'dl', g:'raild', demo:'10/04'},
+  {k:'xbco', l:'过境申报公司', sec:'dl', demo:'DEMO-过境行-01'},
+  {k:'xbwh', l:'过境操作仓库', sec:'dl', demo:'DEMO-仓-MX1'},
+  {k:'carno', l:'派送车厢号', sec:'dl', g:'carno', demo:'CAR-DEMO-12'},
+  {k:'seal2', l:'转运封条号码', sec:'dl', g:'seal2', demo:'SEAL-DEMO-220'},
+  {k:'lock', l:'加强锁号', sec:'dl', g:'lock', demo:'LOCK-DEMO-19'},
+  {k:'car', l:'派送公司', sec:'dl', demo:'DEMO-派送-02'},
+  {k:'depart', l:'发车时间', sec:'dl', g:'depart', demo:'10/04 18:00'},
+  {k:'extra', l:'多拍', sec:'dl', demo:'0'},
+  {k:'s1', l:'1st暂存仓/分拨', sec:'dl', demo:'DEMO-分拨-1'},
+  {k:'s1a', l:'1st开始', sec:'dl', demo:'10/05 08:00'},
+  {k:'s1b', l:'1st截止', sec:'dl', demo:'10/05 12:00'},
+  {k:'s2', l:'2nd暂存仓/主拨', sec:'dl', demo:'DEMO-主拨-1'},
+  {k:'s2a', l:'2nd开始', sec:'dl', demo:'10/06 08:00'},
+  {k:'s2b', l:'2nd截止', sec:'dl', demo:'10/06 12:00'},
+  {k:'etacdmex', l:'ETACDMEX', sec:'dl', demo:'10/06'},
+  {k:'trucknt', l:'卡车通知可派', sec:'dl', demo:'10/05'},
+  {k:'pdel', l:'预计派送', sec:'dl', g:'pdel', lock:1, demo:'10/05'}
+];
+const GATES = [
+  {id:'recisf', keys:['recisf'], next:1, name:'Rec-ISF Doc'},
+  {id:'isdone', keys:['isdone'], next:3, name:'ISF完成'},
+  {id:'arr', keys:['arr'], next:4, name:'Arrival Date'},
+  {id:'av', keys:['av'], next:4, name:'可提柜'},
+  {id:'plan', keys:['plan'], next:4, name:'预计提柜'},
+  {id:'pkdone', keys:['pkdone'], next:5, name:'提柜完成'},
+  {id:'indate', keys:['indate'], next:5, name:'入仓'},
+  {id:'devand', keys:['devand'], next:5, name:'拆柜'},
+  {id:'trarr', keys:['trarr'], next:6, name:'Trailer到达'},
+  {id:'loadd', keys:['loadd'], next:6, name:'装柜'},
+  {id:'outd', keys:['outd'], next:7, name:'出仓'},
+  {id:'cd', keys:['cd'], next:7, name:'清关完成'},
+  {id:'raild', keys:['raild'], next:7, name:'配车厢'},
+  {id:'carno', keys:['carno'], next:8, name:'派送车厢'},
+  {id:'seal2', keys:['seal2'], next:8, name:'转运封条'},
+  {id:'lock', keys:['lock'], next:8, name:'加强锁'},
+  {id:'depart', keys:['depart'], next:8, name:'发车'},
+  {id:'pdel', keys:['pdel'], next:8, name:'预计派送'}
+];
+
+const CABS = {
+  TEST1618033:{node:0, empty:'consignee', cc:'DEMO-G09', ty:'40HQ', co:'保利通', route:'LGB → GDL', mode:'火车'},
+  TEST2468024:{node:1, empty:'isdone', cc:'DEMO-D03', ty:'40HQ', co:'保利通', route:'LGB → MTY', mode:'卡车', doc:'装箱单被退回'},
+  TEST9988776:{node:1, empty:'recisf', cc:'DEMO-C07', ty:'20GP', co:'总公司', route:'LAX → MTY', mode:'火车'},
+  TEST7788990:{node:1, empty:'isdone', cc:'DEMO-B12', ty:'20GP', co:'总公司', route:'LAX → MTY', mode:'卡车'},
+  TEST7654321:{node:3, empty:'arr', cc:'DEMO-B12', ty:'40HQ', co:'新通智联', route:'LGB → GDL', mode:'火车', exc:'码头 hold · 等放行后才能预约提柜'},
+  TEST1234560:{node:4, empty:'pkdone', cc:'DEMO-A01', ty:'40HQ', co:'保利通', route:'LAX → MTY', mode:'火车', lfd:'10/05'},
+  TEST8899001:{node:4, empty:'pkdone', cc:'DEMO-F02', ty:'40HQ', co:'总公司', route:'LAX → MTY', mode:'火车', lfd:'10/05', insp:'海关查验 · 10/03'},
+  TEST1122334:{node:5, empty:'devand', cc:'DEMO-B12', ty:'40HQ', co:'保利通', route:'LGB → GDL', mode:'火车', exc:'拆柜少 3 件 · 等客服问客户'},
+  TEST1357913:{node:6, empty:'outd', cc:'DEMO-E19', ty:'45HQ', co:'新通智联', route:'LAX → MEX', mode:'卡车'},
+  TEST4455667:{node:7, empty:'cd', cc:'DEMO-A01', ty:'40HQ', co:'总公司', route:'LAX → MTY', mode:'卡车'},
+  TEST8642086:{node:8, empty:'pdel', cc:'DEMO-D03', ty:'40HQ', co:'总公司', route:'LAX → MTY', mode:'火车', fh:1}
+};
+
+const VALS = {};
+function seed(id){
+  const cab = CABS[id];
+  const v = {};
+  let blank = false;
+  FIELDS.forEach(f => {
+    if (f.k === cab.empty) blank = true;
+    v[f.k] = blank ? '' : f.demo;
+  });
+  v.mode = cab.mode || v.mode || '火车';
+  if (!v.tmode) v.tmode = cab.mode || '火车';
+  if (cab.lfd) v.lfd = cab.lfd;
+  if (id==='TEST1122334') v.shortover = '少 3';
+  if (id==='TEST8899001') v.box = '10/03 海关查验，还没放行';
+  v.boxLines = v.boxLines || [];
+  cab.passed = {};
+  GATES.forEach(g => {
+    if (g.train && cab.mode!=='火车') { cab.passed[g.id] = true; return; }
+    const empty = g.keys.some(k => !String(v[k]||'').trim());
+    if (!empty) cab.passed[g.id] = true;
+  });
+  return v;
+}
+function vals(id){ if (!CABS[id]) return null; if (!VALS[id]) VALS[id] = seed(id); return VALS[id]; }
+
+function task(o){
+  return Object.assign({bucket:'today', tagKind:'due', dot:'due', kind:'gate', counts:true, doc:'', due:'今天', line:'', steps:null, stepAt:0, ai:''}, o);
+}
+
+const ROLES = {
+  isf:{
+    sec:'isf', name:'陈静', title:'ISF岗', initial:'陈', ringDone:0, ringTotal:3,
+    tools:['回执','邮件'],
+    msgs:[{from:'李明', t:'09:10', text:'TEST2468024 装箱单被退过，回执先别当它齐了。'}],
+    today:[
+      task({uid:'isf-246', id:'TEST2468024', tag:'文件驳回', tagKind:'hot', dot:'hot', action:'ISF完成还没填。装箱单被退过，先别当这一关过了。', due:'今天', line:'TEST2468024 · 填 ISF完成 · 今天', ai:'装箱单被退回过。蓝色的 ISF完成填上，状态才往前走。'}),
+      task({uid:'isf-998', id:'TEST9988776', tag:'ISF', tagKind:'due', dot:'due', action:'Rec-ISF Doc 还没记。这一格是门闩。', due:'今天', line:'TEST9988776 · 填 Rec-ISF Doc · 今天', ai:'先填 Rec-ISF Doc。'}),
+      task({uid:'isf-778', id:'TEST7788990', tag:'ISF', tagKind:'due', dot:'due', action:'ISF完成还空着。', due:'今天', line:'TEST7788990 · 填 ISF完成 · 今天', ai:'和上一柜同一格，可以勾上一起填。'})
+    ],
+    approve:[
+      task({uid:'isf-cc', id:'TEST9988776', bucket:'approve', tag:'抄送我', tagKind:'wait', dot:'wait', kind:'ack', counts:false, doc:'CC-DEMO-06', action:'另一份抄送：知道这柜在做 ISF 就行。', due:'今天', line:'CC-DEMO-06 · 看看就行', ai:'抄送不占今日进度。'})
+    ],
+    change:[],
+    tomorrow:[
+      task({uid:'isf-crm', id:'CRM-DEMO-11', bucket:'tomorrow', tag:'CRM', tagKind:'wait', dot:'wait', kind:'none', counts:false, doc:'CRM-DEMO-11', action:'明天回访 DEMO-C07，问资料齐不齐。', due:'明天', line:'DEMO-C07 · 回访 · 明天', ai:'这是原来 CRM 待办里的一条。不谈报价。'})
+    ],
+    wait:[
+      task({uid:'isf-161', id:'TEST1618033', bucket:'wait', tag:'等审核', tagKind:'wait', dot:'wait', kind:'none', counts:false, action:'还在订单审核，ISF 还没轮到。', due:'等审核', line:'TEST1618033 · 等审核通过', ai:'审核通过之后，这一柜才会进你今天的队列。'})
+    ],
+    done:[]
+  },
+  tr:{
+    sec:'tr', name:'赵磊', title:'转关提柜岗', initial:'赵', ringDone:0, ringTotal:4,
+    tools:['转关DO','邮件','LFD'],
+    msgs:[
+      {from:'刘洋', t:'08:40', text:'TEST8899001 仓库窗口约在今天 14:00。'},
+      {from:'李明', t:'09:25', text:'TEST1234560 客户在问，今天尽量提走。'}
+    ],
+    today:[
+      task({uid:'tr-765', id:'TEST7654321', tag:'异常', tagKind:'hot', dot:'hot', kind:'park', action:'码头还没放行。A/N 可以先传，状态先别往前推。', due:'今天', line:'TEST7654321 · 码头 hold · 今天', ai:'有异常时字段能记，推进先停。'}),
+      task({uid:'tr-do', id:'TEST1234560', tag:'待我执行', tagKind:'due', dot:'due', kind:'do', doc:'BG-DEMO-11', action:'改提柜公司已经批了。把提柜 DO 传上。', due:'今天', line:'BG-DEMO-11 · 发 DO · 今天', steps:CHG, stepAt:2, ai:'审批已经过了。DO 传上，这一步才算你执行完。'}),
+      task({uid:'tr-123', id:'TEST1234560', tag:'LFD今天', tagKind:'due', dot:'due', action:'LFD 今天。提柜完成填上，柜就交给仓库。', due:'今天', line:'TEST1234560 · LFD 今天', ai:'可提柜和货柜 LFD 已经有了。差提柜完成。'}),
+      task({uid:'tr-889', id:'TEST8899001', tag:'查验', tagKind:'hot', dot:'hot', action:'LFD 也是今天，但海关还在查。放行前不要填提柜完成。', due:'今天', line:'TEST8899001 · 查验中 · LFD 今天', ai:'查验没结束，完成日期先空着。'})
+    ],
+    approve:[
+      task({uid:'tr-cc', id:'TEST4455667', bucket:'approve', tag:'抄送我', tagKind:'wait', dot:'wait', kind:'ack', counts:false, doc:'CC-DEMO-08', action:'这柜已经在清关，抄送给你看。不用你提。', due:'今天', line:'CC-DEMO-08 · 清关在走', ai:'清关不是你这段要填的。'})
+    ],
+    change:[], tomorrow:[], wait:[], done:[]
+  },
+  wh:{
+    sec:'wh', name:'刘洋', title:'仓库', initial:'刘', ringDone:1, ringTotal:2,
+    tools:['拆柜单','BOL','GPS'],
+    msgs:[
+      {from:'李明', t:'10:40', text:'TEST1122334 少件我问过客户了，还没回。'},
+      {from:'赵磊', t:'08:50', text:'TEST8899001 我按 14:00 往你仓送。'}
+    ],
+    today:[
+      task({uid:'wh-135', id:'TEST1357913', tag:'待我执行', tagKind:'due', dot:'due', doc:'BG-DEMO-18', action:'运输方式已改成卡车。出仓日期还空着，这一格是门闩。', due:'今天', line:'BG-DEMO-18 · 填出仓日期 · 今天', steps:CHG, stepAt:2, ai:'拆柜今早已做完。蓝色的出仓日期填上就往前走。'})
+    ],
+    approve:[
+      task({uid:'wh-cc', id:'TEST8899001', bucket:'approve', tag:'抄送我', tagKind:'wait', dot:'wait', kind:'ack', counts:false, doc:'CC-DEMO-19', action:'赵磊说今天 14:00 进仓。先知道，到了再拆。', due:'今天 14:00', line:'CC-DEMO-19 · 14:00 进仓', ai:'这是抄送，不是现在就要填的出仓。'})
+    ],
+    change:[],
+    tomorrow:[
+      task({uid:'wh-tom', id:'TEST8899001', bucket:'tomorrow', tag:'预告', tagKind:'wait', dot:'wait', kind:'none', counts:false, action:'柜还在提柜。进仓后再拆。', due:'明天', line:'TEST8899001 · 等进仓', ai:'还没到你这段。'})
+    ],
+    wait:[
+      task({uid:'wh-112', id:'TEST1122334', bucket:'wait', tag:'等客服', tagKind:'wait', dot:'wait', kind:'ping', counts:false, doc:'GD-DEMO-014', action:'少 3 件已经拍过。等客服问客户，你先别做出仓。', due:'等客服', line:'GD-DEMO-014 · 等客服核实少件', ai:'工单还开着。卡住的是客户回复。'})
+    ],
+    done:[
+      task({uid:'wh-done', id:'TEST1357913', bucket:'done', tag:'拆柜已完', tagKind:'ok', dot:'ok', kind:'none', counts:false, action:'今早 10:15 拆完。出仓还在今天里面。', due:'今早', line:'今早拆完 · 出仓仍在今天', ai:'拆柜这步已经做完。'})
+    ]
+  },
+  dl:{
+    sec:'dl', name:'Maria', title:'清关派送岗', initial:'M', ringDone:0, ringTotal:2,
+    tools:['清关DO','POD邮件'],
+    msgs:[{from:'赵磊', t:'11:00', text:'TEST4455667 已经过境前的资料我发过了。'}],
+    today:[
+      task({uid:'dl-445', id:'TEST4455667', tag:'清关', tagKind:'due', dot:'due', action:'清关完成还空着。这一格是门闩。', due:'今天', line:'TEST4455667 · 填清关完成 · 今天', ai:'清关完成填上，状态就走到这一关。'}),
+      task({uid:'dl-bg', id:'TEST8642086', tag:'待我审批', tagKind:'due', dot:'due', kind:'approve', doc:'BG-DEMO-03', action:'批一下改约。这柜被财控暂停，预计派送往后的格子锁着。', due:'今天 18:00', line:'BG-DEMO-03 · 批改约 · 今天 18:00', steps:CHG, stepAt:1, ai:'只写联系财务。这一页不写数字。'})
+    ],
+    approve:[],
+    change:[
+      task({uid:'dl-chg', id:'TEST4455667', bucket:'change', tag:'变更', tagKind:'wait', dot:'wait', kind:'none', counts:false, doc:'BG-DEMO-20', action:'改目的港还在走。你先看进度，今天不用填。', due:'10/08', line:'BG-DEMO-20 · 等确认 · 10/08', steps:CHG, stepAt:1, ai:'还没轮到你执行。'})
+    ],
+    tomorrow:[
+      task({uid:'dl-fh', id:'TEST8642086', bucket:'tomorrow', tag:'财控', tagKind:'wait', dot:'wait', kind:'none', counts:false, action:'财控暂停。预计派送起先别填，请联系财务核实。', due:'明天', line:'TEST8642086 · 财控暂停 · 明天', ai:'只留状态，不写数字。'})
+    ],
+    wait:[], done:[]
+  }
+};
+
+const BUCKETS = ['today','approve','change','tomorrow','wait','done'];
+const QSECS = [
+  {k:'today', n:'今天', cls:'today'},
+  {k:'approve', n:'审批', cls:''},
+  {k:'change', n:'变更', cls:''},
+  {k:'tomorrow', n:'明天预告', cls:''},
+  {k:'wait', n:'等别人', cls:''},
+  {k:'done', n:'今天已完成', cls:'done'}
+];
+
+const state = {
+  role:'isf', uid:'isf-246', menu:false, sel:new Set(), batchKey:'',
+  fold:{today:false, approve:true, change:true, tomorrow:true, wait:true, done:true},
+  secOpen:{isf:true, tr:false, wh:false, dl:false}
+};
+
+function role(){ return ROLES[state.role]; }
+function find(uid){
+  const r = role();
+  for (const k of BUCKETS){
+    const t = (r[k]||[]).find(x => x.uid===uid);
+    if (t) return t;
+  }
+  return null;
+}
+function current(){
+  return find(state.uid) || role().today[0] || role().done[0] || role().tomorrow[0] || role().wait[0];
+}
+function esc(s){ return String(s??'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function cabOf(t){ return t && CABS[t.id]; }
+function editable(cab){
+  if (!cab) return false;
+  const s = role().sec;
+  if (s==='isf') return cab.node===1;
+  if (s==='tr') return cab.node===3 || cab.node===4;
+  if (s==='wh') return cab.node===5 || cab.node===6;
+  if (s==='dl') return cab.node===7 || cab.node===8;
+  return false;
+}
+function skipped(cab, g){ return g.train && cab && cab.mode!=='火车'; }
+function nextGate(id){
+  const cab = CABS[id];
+  const v = vals(id);
+  if (!cab || !v) return null;
+  for (const g of GATES){
+    if (skipped(cab, g)) continue;
+    const empty = g.keys.filter(k => !String(v[k]||'').trim());
+    if (empty.length) return {g, key:empty[0]};
+  }
+  return null;
+}
+function ownOpen(){
+  state.secOpen = {isf:false, tr:false, wh:false, dl:false};
+  state.secOpen[role().sec] = true;
+}
+function filledCount(id, sec){
+  const v = vals(id);
+  const list = FIELDS.filter(f => f.sec===sec);
+  const n = list.filter(f => String(v[f.k]||'').trim()).length;
+  return n+'/'+list.length;
+}
+
+function render(){
+  const r = role();
+  const cur = current();
+  state.uid = cur ? cur.uid : '';
+  document.getElementById('roleAv').textContent = r.initial;
+  document.getElementById('roleName').textContent = r.name;
+  document.getElementById('roleTitle').textContent = r.title+' · 点这里换岗位';
+  document.getElementById('wbCount').textContent = String(r.today.length);
+  document.querySelectorAll('.role-opt').forEach(el => el.classList.toggle('on', el.dataset.role===state.role));
+  document.getElementById('roleMenu').classList.toggle('open', state.menu);
+  document.getElementById('nest').innerHTML = QSECS.map(s => {
+    const list = r[s.k] || [];
+    const fold = state.fold[s.k];
+    const rows = list.length ? list.map(t => {
+      const ck = CABS[t.id] ? '<input class="ck" type="checkbox" data-act="sel" data-uid="'+t.uid+'" '+(state.sel.has(t.uid)?'checked':'')+' aria-label="选中 '+esc(t.id)+'">' : '<span></span>';
+      return '<div class="task'+(t.uid===state.uid?' on':'')+'">'+ck
+        + '<button type="button" class="hit" data-act="open" data-uid="'+t.uid+'"><span class="dot '+t.dot+'"></span><span class="mid"><span class="cid">'+esc(t.doc||t.id)+'</span><span class="sub">'+esc(t.line||t.action)+'</span></span><span class="tag '+t.tagKind+'">'+esc(t.tag)+'</span></button></div>';
+    }).join('') : '<div class="empty">这一组没有</div>';
+    return '<button type="button" class="sec-h '+s.cls+(fold?' fold':'')+'" data-act="fold" data-sec="'+s.k+'"><span class="car">▾</span><span>'+s.n+'</span><span class="gc">'+list.length+'</span></button>'
+      + '<div class="q-body'+(fold?'':' open')+'">'+rows+'</div>';
+  }).join('');
+  const first = r.today[0];
+  const focus = document.getElementById('focusLine');
+  if (first){ focus.textContent = '先做 '+(first.doc||first.id)+' · '+first.action; focus.classList.remove('clear'); }
+  else { focus.textContent = '今天分给你的都做完了'; focus.classList.add('clear'); }
+  document.getElementById('whoBlock').innerHTML = '<b>'+esc(r.name)+'的今天</b><small>'+esc(r.title)+' · '+TODAY_LABEL+'</small>';
+  const done = r.ringDone, total = r.ringTotal, p = total? done/total : 0, clear = total>0 && done>=total;
+  const C = 2*Math.PI*15, off = C*(1-Math.min(1,p));
+  document.getElementById('ringBox').className = 'ringbox'+(clear?' clear':'');
+  document.getElementById('ringBox').innerHTML = '<svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="#E3E6EB" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#2CA01C" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'" transform="rotate(-90 18 18)"/></svg><div class="rl">今日'+(clear?' 已清':'')+'<b id="ringLabel">'+done+'/'+total+'</b></div>';
+  document.getElementById('hero').innerHTML = cur ? heroHTML(cur) : '';
+  document.getElementById('side').innerHTML = sideHTML(r, cur);
+  const n = document.getElementById('nextField');
+  if (n) n.focus({preventScroll:true});
+}
+
+function dotsHTML(node){
+  const row = NODES.map((name,i) => {
+    const fin = i===2 || i===9;
+    const cls = fin ? 'fin' : (i<node ? 'd' : (i===node ? 'c' : ''));
+    return '<i class="nd '+cls+'" title="'+esc(name)+'"></i>';
+  }).join('');
+  return '<div class="dots"><div class="row">'+row+'</div><span class="nm">'+esc(NODES[node]||'')+'</span></div>';
+}
+
+function fieldHTML(f, cab, v, canEdit, nextKey){
+  const val = v[f.k] ?? '';
+  const locked = !!(f.lock && cab.fh);
+  const dis = !canEdit || f.ro || locked;
+  const isNext = canEdit && !dis && f.k===nextKey;
+  const filled = String(val).trim()!=='';
+  let ctrl;
+  if (f.t==='sel'){
+    ctrl = '<select data-k="'+f.k+'" '+(dis?'disabled':'')+' '+(isNext?'id="nextField"':'')+'>'
+      + f.opts.map(o => '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
+  } else if (f.t==='file'){
+    ctrl = '<div class="file-row"><input data-k="'+f.k+'" '+(dis?'disabled':'readonly')+' value="'+esc(val)+'" placeholder="未上传" '+(isNext?'id="nextField"':'')+'>'
+      + (dis?'':'<button type="button" class="btn sm" data-act="upload" data-k="'+f.k+'">上传</button>')+'</div>';
+  } else if (f.t==='check'){
+    ctrl = '<input type="checkbox" data-k="'+f.k+'" data-check="1" '+(val==='是'?'checked':'')+' '+(dis?'disabled':'')+' '+(isNext?'id="nextField"':'')+'>';
+  } else {
+    const more = f.add ? (v.boxLines||[]).map((line,i) => '<input data-box="'+i+'" value="'+esc(line)+'" placeholder="空着" '+(dis?'disabled':'')+'>').join('') : '';
+    const addBtn = f.add && !dis ? '<button type="button" class="btn sm" data-act="addbox">+ 添加</button>' : '';
+    ctrl = '<div class="file-row"><input data-k="'+f.k+'" '+(dis?'disabled':'')+' value="'+esc(val)+'" placeholder="'+(filled?'':'空着')+'" '+(isNext?'id="nextField"':'')+'></div>'
+      + (f.add ? '<div class="file-row" style="margin-top:8px">'+more+addBtn+'</div>' : '');
+  }
+  const tags = (f.g?'<i class="gate-tag">门闩</i>':'') + (isNext?'<i class="next-tag">下一步填这里</i>':'');
+  return '<label class="fv'+(f.wide?' wide':'')+(filled?' filled':'')+(isNext?' next':'')+'"><span class="lab">'+esc(f.l)+tags+'</span>'+ctrl+'</label>';
+}
+
+function heroHTML(t){
+  if (!CABS[t.id]){
+    return '<div class="card"><div class="kicker">'+esc(secName(t.bucket))+'</div><h1 class="h-id">'+esc(t.doc||t.id)+'</h1><p class="action">'+esc(t.action)+'</p><p class="meta">这是客户回访，不是某一柜的状态维护。</p></div>';
+  }
+  const cab = CABS[t.id];
+  const v = vals(t.id);
+  const ng = nextGate(t.id);
+  const can = editable(cab) && t.kind!=='none' && t.kind!=='ack';
+  const nextKey = (can && ng && FIELDS.find(f => f.k===ng.key).sec===role().sec) ? ng.key : '';
+  const order = [role().sec, ...SECS.map(s => s.id).filter(id => id!==role().sec)];
+  const nav = order.map(id => {
+    const sec = SECS.find(s => s.id===id);
+    const on = state.secOpen[id];
+    return '<button type="button" data-act="togglesec" data-sec="'+id+'" class="'+(on?'on':'')+'">'+sec.title+' <span class="muted">'+filledCount(t.id, id)+(id===role().sec?' · 我的段':' · 只读')+'</span></button>';
+  }).join('');
+  const blocks = order.map(id => {
+    const sec = SECS.find(s => s.id===id);
+    const own = id===role().sec;
+    const fields = FIELDS.filter(f => f.sec===id).map(f => fieldHTML(f, cab, v, own && can, nextKey)).join('');
+    const q = sec.buttons.map(b => '<button type="button" class="btn sm" data-act="quick" data-name="'+esc(b)+'">'+esc(b)+'</button>').join('');
+    const open = state.secOpen[id];
+    return '<section class="block'+(own?' own':'')+(open?'':' shut')+'" data-sec-body="'+id+'"><div class="block-h"><span>'+sec.title+'</span><span class="sum">'+(own&&can?'这一段可以填':'只读')+' · 已填 '+filledCount(t.id, id)+'</span></div>'
+      + (q?'<div class="qbtns">'+q+'</div>':'') + '<div class="fgrid">'+fields+'</div></section>';
+  }).join('');
+  let banners = '';
+  if (cab.exc) banners += '<div class="banner hot">'+esc(cab.exc)+'</div>';
+  if (cab.insp) banners += '<div class="banner hot">'+esc(cab.insp)+'</div>';
+  if (cab.fh) banners += '<div class="banner lock">财控暂停。预计派送及以后先别填，请联系财务核实。</div>';
+  if (cab.doc) banners += '<div class="banner hot">'+esc(cab.doc)+'</div>';
+  const steps = t.steps ? '<div class="steps">'+t.steps.map((s,i)=>'<span class="st '+(i<t.stepAt?'d':(i===t.stepAt?'c':''))+'">'+esc(s)+'</span>').join('<i class="arr">→</i>')+'</div>' : '';
+  const ownFields = FIELDS.filter(f => f.sec===role().sec);
+  const opts = ownFields.map(f => '<option value="'+f.k+'"'+(f.k===(state.batchKey||nextKey)?' selected':'')+'>'+esc(f.l)+'</option>').join('');
+  const picked = [...state.sel].map(find).filter(Boolean);
+  const nodes = new Set(picked.map(x => cabOf(x) && cabOf(x).node));
+  const batchNote = !picked.length ? '勾上同一节点的柜，可以一起填下面这一格。'
+    : (nodes.size>1 ? '选中的柜不在同一个节点，不能一起填。' : '已选 '+picked.length+' 柜，都在「'+(NODES[[...nodes][0]]||'')+'」。');
+  const foot = [];
+  foot.push('<div class="nx">Tab 换格。在「下一步填这里」按回车就保存。门闩齐了，状态往前走，今日进度加一。</div>');
+  if (t.kind==='park') foot.push('<button type="button" class="btn" data-act="park">转到等别人</button>');
+  if (t.kind==='ping') foot.push('<button type="button" class="btn" data-act="ping">提醒一声</button>');
+  if (t.kind==='ack') foot.push('<button type="button" class="btn" data-act="ack">知道了</button>');
+  if (t.kind==='do') foot.push('<button type="button" class="btn" data-act="do">发 DO</button>');
+  if (t.kind==='approve') foot.push('<button type="button" class="btn" data-act="approve">同意</button>');
+  if (can) foot.push('<button type="button" class="btn primary" id="btnSave" data-act="save">保存并推进</button>');
+  return '<div class="card" id="statusForm" data-fields="'+FIELDS.length+'"><div class="kicker">'+esc(secName(t.bucket))+' · 状态维护</div>'
+    + '<h1 class="h-id" id="heroId">'+esc(t.id)+'</h1>'
+    + '<div class="chips"><span class="chip '+t.tagKind+'">'+esc(t.tag)+'</span><span class="chip">'+esc(NODES[cab.node])+'</span>'+(t.due?'<span class="chip due">'+esc(t.due)+'</span>':'')+'</div>'
+    + '<p class="meta">'+esc(cab.cc+' · '+cab.ty+' · '+cab.route+' · '+cab.co)+'</p>'
+    + '<p class="action" id="heroAction">'+esc(t.action)+'</p>'
+    + steps + dotsHTML(cab.node) + banners
+    + '<div class="batch"><span>'+batchNote+'</span><select id="batchKey" aria-label="批量填哪一格">'+opts+'</select><input id="batchVal" placeholder="填同一个值" aria-label="批量的值"><button type="button" class="btn sm" data-act="batch">填到选中的柜</button></div>'
+    + '<div class="secnav">'+nav+'</div>'
+    + blocks
+    + '<div class="gfoot">'+foot.join('')+'</div></div>';
+}
+
+function secName(k){ return ({today:'今天',approve:'审批',change:'变更',tomorrow:'明天预告',wait:'等别人',done:'今天已完成'})[k]||''; }
+
+function sideHTML(r, cur){
+  const ai = cur ? cur.ai : '先看左边今天这一列。';
+  const msgs = r.msgs.map(m => '<div class="msg"><span class="av">'+esc(m.from.slice(0,1))+'</span><div class="tx"><b>'+esc(m.from)+'</b> <span class="tm">'+esc(m.t)+'</span><br>'+esc(m.text)+'</div></div>').join('');
+  const tools = r.tools.map(name => '<button type="button" class="tool" data-act="tool" data-tool="'+esc(name)+'">'+esc(name)+'<i></i></button>').join('');
+  return '<div class="card"><h3>小提示</h3><p class="ai"><b>建议</b>'+esc(ai)+'</p></div>'
+    + '<div class="card"><h3>同事提醒</h3>'+msgs+'</div>'
+    + '<div class="card"><h3>这段常用</h3><div class="tools">'+tools+'</div></div>'
+    + '<p class="note">工作台就是状态维护。左边仍是今天、审批、变更、明天、等别人、已完成。点一柜，先展开你这一段。别的段收着，只能看。柜号和客户代码都是虚构的。</p>';
+}
+
+function toast(text){
+  const el = document.getElementById('toast');
+  el.textContent = text;
+  el.classList.add('on');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove('on'), 2600);
+}
+function readForm(){
+  const t = current();
+  if (!t || !vals(t.id)) return;
+  document.querySelectorAll('#statusForm input[data-k], #statusForm select[data-k]').forEach(el => {
+    if (el.disabled) return;
+    vals(t.id)[el.dataset.k] = el.type==='checkbox' ? (el.checked ? '是' : '') : el.value;
+  });
+  const lines = [...document.querySelectorAll('#statusForm [data-box]')].filter(el => !el.disabled).map(el => el.value);
+  if (document.querySelector('#statusForm [data-box]')) vals(t.id).boxLines = lines;
+}
+function finish(t, how){
+  const r = role();
+  for (const k of BUCKETS){
+    const i = (r[k]||[]).findIndex(x => x.uid===t.uid);
+    if (i>=0){ r[k].splice(i,1); break; }
+  }
+  t.bucket = 'done';
+  t.tag = how==='ack' ? '已看' : '已推进';
+  t.tagKind = 'ok'; t.dot = 'ok'; t.kind = 'none';
+  t.line = '刚刚 · '+(t.doc||t.id);
+  t.action = '刚刚处理完。';
+  r.done.unshift(t);
+  if (t.counts!==false && how!=='ack' && how!=='park') r.ringDone += 1;
+  state.sel.delete(t.uid);
+  const next = r.today[0] || r.done[0];
+  state.uid = next ? next.uid : '';
+  state.fold.done = false;
+  ownOpen();
+}
+function applyNode(cab, g){
+  if (g.id==='cd') { cab.node = 7; return; }
+  if (g.id==='xd' && cab.mode==='火车') { cab.node = 7; return; }
+  cab.node = g.next;
+}
+function tryAdvance(t, quiet){
+  const cab = cabOf(t);
+  const v = vals(t.id);
+  if (!cab.passed) cab.passed = {};
+  for (const g of GATES){
+    if (g.train && cab.mode!=='火车') continue;
+    if (cab.passed[g.id]) continue;
+    const empty = g.keys.filter(k => !String(v[k]||'').trim());
+    if (empty.length){
+      const field = FIELDS.find(f => f.k===empty[0]);
+      if (!quiet){
+        if (field.sec!==role().sec) toast('下一步不在你这段。');
+        else if (cab.fh && field.lock) toast('请联系财务核实。');
+        else toast('下一步还没填：'+field.l+'。这一组还差 '+(empty.map(k => FIELDS.find(f => f.k===k).l).join('、')));
+      }
+      return false;
+    }
+    const field = FIELDS.find(f => f.k===g.keys[0]);
+    if (field.sec!==role().sec) { if (!quiet) toast('下一步不在你这段。'); return false; }
+    if (cab.exc || (cab.insp && g.id==='pkdone')) {
+      if (!quiet) toast('有异常或还在查验，这一格先记下，状态先不往前走。');
+      return false;
+    }
+    cab.passed[g.id] = true;
+    applyNode(cab, g);
+    if (!quiet) toast('已填「'+g.name+'」，状态往前走了。演示，没有写入真系统。');
+    return true;
+  }
+  if (!quiet) toast('这一柜的门闩已经齐了。');
+  return false;
+}
+
+document.body.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el){
+    if (state.menu && !e.target.closest('.role-anchor')) { state.menu = false; render(); }
+    return;
+  }
+  const act = el.dataset.act;
+  if (act==='sel') return;
+  if (act==='role-menu'){ state.menu = !state.menu; render(); return; }
+  if (act==='pick'){
+    state.role = el.dataset.role;
+    state.menu = false;
+    state.sel.clear();
+    const r = role();
+    const first = r.today[0] || r.done[0] || r.wait[0];
+    state.uid = first ? first.uid : '';
+    state.fold = {today:false, approve:true, change:true, tomorrow:true, wait:true, done:true};
+    ownOpen();
+    render();
+    return;
+  }
+  if (act==='fold'){ state.fold[el.dataset.sec] = !state.fold[el.dataset.sec]; render(); return; }
+  if (act==='open'){
+    readForm();
+    state.uid = el.dataset.uid;
+    state.menu = false;
+    ownOpen();
+    render();
+    return;
+  }
+  if (act==='jump-first'){
+    const first = role().today[0];
+    if (first){ state.uid = first.uid; state.fold.today = false; ownOpen(); }
+    render();
+    return;
+  }
+  if (act==='togglesec'){
+    readForm();
+    state.secOpen[el.dataset.sec] = !state.secOpen[el.dataset.sec];
+    render();
+    return;
+  }
+  if (act==='plat'){ toast('这是演示。订单平台在另一张样张里。'); return; }
+  if (act==='tool' || act==='quick'){ toast('「'+(el.dataset.tool||el.dataset.name)+'」是演示，还没接真系统。'); return; }
+  if (act==='ping'){ toast('已记一条提醒。演示，没有真的发出去。'); return; }
+  if (act==='addbox'){
+    readForm();
+    const t = current();
+    vals(t.id).boxLines = vals(t.id).boxLines || [];
+    vals(t.id).boxLines.push('');
+    render();
+    return;
+  }
+  if (act==='upload'){
+    const t = current();
+    vals(t.id)[el.dataset.k] = 'demo-上传.pdf';
+    render();
+    toast('已挂上 demo-上传.pdf。演示，没有真的传文件。');
+    return;
+  }
+  if (act==='ack'){
+    finish(current(), 'ack');
+    toast('已标成看过。不计入今日进度。');
+    render();
+    return;
+  }
+  if (act==='park'){
+    const t = current();
+    const r = role();
+    for (const k of BUCKETS){
+      const i = (r[k]||[]).findIndex(x => x.uid===t.uid);
+      if (i>=0){ r[k].splice(i,1); break; }
+    }
+    t.bucket = 'wait'; t.tag = '等放行'; t.tagKind = 'wait'; t.dot = 'wait'; t.kind = 'ping';
+    t.line = (t.id)+' · 等放行';
+    r.wait.unshift(t);
+    state.uid = (r.today[0]||t).uid;
+    state.fold.wait = false;
+    toast('已放到等别人。进度环里仍算没做完。');
+    render();
+    return;
+  }
+  if (act==='do'){
+    const t = current();
+    readForm();
+    vals(t.id).trfile = vals(t.id).trfile || 'do-demo.pdf';
+    finish(t, 'do');
+    toast('DO 已记下。演示，没有写入真系统。');
+    render();
+    return;
+  }
+  if (act==='approve'){
+    finish(current(), 'approve');
+    toast('已同意。演示，没有写入真系统。');
+    render();
+    return;
+  }
+  if (act==='save'){
+    const t = current();
+    readForm();
+    if (tryAdvance(t)) finish(t, 'save');
+    render();
+    return;
+  }
+  if (act==='batch'){
+    readForm();
+    const key = document.getElementById('batchKey').value;
+    const value = document.getElementById('batchVal').value.trim();
+    state.batchKey = key;
+    const picked = [...state.sel].map(find).filter(x => x && CABS[x.id]);
+    if (!picked.length){ toast('先在左边勾上柜。'); return; }
+    const nodes = new Set(picked.map(x => CABS[x.id].node));
+    if (nodes.size>1){ toast('要同一节点的柜才能一起填。'); return; }
+    if (!value){ toast('先写要填进去的值。'); return; }
+    const label = FIELDS.find(f => f.k===key).l;
+    picked.forEach(x => { vals(x.id)[key] = value; });
+    let moved = 0;
+    picked.forEach(x => {
+      if (x.bucket!=='today' || x.kind==='none' || x.kind==='ack') return;
+      if (tryAdvance(x, true)) { finish(x, 'save'); moved++; }
+    });
+    toast('已把「'+label+'」填到 '+picked.length+' 柜。'+(moved?moved+' 柜的状态往前走了。':'')+'演示，没有写入真系统。');
+    render();
+  }
+});
+
+document.body.addEventListener('change', (e) => {
+  const el = e.target.closest('[data-act="sel"]');
+  if (!el) return;
+  if (el.checked) state.sel.add(el.dataset.uid);
+  else state.sel.delete(el.dataset.uid);
+  readForm();
+  render();
+});
+document.body.addEventListener('input', (e) => {
+  const inp = e.target.closest('#statusForm [data-k]');
+  if (!inp || inp.disabled) return;
+  const t = current();
+  if (!t || !vals(t.id)) return;
+  vals(t.id)[inp.dataset.k] = inp.value;
+  const fv = inp.closest('.fv');
+  if (fv) fv.classList.toggle('filled', !!inp.value.trim());
+});
+document.body.addEventListener('keydown', (e) => {
+  if (e.key==='Enter' && e.target.id==='nextField'){
+    e.preventDefault();
+    const btn = document.getElementById('btnSave');
+    if (btn) btn.click();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
