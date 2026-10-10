@@ -720,6 +720,50 @@ a{color:inherit;text-decoration:none}
 .wb-side .cmeta.fin,.wb-side .cmeta.done{background:var(--ok-bg);color:var(--ok)}
 .wb-empty{padding:28px 8px;font-size:14px;color:var(--t4)}
 
+/* 到仓拆柜 · 拆柜清单（沿用审核表的四列节奏） */
+.tn .bd{min-width:0}
+.op-line,.tl{min-width:0}
+#unloadForm{min-width:0}
+#unloadForm .fv{min-width:0}
+#unloadForm .en{font-style:normal;font-weight:500;color:var(--t5);font-size:12px}
+#unloadForm .file-row{display:flex;gap:6px;align-items:center;min-width:0}
+#unloadForm .file-row input{flex:1;width:auto;min-width:0}
+#unloadForm .fv.gate input{border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,123,229,.12)}
+#unloadForm .fv.short input{border-color:var(--danger);background:#FFF8F8}
+#unloadForm .fv.over input{border-color:#C47A00;background:#FFF8EB}
+#unloadForm input[readonly]{background:var(--sunken);color:var(--t2)}
+.ul-var{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 13px;margin:0 0 8px;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:650}
+.ul-var b{font-size:16px;font-variant-numeric:tabular-nums}
+.ul-var small{font-weight:500;font-size:13px}
+.ul-var.short{background:#FDEDED;color:#C62828}
+.ul-var.over{background:#FFF8EB;color:#B86E00}
+.ul-var.even{background:#E8F6E8;color:#0E7A47}
+.split-block{margin-top:13px;padding-top:13px;border-top:1px solid var(--line-soft)}
+.split-block h4{font-size:13px;font-weight:650;margin-bottom:4px}
+.split-block p{font-size:13px;color:var(--t3);margin-bottom:8px}
+.box-list{display:flex;flex-direction:column;gap:8px}
+.box-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(72px,.5fr) auto;gap:8px;align-items:center}
+.box-row input{height:32px;padding:0 9px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:13px;width:100%;min-width:0}
+.box-row input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(46,123,229,.12)}
+.pl-tools{display:flex;gap:8px;align-items:stretch;margin-top:8px}
+.pl-tools textarea{flex:1;min-width:0;min-height:72px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:13px/1.45 var(--font-id);resize:vertical;background:#fff}
+.pl-tools textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(46,123,229,.12)}
+.pl-wrap{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+.pl{width:100%;border-collapse:collapse;min-width:920px;font-size:13px}
+.pl th{text-align:left;font-size:12px;font-weight:600;color:var(--t3);height:36px;padding:0 8px;background:#FAFAFB;border-bottom:1px solid var(--line);white-space:nowrap}
+.pl td{padding:4px 6px;border-bottom:1px solid var(--row-line);vertical-align:middle}
+.pl input{height:30px;width:100%;min-width:64px;padding:0 8px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:#fff}
+.pl input.hs{min-width:112px;font-family:var(--font-id)}
+.pl input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(46,123,229,.12)}
+.pl tfoot td{background:#FAFAFB;font-weight:650;font-variant-numeric:tabular-nums;height:40px;padding:0 8px}
+.pl tfoot tr.short td{background:#FDEDED;color:#C62828}
+.pl tfoot tr.over td{background:#FFF8EB;color:#B86E00}
+.pl tfoot tr.even td{background:#E8F6E8;color:#0E7A47}
+.pl .r{text-align:right}
+@media (max-width:1360px){
+  .box-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 72px auto}
+}
+
 </style></head>
 <body>
 
@@ -811,8 +855,7 @@ const GATES = {
     f:[{k:'av',l:'可提柜日期',t:'date',d:'10/02'},{k:'lfd',l:'货柜 LFD',t:'date',d:'10/05'},{k:'plan',l:'预计提柜日期',t:'date',d:'10/05'},
        {k:'co',l:'提柜公司',t:'sup',o:'truck',d:'DEMO-拖车-03'},{k:'done',l:'提柜完成日期',t:'date',d:'10/05'},{k:'pod',l:'提柜 POD',t:'file',d:'pickup-pod-demo.jpg'}]},
   devan:{title:'到仓拆柜', next:'转装出仓', notify:'仓管平台（装柜）',
-    f:[{k:'wk',l:'卸柜工人登记',t:'text',d:'3 人已登记 · DEMO人力-A',wide:1},{k:'wh',l:'操作仓库',t:'sel',o:'wh',d:'DEMO-仓-LA1'},{k:'in',l:'入仓日期',t:'date',d:'10/04'},
-       {k:'qty',l:'拆柜完成 托/件',t:'text',d:'18 托 / 1,120 件 / 少 0'},{k:'sheet',l:'拆柜单',t:'file',d:'devan-sheet-demo.pdf'}]},
+    f:[{k:'upCntr',l:'拆柜件数',t:'text'}]},
   outbound:{title:'转装出仓', next:'清关过境', notify:'清关平台',
     f:[{k:'dv',l:"53'DV#",t:'text',d:'DV-DEMO-5301'},{k:'mode',l:'运输方式',t:'sel',o:'mode',d:'火车'},{k:'seal',l:'封条号',t:'text',d:'SEAL-DEMO-0912'},
        {k:'gps',l:'GPS 设备',t:'sel',o:'gps',d:'GPS-DEMO-118'},{k:'out',l:'出仓日期',t:'date',d:'10/05'},{k:'ph',l:'出仓照片',t:'file',d:'outbound-photo-demo.zip'}]},
@@ -857,6 +900,7 @@ const TODAY = new Date(2026, 9, 5);
 
 const state = { view:'todo', filter:null, sort:'prio', q:'', fold:{node:true, flag:true, sort:false}, filtOpen:false, gateOpen:false, reviewFold:false,
   collapsed: (()=>{ try { return localStorage.getItem('bbtex13t.collapsed')==='1'; } catch(e){ return false; } })(),
+  unloadFold:false,
   nestOpen: true,
   page: 'orders',
   role: '操作经理',
@@ -1583,9 +1627,369 @@ function reviewInner(c){
     + '<button type="button" class="btn primary" id="btnApprove">审核通过</button></div>'
     + '</div>';
 }
+const UL_GROUPS = [
+  {id:'port', title:'到港 / 入仓', fields:[
+    {k:'item', l:'序号', en:'Item#', t:'int'},
+    {k:'added', l:'建档日期', en:'D. Added', t:'date'},
+    {k:'etaLb', l:'预计到长滩日', en:'ETA LB', t:'date'},
+    {k:'mbl', l:'主提单号', en:'MBL', t:'text'},
+    {k:'oc', l:'柜号', en:'OC#', t:'text'},
+    {k:'weight', l:'重量', en:'Weight(LB)', t:'num'},
+    {k:'chasis', l:'底盘规格', en:'Chasis', t:'text'},
+    {k:'cartons', l:'件数', en:'Cartons', t:'int'},
+    {k:'method', l:'运输方式', en:'Method', t:'sel', o:['Rail','卡车','海运']},
+    {k:'arrival', l:'到港日', en:'arrival date', t:'date'},
+    {k:'lfd', l:'最后免费日', en:'LFD', t:'date'},
+    {k:'portAppt', l:'码头预约', en:'Port Appt', t:'text'},
+    {k:'emptyReturn', l:'还空柜日', en:'Empty Return', t:'date'},
+    {k:'checkIn', l:'入仓日期', en:'Check-in LA', t:'date'}
+  ]},
+  {id:'devan', title:'拆柜', fields:[
+    {k:'paz', l:'4Paz #', en:'4Paz #', t:'text'},
+    {k:'upCntr', l:'拆柜件数', en:'UP CNTR', t:'int', gate:1},
+    {k:'seal', l:'封条号', en:'Seal#', t:'text'},
+    {k:'gps', l:'GPS 设备号', en:'GPS No.', t:'text'},
+    {k:'photos', l:'拆柜照片', en:'LA Unloading Photos', t:'file'}
+  ]},
+  {id:'xfer', title:'转运 / 过境', fields:[
+    {k:'checkOut', l:'出仓日期', en:'Check-out LA', t:'date'},
+    {k:'days', l:'转运天数', en:'O.CNTR Days', t:'auto'},
+    {k:'trailer', l:'53 尺挂车号', en:'Trailer#', t:'text'},
+    {k:'sealFinal', l:'最终封条', en:'Seal # (Final BOL)', t:'text'},
+    {k:'xferPhotos', l:'转运装车照片', en:'Transfer Loading Photos', t:'file'},
+    {k:'planCross', l:'计划过境日', en:'Plan Crossing Date', t:'date'},
+    {k:'crossed', l:'实际过境日', en:'Crossed Date', t:'date'}
+  ]},
+  {id:'del', title:'派送', fields:[
+    {k:'wh', l:'送货地址 / 仓库', en:'W/H Designation', t:'text'},
+    {k:'appt', l:'派送预约日', en:'Appt date', t:'date'},
+    {k:'podSent', l:'POD 已发', en:'POD sent', t:'sel', o:['否','是']},
+    {k:'delStatus', l:'派送状态', en:'Delivery status', t:'sel', o:['待派','在途','已签收','异常']},
+    {k:'delPhotos', l:'派送照片', en:'Delivery Photos', t:'file'}
+  ]}
+];
+function blankLine(){ return {marks:'', name:'', desc:'', hs:'', ctns:'', qty:'', nw:'', gw:'', cbm:'', pic:''}; }
+function blankBox(){ return {trailer:'', seal:'', ctns:''}; }
+function ulNum(s){
+  const n = parseFloat(String(s??'').replace(/,/g,''));
+  return Number.isFinite(n) ? n : 0;
+}
+function ulFmt(n){
+  const v = Math.round(n * 1000) / 1000;
+  return String(v);
+}
+function parseMD(s){
+  if (!s || !/^\d{1,2}\/\d{1,2}$/.test(String(s).trim())) return null;
+  const [m,d] = String(s).trim().split('/').map(Number);
+  return new Date(2026, m-1, d);
+}
+function cntrDays(u){
+  const a = parseMD(u.checkIn), b = parseMD(u.checkOut);
+  if (a==null || b==null) return '';
+  return String(Math.round((b-a)/864e5));
+}
+function unloadModel(c){
+  if (c.unload) return c.unload;
+  const short = c.id==='TEST1122334';
+  const eta = /^\d{1,2}\/\d{1,2}$/.test(c.eta||'') ? c.eta : '10/08';
+  c.unload = {
+    item: short ? '8' : '1',
+    added:'09/18',
+    etaLb: eta,
+    mbl: c.mbl || 'MBL-DEMO-0000',
+    oc: c.id,
+    weight: short ? '18420' : '16200',
+    chasis: c.ty || '40HQ',
+    cartons: short ? '120' : '80',
+    method: c.mode==='卡车' ? '卡车' : 'Rail',
+    arrival:'10/04',
+    lfd: c.lfd || '10/05',
+    portAppt:'10/04 @ 0900',
+    emptyReturn:'',
+    paz:'4PAZ-DEMO-19',
+    upCntr:'',
+    seal:'SEAL-DEMO-4410',
+    gps:'GPS-DEMO-118',
+    checkIn:'10/04',
+    checkOut:'',
+    photos:'',
+    trailer:'',
+    sealFinal:'',
+    xferPhotos:'',
+    planCross:'10/07',
+    crossed:'',
+    wh:'DEMO-仓-MTY1',
+    appt:'',
+    podSent:'否',
+    delStatus:'待派',
+    delPhotos:'',
+    days:'',
+    boxes: short ? [
+      {trailer:'DV-DEMO-5301', seal:'SEAL-DEMO-0912', ctns:'70'},
+      {trailer:'DV-DEMO-5302', seal:'SEAL-DEMO-0913', ctns:'47'}
+    ] : [blankBox()],
+    mergeTrailer:'DV-DEMO-8808',
+    mergeCabs:['TEST1357913'],
+    lines: short ? [
+      {marks:'DEMO-PL-1001', name:'演示配件A', desc:'DEMO PART A', hs:'8479901000', ctns:'70', qty:'840', nw:'620.5', gw:'680', cbm:'8.4', pic:''},
+      {marks:'DEMO-PL-1002', name:'演示配件B', desc:'DEMO PART B', hs:'7326909000', ctns:'47', qty:'564', nw:'410.2', gw:'455', cbm:'5.1', pic:''}
+    ] : [
+      {marks:'DEMO-PL-2001', name:'演示纸箱', desc:'DEMO CARTON', hs:'4819100000', ctns:'80', qty:'800', nw:'500', gw:'540', cbm:'6.2', pic:''}
+    ]
+  };
+  c.unload.days = cntrDays(c.unload);
+  return c.unload;
+}
+function lineSums(lines){
+  const keys = ['ctns','qty','nw','gw','cbm'];
+  const out = {};
+  keys.forEach(k => { out[k] = (lines||[]).reduce((s,r) => s + ulNum(r[k]), 0); });
+  return out;
+}
+function varianceOf(u){
+  const exp = ulNum(u.cartons);
+  const sums = lineSums(u.lines);
+  const raw = String(u.upCntr??'').trim().replace(/,/g,'');
+  const hasAct = raw!=='' && Number.isFinite(parseFloat(raw));
+  const act = hasAct ? parseFloat(raw) : sums.ctns;
+  const diff = Math.round((act - exp) * 1000) / 1000;
+  const kind = diff<0 ? 'short' : diff>0 ? 'over' : 'even';
+  const text = diff<0 ? ('少件 '+ulFmt(-diff)) : diff>0 ? ('多件 '+ulFmt(diff)) : '件数齐';
+  const basis = hasAct ? ('拆柜 '+ulFmt(act)) : ('明细 '+ulFmt(sums.ctns));
+  return {kind, text, diff, exp, act, hasAct, sums, detail:'清单 '+ulFmt(exp)+' · '+basis};
+}
+function ulField(u, f){
+  const val = f.t==='auto' ? cntrDays(u) : (u[f.k] ?? '');
+  const gate = f.gate ? ' <i class="req">门闩</i>' : '';
+  let ctrl;
+  if (f.t==='sel'){
+    ctrl = '<select data-uk="'+f.k+'">'+f.o.map(o => '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
+  } else if (f.t==='file'){
+    ctrl = '<div class="file-row"><input data-uk="'+f.k+'" value="'+esc(val)+'" placeholder="未上传" readonly><button type="button" class="btn secondary sm" data-uup="'+f.k+'">上传</button></div>';
+  } else if (f.t==='auto'){
+    ctrl = '<input data-uk="'+f.k+'" value="'+esc(val)+'" placeholder="入仓、出仓都有日期才自动算" readonly>';
+  } else {
+    ctrl = '<input data-uk="'+f.k+'" value="'+esc(val)+'"'+(f.gate?' placeholder="整数，例如 117" inputmode="numeric"':'')+'>';
+  }
+  return '<label class="fv'+(f.gate?' gate':'')+'" data-f="'+f.k+'"><span>'+esc(f.l)+gate+' <em class="en">'+esc(f.en)+'</em></span>'+ctrl+'</label>';
+}
+function lineRow(r, i){
+  const cell = (k, cls) => '<td><input data-line="'+k+'" value="'+esc(r[k]||'')+'"'+(cls?' class="'+cls+'"':'')+' aria-label="'+k+'"></td>';
+  return '<tr data-line-i="'+i+'">'
+    + cell('marks')+cell('name')+cell('desc')+cell('hs','hs')+cell('ctns')+cell('qty')+cell('nw')+cell('gw')+cell('cbm')+cell('pic')
+    + '<td><button type="button" class="btn ghost sm" data-del-line="'+i+'">删除</button></td></tr>';
+}
+function boxRow(r, i){
+  return '<div class="box-row" data-box-i="'+i+'">'
+    + '<input data-box="trailer" value="'+esc(r.trailer||'')+'" aria-label="挂车号" placeholder="DV-DEMO-">'
+    + '<input data-box="seal" value="'+esc(r.seal||'')+'" aria-label="封条" placeholder="SEAL-DEMO-">'
+    + '<input data-box="ctns" value="'+esc(r.ctns||'')+'" aria-label="件数" inputmode="numeric" placeholder="件数">'
+    + '<button type="button" class="btn ghost sm" data-del-box="'+i+'">删除</button></div>';
+}
+function cabRow(id, i){
+  return '<div class="box-row" data-cab-i="'+i+'">'
+    + '<input data-cab value="'+esc(id||'')+'" aria-label="并入柜号" placeholder="TEST">'
+    + '<span></span><span></span>'
+    + '<button type="button" class="btn ghost sm" data-del-cab="'+i+'">删除</button></div>';
+}
+function splitHTML(c, u){
+  const boxes = (u.boxes||[]).map(boxRow).join('') || '<div class="cab-empty">还没有箱子</div>';
+  const cabs = (u.mergeCabs||[]).map(cabRow).join('') || '<div class="cab-empty">还没有别的柜</div>';
+  return '<div class="split-block" id="splitBlock">'
+    + '<h4>一柜拆多箱</h4>'
+    + '<p>这一只柜 '+esc(c.id)+' 拆成下面几只 53 尺箱。箱号、封条、件数都可以改。</p>'
+    + '<div class="box-list" id="boxList">'+boxes+'</div>'
+    + '<button type="button" class="btn secondary sm" id="btnAddBox" style="margin-top:8px">+ 加一箱</button>'
+    + '<h4 style="margin-top:13px">多柜并一箱</h4>'
+    + '<p>多只柜并进同一只箱。本柜 '+esc(c.id)+' 和下面这些柜共用一只挂车（演示柜号）。</p>'
+    + '<div class="box-row" style="margin-bottom:8px"><input data-merge-trailer value="'+esc(u.mergeTrailer||'')+'" aria-label="共用挂车号" placeholder="DV-DEMO-共用"></div>'
+    + '<div class="box-list" id="cabList">'+cabs+'</div>'
+    + '<button type="button" class="btn secondary sm" id="btnAddCab" style="margin-top:8px">+ 加一只柜</button>'
+    + '</div>';
+}
+function tableHTML(u){
+  const v = varianceOf(u);
+  const rows = (u.lines||[]).map(lineRow).join('');
+  const s = v.sums;
+  return '<div class="ul-var '+v.kind+'" id="ulVar" data-kind="'+v.kind+'"><b id="ulVarText">'+esc(v.text)+'</b><small id="ulVarDetail">'+esc(v.detail)+'</small></div>'
+    + '<div class="pl-tools"><textarea id="plPaste" placeholder="从 Excel 粘贴明细。表头或直接十列：MARKS、品名、Description、HS CODE、CTNS、QTY、N.W. KGS、G.W. KGS、CBM、Picture。制表符或逗号都可以。"></textarea>'
+    + '<button type="button" class="btn secondary sm" id="plImport">导入明细</button></div>'
+    + '<div class="pl-wrap"><table class="pl" id="plTable"><thead><tr>'
+    + '<th>MARKS</th><th>品名</th><th>Description</th><th>HS CODE</th><th>CTNS</th><th>QTY</th><th>N.W. KGS</th><th>G.W. KGS</th><th>CBM</th><th>Picture</th><th></th>'
+    + '</tr></thead><tbody id="plBody">'+(rows || '<tr><td colspan="11">还没有明细，可以加一行或粘贴导入。</td></tr>')+'</tbody>'
+    + '<tfoot><tr id="plFoot" class="'+v.kind+'">'
+    + '<td>合计</td><td id="plVarCell">'+esc(v.text)+'</td><td></td><td></td>'
+    + '<td class="r" id="plTotCtns">'+ulFmt(s.ctns)+'</td>'
+    + '<td class="r" id="plTotQty">'+ulFmt(s.qty)+'</td>'
+    + '<td class="r" id="plTotNw">'+ulFmt(s.nw)+'</td>'
+    + '<td class="r" id="plTotGw">'+ulFmt(s.gw)+'</td>'
+    + '<td class="r" id="plTotCbm">'+ulFmt(s.cbm)+'</td>'
+    + '<td></td><td></td></tr></tfoot></table></div>'
+    + '<button type="button" class="btn secondary sm" id="btnAddLine" style="margin-top:8px">+ 加一行</button>';
+}
+function unloadInner(c){
+  const u = unloadModel(c);
+  const n = UL_GROUPS.reduce((s,g) => s+g.fields.length, 0);
+  const groups = UL_GROUPS.map(g => {
+    const fields = g.fields.map(f => ulField(u, f)).join('');
+    const extra = g.id==='devan' ? splitHTML(c, u) : '';
+    return '<section class="rev-sec" data-ul-group="'+g.id+'"><h3>'+g.title+'</h3><div class="rev-grid">'+fields+'</div>'+extra+'</section>';
+  }).join('');
+  const excBtn = c.exc
+    ? '<button type="button" class="btn secondary sm" data-fix>异常已解决</button>'
+    : '<button type="button" class="btn ghost sm" data-exc>上报异常</button>';
+  return '<div class="rev" id="unloadForm" data-fields="'+n+'">'
+    + '<div class="rev-ai"><b>拆柜清单录入</b> 演示数据。门闩只有拆柜件数：填上并保存，状态进到转装出仓，今日进度加一。</div>'
+    + groups
+    + '<section class="rev-sec" id="packingSec"><h3>装箱单明细</h3>'
+    + '<p style="font-size:13px;color:var(--t3);margin-bottom:8px">一行一种货。合计跟清单件数比，少件标红，多件标黄。</p>'
+    + tableHTML(u)
+    + '</section>'
+    + '<div class="gfoot"><div class="nx">下一站：<b>转装出仓</b>。少件 / 多件只标出来，不挡住这一步。</div>'
+    + excBtn
+    + '<button type="button" class="btn primary" id="btnUnloadSave">保存拆柜件数并推进 →</button></div>'
+    + '</div>';
+}
+function readUnload(c){
+  const u = unloadModel(c);
+  document.querySelectorAll('#unloadForm [data-uk]').forEach(el => {
+    if (el.dataset.uk==='days') return;
+    u[el.dataset.uk] = el.value;
+  });
+  u.days = cntrDays(u);
+  if (document.getElementById('plBody')){
+    const lines = [];
+    document.querySelectorAll('#unloadForm [data-line-i]').forEach(row => {
+      const g = k => row.querySelector('[data-line="'+k+'"]')?.value ?? '';
+      lines.push({marks:g('marks'), name:g('name'), desc:g('desc'), hs:g('hs'), ctns:g('ctns'), qty:g('qty'), nw:g('nw'), gw:g('gw'), cbm:g('cbm'), pic:g('pic')});
+    });
+    u.lines = lines;
+  }
+  if (document.getElementById('boxList')){
+    const boxes = [];
+    document.querySelectorAll('#unloadForm [data-box-i]').forEach(row => {
+      const g = k => row.querySelector('[data-box="'+k+'"]')?.value ?? '';
+      boxes.push({trailer:g('trailer'), seal:g('seal'), ctns:g('ctns')});
+    });
+    u.boxes = boxes;
+  }
+  if (document.getElementById('cabList')){
+    u.mergeCabs = [...document.querySelectorAll('#unloadForm [data-cab-i]')].map(row => row.querySelector('[data-cab]')?.value ?? '');
+  }
+  const mt = document.querySelector('#unloadForm [data-merge-trailer]');
+  if (mt) u.mergeTrailer = mt.value;
+  const act = String(u.upCntr||'').trim();
+  if (act) c.v.upCntr = act; else delete c.v.upCntr;
+  return u;
+}
+function paintVariance(c){
+  const u = c.unload; if (!u) return;
+  const v = varianceOf(u);
+  const banner = document.getElementById('ulVar');
+  if (banner){
+    banner.className = 'ul-var '+v.kind;
+    banner.dataset.kind = v.kind;
+    const t = document.getElementById('ulVarText'); if (t) t.textContent = v.text;
+    const d = document.getElementById('ulVarDetail'); if (d) d.textContent = v.detail;
+  }
+  const foot = document.getElementById('plFoot');
+  if (foot) foot.className = v.kind;
+  const cell = document.getElementById('plVarCell'); if (cell) cell.textContent = v.text;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('plTotCtns', ulFmt(v.sums.ctns));
+  set('plTotQty', ulFmt(v.sums.qty));
+  set('plTotNw', ulFmt(v.sums.nw));
+  set('plTotGw', ulFmt(v.sums.gw));
+  set('plTotCbm', ulFmt(v.sums.cbm));
+  const daysEl = document.querySelector('#unloadForm [data-uk="days"]');
+  if (daysEl) daysEl.value = u.days || '';
+  const fv = document.querySelector('#unloadForm [data-f="upCntr"]');
+  if (fv){
+    fv.classList.toggle('short', v.hasAct && v.kind==='short');
+    fv.classList.toggle('over', v.hasAct && v.kind==='over');
+  }
+}
+function parsePaste(text){
+  const lines = String(text||'').replace(/\r/g,'').split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lines.length) return [];
+  const delim = lines[0].includes('\t') ? '\t' : ',';
+  const cells = line => {
+    if (delim==='\t') return line.split('\t').map(s => s.trim());
+    const out = []; let cur = ''; let q = false;
+    for (const ch of line){
+      if (ch==='"'){ q = !q; continue; }
+      if (ch===',' && !q){ out.push(cur.trim()); cur = ''; continue; }
+      cur += ch;
+    }
+    out.push(cur.trim());
+    return out;
+  };
+  let rows = lines.map(cells);
+  const head = rows[0].join(' ').toLowerCase();
+  if (/marks|品名|hs|description|ctns/.test(head)) rows = rows.slice(1);
+  return rows.map(r => ({
+    marks:r[0]||'', name:r[1]||'', desc:r[2]||'', hs:String(r[3]||''),
+    ctns:r[4]||'', qty:r[5]||'', nw:r[6]||'', gw:r[7]||'', cbm:r[8]||'', pic:r[9]||''
+  })).filter(r => Object.values(r).some(v => String(v).trim()));
+}
+function rerenderUnload(c){
+  state.unloadFold = false;
+  renderDetail();
+}
+function bindUnload(c){
+  const root = document.getElementById('unloadForm');
+  if (!root) return;
+  root.addEventListener('input', () => { readUnload(c); paintVariance(c); });
+  root.querySelectorAll('[data-uup]').forEach(b => b.onclick = () => {
+    readUnload(c);
+    c.unload[b.dataset.uup] = 'unload-demo.jpg';
+    rerenderUnload(c);
+    toast('已挂上 unload-demo.jpg（演示，没有真的传文件）');
+  });
+  const addL = document.getElementById('btnAddLine');
+  if (addL) addL.onclick = () => { readUnload(c); c.unload.lines.push(blankLine()); rerenderUnload(c); };
+  const addB = document.getElementById('btnAddBox');
+  if (addB) addB.onclick = () => { readUnload(c); c.unload.boxes.push(blankBox()); rerenderUnload(c); };
+  const addC = document.getElementById('btnAddCab');
+  if (addC) addC.onclick = () => { readUnload(c); c.unload.mergeCabs.push(''); rerenderUnload(c); };
+  root.querySelectorAll('[data-del-line]').forEach(b => b.onclick = () => {
+    readUnload(c); c.unload.lines.splice(Number(b.dataset.delLine), 1); rerenderUnload(c);
+  });
+  root.querySelectorAll('[data-del-box]').forEach(b => b.onclick = () => {
+    readUnload(c); c.unload.boxes.splice(Number(b.dataset.delBox), 1); rerenderUnload(c);
+  });
+  root.querySelectorAll('[data-del-cab]').forEach(b => b.onclick = () => {
+    readUnload(c); c.unload.mergeCabs.splice(Number(b.dataset.delCab), 1); rerenderUnload(c);
+  });
+  const imp = document.getElementById('plImport');
+  if (imp) imp.onclick = () => {
+    readUnload(c);
+    const rows = parsePaste((document.getElementById('plPaste')||{}).value||'');
+    if (!rows.length){ toast('没有读到明细。按十列粘贴，或带一行表头。'); return; }
+    c.unload.lines = c.unload.lines.concat(rows);
+    toast('已导入 '+rows.length+' 行明细（演示）');
+    rerenderUnload(c);
+  };
+  const save = document.getElementById('btnUnloadSave');
+  if (save) save.onclick = () => {
+    readUnload(c);
+    const n = String(c.unload.upCntr||'').replace(/,/g,'').trim();
+    if (!/^\d+$/.test(n)){
+      const fv = document.querySelector('#unloadForm [data-f="upCntr"]');
+      if (fv) fv.classList.add('err');
+      toast('拆柜件数是门闩，填整数后才会推进');
+      return;
+    }
+    c.unload.upCntr = n;
+    c.v.upCntr = n;
+    const v = varianceOf(c.unload);
+    advance(c, '拆柜件数 '+n+'（'+v.text+'）· ');
+  };
+}
 function gateInner(c){
   const key = NODES[c.d]?.k;
   if (c.d === 0) return reviewInner(c);
+  if (key === 'devan') return unloadInner(c);
   if (NODES[c.d]?.fin) {
     if (NODES[c.d].early) return '<div class="grule">开票在转运前由财务完成。订单平台只看状态，不操作金额。</div>'
       + '<div class="gfoot"><div class="nx">去财务平台开票 / 发账单</div><a class="btn secondary sm" href="#">打开财务平台</a></div>';
@@ -1631,7 +2035,7 @@ function gateBlock(c){
     title = G.title;
     filled = '<span class="gp">已填 <b>'+n+'</b> / '+reqs.length+'</span>';
   }
-  const open = (c.d===0 ? !state.reviewFold : state.gateOpen) ? ' open' : '';
+  const open = (c.d===0 ? !state.reviewFold : (key==='devan' ? !state.unloadFold : state.gateOpen)) ? ' open' : '';
   return '<div class="gate-inline">'
     + '<button type="button" class="gate-tog'+open+'" id="gateTog"><span class="gtag">填写推进</span><span class="gt">'+title+'</span>'+filled+'<span class="car">▾</span></button>'
     + '<div class="gate'+open+'" id="gatePanel">'+gateInner(c)+'</div></div>';
@@ -1668,7 +2072,8 @@ function renderDetail(){
     return '<div class="stop '+k+(n.fin?' fn':'')+'"><div class="dot2">'+(i<c.d?'✓':(i+1))+'</div><div class="nm">'+n.n+'</div><div class="tm">'+tm+'</div></div>';
   }).join('');
 
-  const ai = c.exc ? '码头 hold / 少件已到，建议同步客户代码 '+c.cc+' 并更新预计节点。'
+  const ai = c.d===5 ? '这一步是拆柜清单。拆柜件数填上并保存，才会进到转装出仓。少件、多件只标出来，不挡住保存。'
+    : c.exc ? '码头 hold / 少件已到，建议同步客户代码 '+c.cc+' 并更新预计节点。'
     : c.d===4 ? '提柜公司已预约，LFD '+(c.lfd||'—')+'。回传 POD 后可保存并推进。'
     : c.d===0 ? '提单号和 MBL# 对不上，邮编也空着。先看下面四组，再决定通过还是驳回。'
     : '门闩填齐后点「保存并推进」。';
@@ -1712,7 +2117,7 @@ function renderDetail(){
     +     '<span>客服 <b>李明</b></span>'
     +   '</div>'
     + '</div>'
-    + '<div class="scheme-note">订单平台 QB 13 · v1.3.17 · 订单审核展开成四组资料（基本信息、装运、ISF、派送地址），和旧系统「订单信息」一样的字段。必填有标记，对不上的当场标出。演示数据全虚构。</div>';
+    + '<div class="scheme-note">订单平台 QB 13 · v1.3.18 · 订单审核仍是四组资料。到仓拆柜展开拆柜清单：31 个跟踪字段、装箱单明细、少件/多件。拆柜件数是这一步的门闩。演示数据全虚构。</div>';
   bind(c);
 }
 
@@ -1726,6 +2131,7 @@ function bind(c){
   const gt = $('#gateTog');
   if (gt) gt.onclick = () => {
     if (c.d===0) { readReview(c); state.reviewFold = !state.reviewFold; }
+    else if (NODES[c.d]?.k==='devan') { readUnload(c); state.unloadFold = !state.unloadFold; }
     else state.gateOpen = !state.gateOpen;
     renderDetail();
   };
@@ -1794,6 +2200,7 @@ function bind(c){
     }
     toast('已驳回：'+c.rev.rejectReason.trim()+'（演示，没有写入真系统）');
   };
+  bindUnload(c);
 }
 
 function advance(c, pre){

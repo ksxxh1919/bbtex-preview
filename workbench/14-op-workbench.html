@@ -174,7 +174,8 @@ button{cursor:pointer}
 .msg .tx b{font-weight:650}
 .msg .tm{color:var(--t4)}
 .tools{display:flex;flex-direction:column;gap:8px}
-.tool{display:flex;align-items:center;justify-content:space-between;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:600;text-align:left}
+.tool,a.tool{display:flex;align-items:center;justify-content:space-between;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:600;text-align:left;text-decoration:none;color:inherit}
+a.btn{display:inline-flex;align-items:center;text-decoration:none;color:inherit}
 .tool:hover{background:var(--accent-tint);border-color:#C5D9F5;color:var(--accent-text)}
 .note{font-size:13px;color:var(--t4);line-height:1.5}
 .toast{position:fixed;left:50%;bottom:21px;transform:translateX(-50%);background:#2C3038;color:#fff;font-size:14px;padding:10px 16px;border-radius:8px;z-index:40;max-width:min(560px,calc(100vw - 48px));display:none}
@@ -613,7 +614,10 @@ function heroHTML(t){
     const sec = SECS.find(s => s.id===id);
     const own = id===role().sec;
     const fields = FIELDS.filter(f => f.sec===id).map(f => fieldHTML(f, cab, v, own && can, nextKey)).join('');
-    const q = sec.buttons.map(b => '<button type="button" class="btn sm" data-act="quick" data-name="'+esc(b)+'">'+esc(b)+'</button>').join('');
+    const q = sec.buttons.map(b => {
+      if (b==='拆柜单') return '<a class="btn sm" href="../order-platform/13-order-mgmt-qb.html#/todo/orders/TEST1122334">拆柜清单录入</a>';
+      return '<button type="button" class="btn sm" data-act="quick" data-name="'+esc(b)+'">'+esc(b)+'</button>';
+    }).join('');
     const open = state.secOpen[id];
     return '<section class="block'+(own?' own':'')+(open?'':' shut')+'" data-sec-body="'+id+'"><div class="block-h"><span>'+sec.title+'</span><span class="sum">'+(own&&can?'这一段可以填':'只读')+' · 已填 '+filledCount(t.id, id)+'</span></div>'
       + (q?'<div class="qbtns">'+q+'</div>':'') + '<div class="fgrid">'+fields+'</div></section>';
@@ -655,7 +659,10 @@ function secName(k){ return ({today:'今天',approve:'审批',change:'变更',to
 function sideHTML(r, cur){
   const ai = cur ? cur.ai : '先看左边今天这一列。';
   const msgs = r.msgs.map(m => '<div class="msg"><span class="av">'+esc(m.from.slice(0,1))+'</span><div class="tx"><b>'+esc(m.from)+'</b> <span class="tm">'+esc(m.t)+'</span><br>'+esc(m.text)+'</div></div>').join('');
-  const tools = r.tools.map(name => '<button type="button" class="tool" data-act="tool" data-tool="'+esc(name)+'">'+esc(name)+'<i></i></button>').join('');
+  const tools = r.tools.map(name => {
+    if (r.sec==='wh' && name==='拆柜单') return '<a class="tool" id="unloadLink" href="../order-platform/13-order-mgmt-qb.html#/todo/orders/TEST1122334">拆柜清单录入<i>→</i></a>';
+    return '<button type="button" class="tool" data-act="tool" data-tool="'+esc(name)+'">'+esc(name)+'<i></i></button>';
+  }).join('');
   return '<div class="card"><h3>小提示</h3><p class="ai"><b>建议</b>'+esc(ai)+'</p></div>'
     + '<div class="card"><h3>同事提醒</h3>'+msgs+'</div>'
     + '<div class="card"><h3>这段常用</h3><div class="tools">'+tools+'</div></div>'
