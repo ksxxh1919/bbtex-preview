@@ -763,7 +763,42 @@ a{color:inherit;text-decoration:none}
 @media (max-width:1360px){
   .box-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 72px auto}
 }
-
+:root{--t4:#5C6370;--t5:#5C6370;--qb-nav-mute:#C8CDD6;--warn:#7A4A00}
+.app *{font-size:14px !important}
+.app h1{font-size:22px !important}
+.rev-grid,.gfields,.app.collapsed .gfields{grid-template-columns:minmax(0,1fr) !important}
+.rev-grid .span2,.rev-grid .spanall,.gfields .fv.wide{grid-column:auto !important}
+.fv{display:flex;flex-direction:column;align-items:stretch;gap:4px}
+.fv label,.fv>span{font-size:14px;color:var(--t3)}
+.ck,.rail .cab .ck,[data-ckall]{width:24px;height:24px;min-width:24px;min-height:24px;font-size:14px;color:#1A1D23}
+.ck i{font-style:normal;font-size:14px;line-height:1}
+.tbtn,.btn,.create-btn,.ni,.sub-ni{min-height:24px;min-width:24px}
+.btn.primary,.brand .logo{color:#1A1D23}
+.brand .logo{font-size:14px}
+.save-stamp{position:sticky;top:0;z-index:4;background:#fff;font-size:14px;font-weight:650;color:#0B5A09;padding:6px 0}
+.save-stamp.wait{color:#5C6370;font-weight:600}
+.switch-note{margin:0 0 8px;padding:8px 10px;border-radius:8px;background:#FFF8EB;color:#5C4314;font-size:14px}
+.field-err{font-size:14px;color:#8E1B1B;line-height:1.4}
+.hist{border:0;background:transparent;color:#1A5FB4;font-size:14px;font-weight:650;min-height:24px;min-width:24px;padding:0 4px}
+.hist-pop{margin-top:4px;padding:8px;border-radius:8px;background:#F4F5F7;font-size:14px;color:#1A1D23}
+.rare-sum{display:flex;width:100%;min-height:36px;border:0;background:#F4F5F7;border-radius:8px;padding:0 10px;font-size:14px;font-weight:650;text-align:left}
+.from-prev{font-style:normal;font-size:14px;font-weight:650;color:#5C4314;background:#FFF8EB;border-radius:4px;padding:0 6px}
+.cal{width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:6px;background:#fff}
+#openFields{display:flex;flex-direction:column;gap:8px}
+#stepDock{margin-bottom:13px}
+.scheme-note,.crumb,.gfoot .nx,.ni,.sub-ni,.brand b,.brand small,.grp{font-size:14px;color:#C8CDD6}
+.main .scheme-note,.main .crumb,.main .gfoot .nx,.dt .sub,.lp-hd h2 .crumbv{color:#5C6370}
+.rail .ck,.rail .ck i{color:#F2F4F7 !important}
+.rail .list-tools .ck,.rail [data-ckall]{background:transparent;border-color:rgba(255,255,255,.45);color:#F2F4F7}
+.rail .car,.rail .chev,.rail .pcar,.rail .arrow{color:#C8CDD6 !important}
+.rail .nav-search .kbd,.rail .tchip .tl,.rail .nest-foot,.rail .nest-foot span{color:#C8CDD6 !important}
+.rail .nest-foot b{color:#F2F4F7 !important}
+.me .av{background:#0B4FA8 !important;color:#fff !important}
+.rev-pill{color:#0B5A09 !important}
+.gate-tog .gtag{background:#0B4FA8 !important;color:#fff !important}
+.stop.c .dot2,.tn.c .ix{color:#0B4FA8 !important}
+.stop.d .dot2,.tn.d .ix{background:#0B5A09 !important;border-color:#0B5A09 !important;color:#fff !important}
+.stop.x .dot2,.tn.x .ix{color:#8E1B1B !important}
 </style></head>
 <body>
 
@@ -1359,14 +1394,14 @@ function cabRowHTML(c, cur){
     const st = stageOf(c);
     const who = handlerOf(c);
     return '<a class="'+cls+'" href="'+href+'" data-id="'+c.id+'">'
-      + '<span class="ck'+(sel?' on':'')+'" data-ck="'+c.id+'" title="勾选做批量"></span>'
+      + '<span class="ck'+(sel?' on':'')+'" data-ck="'+c.id+'" title="勾选做批量"><i>选</i></span>'
       + '<span class="cid">'+c.id+'</span>'
       + '<span class="stage s-'+st.id+'">'+st.n+'</span>'
       + '<span class="hav" title="'+esc(who)+'">'+initialOf(who)+'</span></a>';
   }
   const cm = cabMeta(c, done);
   return '<a class="'+cls+'" href="'+href+'" data-id="'+c.id+'">'
-    + '<span class="ck'+(sel?' on':'')+'" data-ck="'+c.id+'" title="勾选做批量"></span><div>'
+    + '<span class="ck'+(sel?' on':'')+'" data-ck="'+c.id+'" title="勾选做批量"><i>选</i></span><div>'
     + '<div class="cid">'+c.id+' '+marks+'</div>'
     + '<div class="sub2"><span>'+c.mbl+'</span><span class="ord">'+c.ord+'</span></div>'
     + '<div class="do '+td.cls+'">'+td.txt+'</div>'
@@ -1377,7 +1412,7 @@ function listToolsHTML(rows){
   const n = state.sel.size;
   const vis = rows.filter(c=>state.sel.has(c.id)).length;
   const allCls = rows.length && vis===rows.length ? ' on' : (vis ? ' part' : '');
-  return '<div class="list-tools"><span class="ck'+allCls+'" data-ckall title="全选当前列表"></span>'
+  return '<div class="list-tools"><span class="ck'+allCls+'" data-ckall title="全选当前列表"><i>选</i></span>'
     + (n ? '<span class="lt-l on">已选 '+n+'</span>' : '')
     + '<button type="button" class="tbtn" id="btnBatch"'+(n?'':' disabled')+' title="勾选柜号后批量（提醒 / 导出）">批量 ▾</button>'
     + '<span class="lt-sp"></span>'
@@ -1769,7 +1804,7 @@ function ulField(u, f){
   } else if (f.t==='auto'){
     ctrl = '<input data-uk="'+f.k+'" value="'+esc(val)+'" placeholder="入仓、出仓都有日期才自动算" readonly>';
   } else {
-    ctrl = '<input data-uk="'+f.k+'" value="'+esc(val)+'"'+(f.gate?' placeholder="整数，例如 117" inputmode="numeric"':'')+'>';
+    ctrl = '<input data-uk="'+f.k+'"'+(f.t==='date'?' data-date="1"':'')+(f.gate?' data-gate="1"':'')+' value="'+esc(val)+'"'+(f.gate?' placeholder="整数，例如 117" inputmode="numeric"':'')+'>';
   }
   return '<label class="fv'+(f.gate?' gate':'')+'" data-f="'+f.k+'"><span>'+esc(f.l)+gate+' <em class="en">'+esc(f.en)+'</em></span>'+ctrl+'</label>';
 }
@@ -1847,7 +1882,7 @@ function unloadInner(c){
     + '</section>'
     + '<div class="gfoot"><div class="nx">下一站：<b>转装出仓</b>。少件 / 多件只标出来，不挡住这一步。</div>'
     + excBtn
-    + '<button type="button" class="btn primary" id="btnUnloadSave">保存拆柜件数并推进 →</button></div>'
+    + '<button type="button" class="btn primary" id="btnUnloadSave">确认推进 →</button></div>'
     + '</div>';
 }
 function readUnload(c){
@@ -2010,12 +2045,12 @@ function gateInner(c){
     if (f.t==='file') ctrl = '<div class="file-row"><input data-k="'+f.k+'" value="'+val+'" placeholder="未上传" readonly'+dis+'><button class="btn secondary sm" data-up="'+f.k+'" type="button"'+dis+'>上传</button></div>';
     else if (f.t==='sup' || f.t==='sel') {
       const opts = (SUPS[f.o]||[]).map(o=>'<option'+(o===val?' selected':'')+'>'+o+'</option>').join('');
-      ctrl = '<select data-k="'+f.k+'"'+dis+'><option value="">—</option>'+opts+'</select>';
-    } else ctrl = '<input data-k="'+f.k+'" value="'+val+'" placeholder="'+f.d+'"'+dis+'>';
+      ctrl = '<select data-k="'+f.k+'" data-gate="1"'+dis+'><option value="">—</option>'+opts+'</select>';
+    } else ctrl = '<input data-k="'+f.k+'" data-gate="1"'+(f.t==='date'?' data-date="1"':'')+' value="'+val+'" placeholder="'+f.d+'"'+dis+'>';
     return '<div class="fv'+(f.wide?' wide':'')+'" data-f="'+f.k+'"><label>'+f.l+' <span class="req">*</span> <span class="tt">'+TT[f.t]+'</span></label>'+ctrl+'</div>';
   }).join('');
-  const btnLbl = c.exc ? '保存字段（推进已锁）' : '保存并推进';
-  return '<div class="grule">状态<b>不从下拉框选</b>：门闩填齐、点保存 → 自动推进到 <b>'+G.next+'</b>，通知 <b>'+G.notify+'</b>。</div>'
+  const btnLbl = c.exc ? '确认推进（已锁）' : '确认推进';
+  return '<div class="grule">状态<b>不从下拉框选</b>：门闩先记下，再点确认推进 → 自动推进到 <b>'+G.next+'</b>，通知 <b>'+G.notify+'</b>。</div>'
     + warn + '<div class="gfields" id="gate">'+fields+'</div>'
     + '<div class="gfoot"><div class="nx">下一站：<b>'+G.next+'</b></div>'
     + (c.exc?'<button class="btn secondary sm" data-fix>异常已解决</button>':'<button class="btn ghost sm" data-exc>上报异常</button>')
@@ -2122,7 +2157,7 @@ function renderDetail(){
 }
 
 function readGate(c){
-  document.querySelectorAll('#gate [data-k], #gatePanel [data-k]').forEach(inp => {
+  document.querySelectorAll('#gate input[data-k], #gate select[data-k], #gate textarea[data-k], #gatePanel input[data-k], #gatePanel select[data-k], #gatePanel textarea[data-k]').forEach(inp => {
     const v = (inp.value||'').trim();
     if (v) c.v[inp.dataset.k] = v; else delete c.v[inp.dataset.k];
   });
@@ -2154,8 +2189,21 @@ function bind(c){
     const missing = G.f.filter(f => !f.opt && !c.v[f.k]);
     if (missing.length) {
       state.gateOpen = true; renderDetail();
-      missing.forEach(f => { const n = document.querySelector('[data-f="'+f.k+'"]'); n && n.classList.add('err'); });
-      toast('已保存。还差 '+missing.length+' 项门闩字段，状态暂不推进');
+      missing.forEach(f => {
+        const n = document.querySelector('[data-f="'+f.k+'"]');
+        if (!n) return;
+        n.classList.add('err');
+        let er = n.querySelector('.field-err');
+        if (!er) { er = document.createElement('div'); er.className = 'field-err'; n.appendChild(er); }
+        er.textContent = '这一栏还空着';
+      });
+      const first = document.querySelector('[data-f="'+missing[0].k+'"] input, [data-f="'+missing[0].k+'"] select');
+      if (first && first.closest('#rareOrder')){
+        state.opRare = true;
+        const rare = document.getElementById('rareOrder');
+        if (rare) rare.hidden = false;
+      }
+      if (first) first.focus({ preventScroll:true });
       return;
     }
     if (c.exc) { state.gateOpen = true; renderDetail(); toast('门闩字段已保存 · 有未解决异常，推进已锁'); return; }
@@ -2166,7 +2214,23 @@ function bind(c){
     if (c.d===0) {
       readReview(c);
       const miss = reviewMissing(c.rev);
-      if (miss.length) { state.reviewFold = false; renderDetail(); toast('还有必填没填：'+miss.join('、')); return; }
+      if (miss.length) {
+        state.reviewFold = false; renderDetail();
+        const keys = REVIEW_REQ.filter(([k]) => !String((c.rev[k])??'').trim());
+        keys.forEach(([k]) => {
+          const el = document.querySelector('[data-rev="'+k+'"]');
+          if (!el) return;
+          const fv = el.closest('.fv');
+          if (!fv) return;
+          if (fv.closest('#rareOrder')){ state.opRare = true; const rare = document.getElementById('rareOrder'); if (rare) rare.hidden = false; }
+          let er = fv.querySelector('.field-err');
+          if (!er){ er = document.createElement('div'); er.className = 'field-err'; fv.appendChild(er); }
+          er.textContent = '这一栏还空着';
+        });
+        const first = document.querySelector('[data-rev="'+keys[0][0]+'"]');
+        if (first) first.focus({ preventScroll:true });
+        return;
+      }
     }
     const from = c.d; c.d = 1; c.v = {}; state.gateOpen = false; markDone(c, from); toast('审核通过 · 状态推进到「ISF 申报」'+progressSuffix()); render();
   };
@@ -2304,7 +2368,7 @@ function render(){
   applyCollapsed();
   renderSwitchers();
 }
-window.addEventListener('hashchange', render);
+window.addEventListener('hashchange', () => render());
 /* 待办 / 全部：点开就把柜号嵌在这一行下面；再点一下收起。点「订单平台」或 [ 收起整段。 */
 document.querySelectorAll('.sub-ni').forEach(a => a.addEventListener('click', (e) => {
   e.preventDefault();
@@ -2353,6 +2417,457 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault(); if (qi){ qi.focus(); qi.select(); }
   }
 });
+const OP_KEY = 'bbtex.op.v1';
+const OP_DEBOUNCE = 400;
+const OP_FLIGHT = 120;
+const OP_OPEN = {
+  review: ['zip','bl','eta'],
+  isf: ['no','done','recv'],
+  arrive: ['term','arr','ted'],
+  pickup: ['lfd','done','av'],
+  devan: ['upCntr','seal','arrival'],
+  outbound: ['out','mode','dv'],
+  customs: ['decl','cd','xd'],
+  deliver: ['sign','car','nt']
+};
+window.__bbtexOp = {
+  debounce: OP_DEBOUNCE, flight: OP_FLIGHT, failNext: false, storeKey: OP_KEY,
+  prevKey: 'Alt+ArrowUp', nextKey: 'Alt+ArrowDown', year: 2026, open: OP_OPEN,
+  openNote: '未做计时。订单审核先补邮编、核对提单号、再看 ETA。其它节点先填要确认的栏，不是旧表从左到右。'
+};
+state.opRare = false;
+state.opNote = '';
+state.focusFor = '';
+const opDraft = {};
+const opTimers = {};
+function opStore(){ try { return JSON.parse(localStorage.getItem(OP_KEY)) || {}; } catch(e){ return {}; } }
+function opWrite(s){ localStorage.setItem(OP_KEY, JSON.stringify(s)); }
+function opRec(id){
+  const s = opStore();
+  if (!s[id]) s[id] = { v:{}, rev:{}, uk:{}, savedAt:'', history:{}, confirmed:{}, init:false };
+  if (!s[id].history) s[id].history = {};
+  if (!s[id].confirmed) s[id].confirmed = {};
+  return { s, rec: s[id] };
+}
+function opHms(){
+  const d = new Date(), p = n => String(n).padStart(2,'0');
+  return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+}
+function opNormDate(raw){
+  const s = String(raw??'').trim();
+  if (!/^\d{4}$/.test(s)) return { kind:'keep', v:s };
+  const mo = Number(s.slice(0,2)), da = Number(s.slice(2));
+  if (mo<1 || mo>12 || da<1 || da>31) return { kind:'bad', v:s };
+  return { kind:'ok', v:String(mo).padStart(2,'0')+'/'+String(da).padStart(2,'0') };
+}
+function opCab(){
+  const id = curId();
+  return DATA.find(x => x.id===id) || null;
+}
+function opKeyOf(el){ return el.dataset.rev || el.dataset.k || el.dataset.uk || ''; }
+function opBucket(el){ return el.dataset.rev ? 'rev' : (el.dataset.uk ? 'uk' : 'v'); }
+function opGateKeys(c){
+  const k = NODES[c.d] && NODES[c.d].k;
+  if (k==='devan') return ['upCntr'];
+  const G = GATES[k];
+  return G ? G.f.map(f => f.k) : [];
+}
+function opWriteModel(c, el, value){
+  const key = opKeyOf(el), bucket = opBucket(el);
+  if (bucket==='rev') reviewModel(c)[key] = value;
+  else if (bucket==='uk') unloadModel(c)[key] = value;
+  else if (String(value).trim()) c.v[key] = value;
+  else delete c.v[key];
+}
+function opReadModel(c, bucket, key){
+  if (bucket==='rev') return String((reviewModel(c)[key]) ?? '');
+  if (bucket==='uk') return String((unloadModel(c)[key]) ?? '');
+  return String((c.v && c.v[key]) ?? '');
+}
+(function hydrateOp(){
+  const s = opStore();
+  DATA.forEach(c => {
+    const rec = s[c.id];
+    if (!rec) return;
+    if (rec.v) Object.assign(c.v, rec.v);
+    if (rec.rev) Object.assign(reviewModel(c), rec.rev);
+    if (rec.uk) Object.assign(unloadModel(c), rec.uk);
+    if (typeof rec.d === 'number') c.d = rec.d;
+  });
+})();
+function opStamp(text, waiting){
+  const el = document.getElementById('saveStamp');
+  if (!el) return;
+  el.textContent = text;
+  el.classList.toggle('wait', !!waiting);
+}
+function opFieldErr(el, msg){
+  const fv = el.closest('.fv') || el.parentElement;
+  if (!fv) return;
+  let er = fv.querySelector('.field-err');
+  if (!er){ er = document.createElement('div'); er.className = 'field-err'; fv.appendChild(er); }
+  er.textContent = msg || '';
+  if (msg) el.focus({ preventScroll:true });
+}
+function opShowFail(el){
+  opFieldErr(el, '没存上，字还在。');
+  const fv = el.closest('.fv');
+  if (fv && !fv.querySelector('[data-act="retry"]')){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn sm'; b.dataset.act = 'retry';
+    b.textContent = '重试';
+    fv.appendChild(b);
+  }
+  const c = opCab();
+  const rec = c && opStore()[c.id];
+  opStamp(rec && rec.savedAt ? ('已保存 '+rec.savedAt) : '还没有保存', !(rec && rec.savedAt));
+}
+function opCommit(cabId, bucket, key, value, how){
+  const slot = cabId+'|'+bucket+'|'+key;
+  const live = opDraft[slot] !== undefined ? opDraft[slot] : value;
+  if (live !== value) return;
+  const c = DATA.find(x => x.id===cabId);
+  const el = c && document.querySelector('#detail [data-rev="'+key+'"], #detail [data-k="'+key+'"], #detail [data-uk="'+key+'"]');
+  if (window.__bbtexOp.failNext){
+    window.__bbtexOp.failNext = false;
+    if (el && opCab() && opCab().id===cabId) opShowFail(el);
+    return;
+  }
+  const { s, rec } = opRec(cabId);
+  const prev = bucket==='rev' ? (rec.rev[key]||'') : bucket==='uk' ? (rec.uk[key]||'') : (rec.v[key]||'');
+  if (bucket==='rev') rec.rev[key] = value;
+  else if (bucket==='uk') rec.uk[key] = value;
+  else rec.v[key] = value;
+  const time = opHms();
+  rec.savedAt = time;
+  if (!rec.history[key]) rec.history[key] = [];
+  rec.history[key].push({ who: state.role || '操作经理', how: how, from: prev, to: value, time: time });
+  s[cabId] = rec;
+  opWrite(s);
+  if (opCab() && opCab().id===cabId){
+    opStamp('已保存 '+time, false);
+    if (el){
+      const er = el.closest('.fv') && el.closest('.fv').querySelector('.field-err');
+      if (er) er.textContent = '';
+      const retry = el.closest('.fv') && el.closest('.fv').querySelector('[data-act="retry"]');
+      if (retry) retry.remove();
+    }
+  }
+}
+function opSchedule(cabId, bucket, key, value){
+  const slot = cabId+'|'+bucket+'|'+key;
+  clearTimeout(opTimers[slot]);
+  opTimers[slot] = setTimeout(() => {
+    opTimers[slot] = setTimeout(() => {
+      delete opTimers[slot];
+      const live = opDraft[slot] !== undefined ? opDraft[slot] : value;
+      if (live !== value) return;
+      opCommit(cabId, bucket, key, live, '自动保存');
+    }, OP_FLIGHT);
+  }, OP_DEBOUNCE);
+}
+function opFlush(cabId){
+  if (!cabId) return;
+  Object.keys(opTimers).forEach(slot => {
+    if (!slot.startsWith(cabId+'|')) return;
+    clearTimeout(opTimers[slot]);
+    delete opTimers[slot];
+    const parts = slot.split('|');
+    const bucket = parts[1], key = parts.slice(2).join('|');
+    const live = opDraft[slot] !== undefined ? opDraft[slot] : '';
+    opCommit(cabId, bucket, key, live, '自动保存');
+  });
+}
+function opPendingNote(c){
+  if (!c) return '';
+  const rec = opStore()[c.id];
+  if (!rec || !rec.init) return '';
+  const hit = opGateKeys(c).filter(k => {
+    const val = String((c.unload && k==='upCntr' ? c.unload.upCntr : (c.v && c.v[k])) || '').trim();
+    return val && String(rec.confirmed[k]||'') !== val;
+  });
+  if (!hit.length) return '';
+  return c.id+' 的门闩已记下，还没确认推进。字还在这一柜。';
+}
+function opEdit(el){
+  const c = opCab();
+  if (!c || el.disabled) return;
+  const key = opKeyOf(el);
+  if (!key) return;
+  let value = el.value;
+  if (el.dataset.date){
+    const n = opNormDate(value);
+    if (n.kind==='ok'){ value = n.v; el.value = value; opFieldErr(el, ''); }
+    else if (n.kind==='bad'){ opFieldErr(el, '4 位数字没法变成月/日。'); return; }
+  }
+  opWriteModel(c, el, value);
+  const slot = c.id+'|'+opBucket(el)+'|'+key;
+  opDraft[slot] = value;
+  opSchedule(c.id, opBucket(el), key, value);
+}
+function opFvKey(fv){
+  const el = fv.querySelector('[data-rev],[data-k],[data-uk]');
+  return el ? opKeyOf(el) : '';
+}
+function opInitConfirmed(c){
+  const { s, rec } = opRec(c.id);
+  if (rec.init) return;
+  opGateKeys(c).forEach(k => {
+    rec.confirmed[k] = String(k==='upCntr' && c.unload ? (c.unload.upCntr||'') : ((c.v && c.v[k]) || ''));
+  });
+  rec.init = true;
+  s[c.id] = rec;
+  opWrite(s);
+}
+function ergOrder(){
+  const detail = document.getElementById('detail');
+  const c = opCab();
+  if (!detail || !c || !detail.querySelector('.gate-inline')) return;
+  opInitConfirmed(c);
+  if (!detail.querySelector('#saveStamp')){
+    detail.insertAdjacentHTML('afterbegin', '<div class="save-stamp wait" id="saveStamp">还没有保存</div><div class="switch-note" id="switchNote" hidden></div><div id="stepDock"></div>');
+  }
+  const dock = detail.querySelector('#stepDock');
+  const hd = detail.querySelector('.dt-hd');
+  if (hd && hd.parentElement !== dock) dock.appendChild(hd);
+  const gate = detail.querySelector('.gate-inline');
+  if (gate && gate.parentElement !== dock) dock.appendChild(gate);
+  const panel = detail.querySelector('#gatePanel') || gate;
+  const nodeKey = NODES[c.d] ? NODES[c.d].k : '';
+  const want = OP_OPEN[nodeKey] || [];
+  const fvs = [...panel.querySelectorAll('.fv')];
+  const by = new Map();
+  fvs.forEach(fv => { const k = opFvKey(fv); if (k && !by.has(k)) by.set(k, fv); });
+  let box = panel.querySelector('#openFields');
+  if (!box){ box = document.createElement('div'); box.id = 'openFields'; panel.insertBefore(box, panel.firstChild); }
+  const openEls = [];
+  want.forEach(k => { const fv = by.get(k); if (fv && openEls.length<3) openEls.push(fv); });
+  openEls.forEach(fv => { fv.dataset.stepOpen = '1'; box.appendChild(fv); });
+  let rare = panel.querySelector('#rareOrder');
+  if (!rare){ rare = document.createElement('div'); rare.id = 'rareOrder'; }
+  fvs.forEach(fv => { if (openEls.indexOf(fv)<0){ fv.dataset.stepOpen = '0'; rare.appendChild(fv); } });
+  let tog = panel.querySelector('#rareTog');
+  if (!tog){
+    tog = document.createElement('button');
+    tog.type = 'button'; tog.id = 'rareTog'; tog.className = 'rare-sum';
+    tog.dataset.act = 'rare';
+  }
+  const filled = [...rare.querySelectorAll('.fv')].filter(fv => {
+    const inp = fv.querySelector('input,select,textarea');
+    return inp && String(inp.value||'').trim();
+  }).length;
+  const total = rare.querySelectorAll('.fv').length;
+  tog.textContent = '很少填 · 已填 '+filled+'/'+total;
+  if (tog.parentElement !== panel) box.insertAdjacentElement('afterend', tog);
+  tog.insertAdjacentElement('afterend', rare);
+  rare.hidden = !state.opRare;
+  panel.querySelectorAll('.rev-sec').forEach(sec => { if (!sec.querySelector('.fv')) sec.hidden = true; });
+  fvs.forEach(fv => {
+    const key = opFvKey(fv);
+    const input = fv.querySelector('input,select,textarea');
+    if (!input || !key) return;
+    const lab = (fv.querySelector('span,label') || {}).textContent || '';
+    if (/日期|ETA|LFD|开船|抵港/.test(lab) && input.tagName==='INPUT') input.dataset.date = '1';
+    if (input.dataset.date && !fv.querySelector('[data-cal]')){
+      const cal = document.createElement('input');
+      cal.type = 'date'; cal.className = 'cal'; cal.tabIndex = -1; cal.dataset.cal = key;
+      cal.setAttribute('aria-label','日历，辅助');
+      input.insertAdjacentElement('afterend', cal);
+    }
+    if (!fv.querySelector('[data-act="hist"]')){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'hist'; b.dataset.act = 'hist'; b.dataset.k = key; b.textContent = '历史';
+      fv.appendChild(b);
+      const pop = document.createElement('div'); pop.className = 'hist-pop'; pop.hidden = true; fv.appendChild(pop);
+    }
+    if ((key==='mode' || key==='whTime') && !fv.querySelector('[data-act="carry"]')){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn sm'; b.dataset.act = 'carry'; b.dataset.k = key; b.textContent = '带入上一柜';
+      fv.appendChild(b);
+      const mark = document.createElement('i');
+      mark.className = 'from-prev'; mark.hidden = true; mark.textContent = '来自上一柜';
+      fv.appendChild(mark);
+    }
+    if (!fv.querySelector('.field-err')){
+      const er = document.createElement('div'); er.className = 'field-err'; fv.appendChild(er);
+    }
+    if (key==='whTime' && input && !String(input.value||'').trim()){
+      input.value = '09:00–17:00';
+      opWriteModel(c, input, input.value);
+    }
+  });
+  const rec = opStore()[c.id];
+  opStamp(rec && rec.savedAt ? ('已保存 '+rec.savedAt) : '还没有保存', !(rec && rec.savedAt));
+  const note = document.getElementById('switchNote');
+  if (note){
+    if (state.opNote){ note.hidden = false; note.textContent = state.opNote; }
+    else note.hidden = true;
+  }
+}
+function opFocusNew(){
+  const c = opCab();
+  if (!c) return;
+  const inputs = [...document.querySelectorAll('#openFields [data-step-open="1"] input, #openFields [data-step-open="1"] select, #openFields [data-step-open="1"] textarea')].filter(inp => !inp.dataset.cal);
+  const el = inputs.find(inp => {
+    const fv = inp.closest('.fv');
+    const req = fv && (fv.querySelector('.req') || inp.dataset.gate);
+    return req && !inp.disabled && !String(inp.value||'').trim();
+  }) || inputs.find(inp => !inp.disabled && !String(inp.value||'').trim());
+  if (!el) return;
+  const cur = document.activeElement;
+  if (cur === el) { state.focusFor = c.id; return; }
+  if (state.focusFor === c.id && cur && cur.closest && cur.closest('#openFields')) return;
+  state.focusFor = c.id;
+  el.focus({ preventScroll:true });
+}
+const renderDetailCore = renderDetail;
+renderDetail = function(){
+  const det = document.getElementById('detail');
+  const y = det ? det.scrollTop : 0;
+  renderDetailCore();
+  ergOrder();
+  const det2 = document.getElementById('detail');
+  if (det2) det2.scrollTop = y;
+  opFocusNew();
+};
+const renderCore = render;
+render = function(){
+  const id = curId();
+  if (id && id !== state._openedCab){
+    state.reviewFold = false;
+    state.gateOpen = true;
+    state.unloadFold = false;
+    state.opRare = false;
+    state._openedCab = id;
+  }
+  const det = document.getElementById('detail');
+  const y = det ? det.scrollTop : 0;
+  renderCore();
+  const det2 = document.getElementById('detail');
+  if (det2) det2.scrollTop = y;
+};
+function opLeave(nextNote){
+  const c = opCab();
+  if (c){ opFlush(c.id); state.opNote = opPendingNote(c); }
+  if (nextNote !== undefined) state.opNote = nextNote;
+}
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a.cab');
+  if (!a || e.target.closest('[data-ck]')) return;
+  opLeave();
+}, true);
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act="rare"], [data-act="hist"], [data-act="carry"], [data-act="retry"]');
+  if (!el || !el.closest('#detail')) return;
+  const c = opCab();
+  if (!c) return;
+  if (el.dataset.act==='rare'){
+    state.opRare = !state.opRare;
+    const rare = document.getElementById('rareOrder');
+    if (rare) rare.hidden = !state.opRare;
+    return;
+  }
+  if (el.dataset.act==='retry'){
+    const input = el.closest('.fv').querySelector('input,select,textarea');
+    if (!input) return;
+    const key = opKeyOf(input);
+    const slot = c.id+'|'+opBucket(input)+'|'+key;
+    const live = opDraft[slot] !== undefined ? opDraft[slot] : input.value;
+    opCommit(c.id, opBucket(input), key, live, '自动保存');
+    return;
+  }
+  if (el.dataset.act==='hist'){
+    const pop = el.parentElement.querySelector('.hist-pop');
+    if (!pop) return;
+    const rows = ((opStore()[c.id]||{}).history||{})[el.dataset.k] || [];
+    pop.hidden = !pop.hidden;
+    pop.innerHTML = rows.length ? rows.map(r => esc(r.who)+' · '+esc(r.how)+' · '+esc(r.from||'（空）')+'→'+esc(r.to)+' · '+esc(r.time)).join('<br>') : '还没有记录';
+    return;
+  }
+  if (el.dataset.act==='carry'){
+    const links = [...document.querySelectorAll('#tree a.cab')];
+    const i = links.findIndex(x => x.classList.contains('on'));
+    const prev = i>0 ? DATA.find(x => x.id===links[i-1].dataset.id) : null;
+    const input = el.closest('.fv').querySelector('input,select,textarea');
+    if (!prev || !input) return;
+    const key = el.dataset.k;
+    let value = '';
+    if (prev.rev && prev.rev[key] != null) value = prev.rev[key];
+    else if (key==='mode') value = prev.mode || '';
+    else if (prev.v && prev.v[key] != null) value = prev.v[key];
+    input.value = value;
+    const mark = el.closest('.fv').querySelector('.from-prev');
+    if (mark) mark.hidden = false;
+    opEdit(input);
+  }
+});
+document.addEventListener('input', (e) => {
+  const el = e.target.closest('#detail [data-rev], #detail [data-k], #detail [data-uk]');
+  if (!el || el.dataset.cal || el.readOnly) return;
+  opEdit(el);
+});
+document.addEventListener('change', (e) => {
+  const cal = e.target.closest('#detail [data-cal]');
+  if (cal && cal.value){
+    const input = cal.parentElement.querySelector('input:not([data-cal])');
+    if (input){
+      const parts = cal.value.split('-');
+      input.value = parts[1]+'/'+parts[2];
+      opEdit(input);
+    }
+    return;
+  }
+  const el = e.target.closest('#detail select[data-rev], #detail select[data-k], #detail select[data-uk]');
+  if (el) opEdit(el);
+});
+document.addEventListener('paste', (e) => {
+  const step = e.target.closest('#openFields');
+  if (!step) return;
+  const text = (e.clipboardData && e.clipboardData.getData('text')) || '';
+  if (!text.includes('\t') && !text.includes(',')) return;
+  e.preventDefault();
+  const cells = text.trim().split(/\t|,/).map(s => s.trim());
+  const inputs = [...step.querySelectorAll('[data-step-open="1"] input, [data-step-open="1"] select, [data-step-open="1"] textarea')].filter(el => !el.dataset.cal);
+  const typed = inputs.map(el => el.value);
+  if (cells.length !== inputs.length){
+    const n = Math.min(cells.length, inputs.length);
+    const miss = cells.length>inputs.length ? (n+1) : (cells.length+1);
+    if (inputs[0]) opFieldErr(inputs[0], '第 '+miss+' 列没对上。已敲的字还在。');
+    inputs.forEach((el,i) => { el.value = typed[i]; });
+    return;
+  }
+  inputs.forEach((el,i) => { el.value = cells[i]; opEdit(el); });
+});
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && (e.key==='ArrowUp' || e.key==='ArrowDown')){
+    const links = [...document.querySelectorAll('#tree a.cab')];
+    if (!links.length) return;
+    const i = Math.max(0, links.findIndex(a => a.classList.contains('on')));
+    const n = e.key==='ArrowDown' ? Math.min(links.length-1, i+1) : Math.max(0, i-1);
+    if (n!==i){
+      e.preventDefault();
+      opLeave();
+      location.hash = links[n].getAttribute('href');
+    }
+    return;
+  }
+  if (e.key!=='Enter' || e.shiftKey) return;
+  const el = e.target.closest('#detail input, #detail select, #detail textarea');
+  if (!el || el.dataset.cal) return;
+  e.preventDefault();
+  const gate = el.dataset.gate || el.dataset.uk==='upCntr';
+  if (gate){
+    const c = opCab();
+    if (c) opFlush(c.id);
+    const btn = el.closest('#unloadForm') ? document.getElementById('btnUnloadSave') : document.getElementById('btnSave');
+    if (btn && !btn.disabled) btn.click();
+    return;
+  }
+  const all = [...document.querySelectorAll('#openFields [data-step-open="1"] input, #openFields [data-step-open="1"] select, #openFields [data-step-open="1"] textarea')].filter(x => !x.disabled && !x.dataset.cal);
+  const idx = all.indexOf(el);
+  const next = all[idx+1];
+  if (next) next.focus({ preventScroll:true });
+}, true);
 if (!location.hash || location.hash==='#') location.replace('#/todo');
 else if (/todo/.test(location.hash)) state.view = 'todo';
 else if (/all/.test(location.hash)) state.view = 'all';
