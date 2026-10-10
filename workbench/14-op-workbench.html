@@ -6,7 +6,6 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%232CA01C'/%3E%3C/svg%3E">
 <title>工作台 · 状态维护 · BBTEX</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
 :root{
   --font:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
   --font-id:"Inter","Noto Sans SC",sans-serif;
@@ -15,11 +14,11 @@
   --sp1:8px; --sp2:13px; --sp3:21px; --sp4:34px;
   --r:8px; --r-lg:13px;
   --qb-nav:#2C3038; --qb-nav-hi:#363B45; --qb-nav-active:#3D4450;
-  --qb-nav-text:#C8CDD6; --qb-nav-mute:#C8CDD6; --qb-green:#2CA01C;
+  --qb-nav-text:#C8CDD6; --qb-nav-mute:#8B929E; --qb-green:#2CA01C;
   --accent:#2E7BE5; --accent-text:#1A5FB4; --accent-tint:#E8F1FC;
   --bg:#F0F2F5; --surface:#fff; --sunken:#F4F5F7;
   --line:#E3E6EB; --line-soft:#ECEEF2;
-  --t1:#1A1D23; --t2:#3A3F4A; --t3:#5C6370; --t4:#5C6370;
+  --t1:#1A1D23; --t2:#3A3F4A; --t3:#5C6370; --t4:#7A8290;
   --ok:#2CA01C; --ok-bg:#E8F6E8;
   --warn:#B86E00; --warn-bg:#FFF8EB;
   --danger:#C62828; --danger-bg:#FDEDED;
@@ -33,7 +32,7 @@ button{cursor:pointer}
 .rail{background:var(--qb-nav);color:var(--qb-nav-text);display:flex;flex-direction:column;height:100vh;min-width:0;padding:var(--sp2) var(--sp1) var(--sp1)}
 .rail-top{flex:none;padding:2px var(--sp1) var(--sp2)}
 .brand{display:flex;align-items:center;gap:10px}
-.brand .logo{width:28px;height:28px;border-radius:var(--r);background:var(--qb-green);color:#1A1D23;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
+.brand .logo{width:28px;height:28px;border-radius:var(--r);background:var(--qb-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
 .brand b{display:block;font-size:13px;font-weight:650;line-height:18px;color:#fff}
 .brand small{display:block;font-size:13px;color:var(--qb-nav-mute);line-height:18px}
 .rail-mid{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;padding:0 4px}
@@ -57,18 +56,17 @@ button{cursor:pointer}
 .task{display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:4px;align-items:start;width:100%;padding:6px 6px 6px 6px;border-bottom:1px solid rgba(255,255,255,.06);border-radius:6px;position:relative}
 .task.on{background:rgba(255,255,255,.12)}
 .task.on::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--qb-green)}
-.cklab{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center}
-.task .ck{width:16px;height:16px;accent-color:#7CB6FF}
+.task .ck{margin-top:6px;width:14px;height:14px;accent-color:#7CB6FF}
 .hit{display:grid;grid-template-columns:10px minmax(0,1fr) auto;column-gap:8px;align-items:start;width:100%;border:0;background:transparent;color:#E8EAEE;text-align:left;padding:2px 2px;min-width:0}
 .hit:hover{color:#fff}
-.task .dot{width:8px;height:8px;border-radius:50%;background:#C8CDD6;margin-top:5px}
+.task .dot{width:8px;height:8px;border-radius:50%;background:#8B929E;margin-top:5px}
 .task .dot.hot{background:var(--danger);border-radius:2px}
 .task .dot.due{background:#C47A00}
 .task .dot.ok{background:var(--qb-green)}
 .task .dot.wait{background:#7A8699}
 .task .mid{min-width:0;display:flex;flex-direction:column;gap:2px}
 .task .cid{font-family:var(--font-id);font-weight:650;font-size:13px;color:#F2F4F7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:18px}
-.task .sub{font-size:14px;color:#C8CDD6;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task .sub{font-size:13px;color:#A8B0BC;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .task .tag{font-size:13px;font-weight:650;height:22px;line-height:22px;padding:0 7px;border-radius:4px;background:rgba(255,255,255,.1);color:#E8EAEE;white-space:nowrap}
 .task .tag.hot{background:rgba(198,40,40,.42);color:#FFD6D6}
 .task .tag.due{background:rgba(196,122,0,.34);color:#FFE3B0}
@@ -104,7 +102,7 @@ button{cursor:pointer}
 .ringbox .rl b{display:block;font-size:14px;color:var(--t1);font-variant-numeric:tabular-nums;font-weight:650}
 .ringbox.clear .rl b{color:var(--ok)}
 .cols{flex:1;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:13px;padding:var(--sp3) var(--sp4)}
-.hero,.side{min-width:0;min-height:0;overflow-x:hidden;overflow-y:auto;overflow-anchor:none}
+.hero,.side{min-width:0;min-height:0;overflow-x:hidden;overflow-y:auto}
 .card{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-card);padding:var(--sp3)}
 .kicker{font-size:13px;font-weight:650;color:var(--t4);margin-bottom:8px}
 .h-id{font-family:var(--font-id);font-size:22px;font-weight:650;letter-spacing:.01em;line-height:28px}
@@ -141,11 +139,10 @@ button{cursor:pointer}
 .block.own .block-h{background:var(--accent-tint)}
 .block-h .sum{margin-left:auto;font-size:13px;font-weight:500;color:var(--t3)}
 .qbtns{display:flex;flex-wrap:wrap;gap:8px;padding:8px 13px 0}
-.fgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:8px 13px 13px}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;padding:13px}
 .fv{display:flex;flex-direction:column;gap:4px;min-width:0}
 .fv.wide{grid-column:1/-1}
-.fv .lab{font-size:14px;font-weight:600;color:var(--t3);line-height:1.4;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fv .lab{font-size:13px;font-weight:600;color:var(--t3);line-height:1.4;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .gate-tag,.next-tag{font-style:normal;font-weight:650;font-size:13px;color:var(--accent-text)}
 .next-tag{background:var(--accent);color:#fff;border-radius:4px;padding:0 6px;line-height:20px}
 .fv input,.fv select{height:34px;padding:0 10px;border-radius:6px;border:1px dashed var(--line);background:#fff;font-size:14px;width:100%;min-width:0;outline:none}
@@ -162,8 +159,8 @@ button{cursor:pointer}
 .gfoot .nx{flex:1;min-width:180px;font-size:13px;color:var(--t3);line-height:1.45}
 .btn{height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--t1);font-size:14px;font-weight:650}
 .btn:hover{background:var(--sunken)}
-.btn.primary{background:var(--qb-green);border-color:var(--qb-green);color:#1A1D23}
-.btn.primary:hover{background:#248A16;color:#1A1D23}
+.btn.primary{background:var(--qb-green);border-color:var(--qb-green);color:#fff}
+.btn.primary:hover{background:#248A16}
 .btn.sm{height:34px;padding:0 10px}
 .side{display:flex;flex-direction:column;gap:13px}
 .side h3{font-size:13px;font-weight:650;color:var(--t4);margin-bottom:8px}
@@ -182,32 +179,10 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none;color:inherit}
 .note{font-size:13px;color:var(--t4);line-height:1.5}
 .toast{position:fixed;left:50%;bottom:21px;transform:translateX(-50%);background:#2C3038;color:#fff;font-size:14px;padding:10px 16px;border-radius:8px;z-index:40;max-width:min(560px,calc(100vw - 48px));display:none}
 .toast.on{display:block}
-.save-stamp{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;min-height:28px;margin:-8px -8px 8px;padding:6px 8px;background:#fff;font-size:14px;font-weight:650;color:var(--ok)}
-.save-stamp.wait{color:var(--t3);font-weight:600}
-.switch-note{margin:0 0 8px;padding:8px 10px;border-radius:8px;background:#FFF8EB;color:#5C4314;font-size:14px;line-height:1.45}
-.field-err{font-size:14px;color:var(--danger);line-height:1.4;min-height:0}
-.hist{border:0;background:transparent;color:var(--accent-text);font-size:14px;font-weight:650;padding:0 4px;min-height:24px}
-.hist-pop{margin-top:4px;padding:8px;border-radius:8px;background:var(--sunken);font-size:14px;color:var(--t2);line-height:1.45}
-.combo{position:relative}
-.combo-list{position:absolute;left:0;right:0;top:100%;z-index:5;margin:2px 0 0;padding:4px;list-style:none;background:#fff;border-radius:8px;box-shadow:0 8px 24px rgba(26,29,35,.16);max-height:220px;overflow:auto}
-.combo-list button{display:block;width:100%;text-align:left;border:0;background:transparent;min-height:28px;padding:4px 8px;border-radius:6px;font-size:14px}
-.combo-list button.on,.combo-list button:hover{background:var(--accent-tint)}
-.from-prev{font-style:normal;font-size:14px;font-weight:650;color:#5C4314;background:#FFF8EB;border-radius:4px;padding:0 6px}
-.ai-sug{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--accent-text)}
-.rare-sum{display:flex;align-items:center;width:100%;min-height:36px;border:0;background:var(--sunken);border-radius:8px;padding:0 10px;font-size:14px;font-weight:650;text-align:left}
-.file-reject{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;font-size:14px}
-.file-reject input{height:34px;border:1px solid var(--line);border-radius:6px;padding:0 8px;font-size:14px}
-.cal{width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:6px;background:#fff}
 @media (max-width:1360px){
   .cols{grid-template-columns:minmax(0,1fr) 240px;padding:13px 21px}
+  .fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-.app *{font-size:14px !important}
-.h-id,h1{font-size:22px !important}
-.chip.ok,.chip.due{color:#0B5A09}
-.chip.due,.chip.hot{color:#7A4A00}
-.chip.hot{color:#8E1B1B}
-button,.hit,.tool,.sec-h,.ni,.me,.role-opt,.cklab{min-height:24px;min-width:24px}
-.me .av,.msg .av{background:#0B4FA8;color:#fff}
 </style>
 </head>
 <body>
@@ -255,6 +230,7 @@ button,.hit,.tool,.sec-h,.ni,.me,.role-opt,.cklab{min-height:24px;min-width:24px
   </main>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<script src="../shared/orders.js"></script>
 <script>
 const NODES = ['订单审核','ISF 申报','财务开票','转关到港','提柜完成','到仓拆柜','转装出仓','清关过境','派送签收','催款回款'];
 const TODAY_LABEL = '2026-10-05';
@@ -398,23 +374,7 @@ function seed(id){
   });
   return v;
 }
-function vals(id){
-  if (!CABS[id]) return null;
-  if (!VALS[id]) {
-    VALS[id] = seed(id);
-    const saved = wbStore()[id];
-    if (saved && saved.values) {
-      Object.assign(VALS[id], saved.values);
-      const cab = CABS[id];
-      cab.passed = {};
-      GATES.forEach(g => {
-        if (skipped(cab, g)) { cab.passed[g.id] = true; return; }
-        if (!g.keys.some(k => !String(VALS[id][k]||'').trim())) cab.passed[g.id] = true;
-      });
-    }
-  }
-  return VALS[id];
-}
+function vals(id){ if (!CABS[id]) return null; if (!VALS[id]) VALS[id] = seed(id); return VALS[id]; }
 
 function task(o){
   return Object.assign({bucket:'today', tagKind:'due', dot:'due', kind:'gate', counts:true, doc:'', due:'今天', line:'', steps:null, stepAt:0, ai:''}, o);
@@ -565,239 +525,7 @@ function filledCount(id, sec){
   return n+'/'+list.length;
 }
 
-const WB_KEY = 'bbtex.wb.v1';
-const DEBOUNCE_MS = 400;
-const FLIGHT_MS = 120;
-window.__bbtex = { debounce: DEBOUNCE_MS, failNext: false, storeKey: WB_KEY, prevKey: 'Alt+ArrowUp', nextKey: 'Alt+ArrowDown', year: 2026, flight: FLIGHT_MS };
-const OPEN = {
-  isf: ['consignee','isdone','recisf'],
-  tr: ['term','pkdone','arr'],
-  wh: ['devqty','outd','indate'],
-  dl: ['decl','pdel','cd']
-};
-window.__bbtex.fillOrder = OPEN;
-window.__bbtex.fillNote = '未做计时。每个岗位这一步按「先认人/地点，再填这一步的门闩，再补日期」排，不是旧表从上到下。';
-const DATE_KEYS = new Set(['recisf','isdone','isdate','arr','ted','teclose','av','lfd','pkdone','rtn','indate','devand','loadd','outd','cd','raild','etacdmex','trucknt','pdel']);
-const COMBO = {
-  isco: ['DEMO-ISF-01','DEMO-ISF-02','DEMO-ISF-03','DEMO-ISF-04','DEMO-ISF-05','DEMO-ISF-06','DEMO-ISF-07','DEMO-ISF-08'],
-  teco: ['DEMO-转关-01','DEMO-转关-02','DEMO-转关-03','DEMO-转关-04','DEMO-转关-05','DEMO-转关-06','DEMO-转关-07','DEMO-转关-08'],
-  pkco: ['DEMO-拖车-01','DEMO-拖车-02','DEMO-拖车-03','DEMO-拖车-04','DEMO-拖车-05','DEMO-拖车-06','DEMO-拖车-07','DEMO-拖车-08'],
-  devco: ['DEMO-拆柜-01','DEMO-拆柜-02','DEMO-拆柜-03','DEMO-拆柜-04','DEMO-拆柜-05','DEMO-拆柜-06','DEMO-拆柜-07','DEMO-拆柜-08'],
-  car: ['DEMO-派送-01','DEMO-派送-02','DEMO-派送-03','DEMO-派送-04','DEMO-派送-05','DEMO-派送-06','DEMO-派送-07','DEMO-派送-08']
-};
-const CARRY = new Set(['isco','wh','pkco','mode']);
-const DEFAULTS = { hold: '不拦截', isco: 'DEMO-ISF-01' };
-const AI = { consignee: 'DEMO Consignee · AI', term: 'DEMO-TML-9', devqty: '18 / 1120 · AI', decl: 'PED-DEMO-9000' };
-const FILE_KEY = { isf: 'isfile', tr: 'trfile', wh: 'gps', dl: 'decl' };
-const draft = {};
-const timers = {};
-let saveGen = 0;
-state.pane = 'form';
-state.switchNote = '';
-state.rareOpen = false;
-state.rejectOpen = false;
-state.rejectReason = '';
-state.rejected = false;
-
-function wbStore(){ try { return JSON.parse(localStorage.getItem(WB_KEY)) || {}; } catch(e){ return {}; } }
-function wbWrite(s){ localStorage.setItem(WB_KEY, JSON.stringify(s)); }
-function cabRec(id){
-  const s = wbStore();
-  if (!s[id]) s[id] = { values:{}, savedAt:'', history:{}, confirmed:{}, confirmedInit:false, fail:{} };
-  if (!s[id].history) s[id].history = {};
-  if (!s[id].fail) s[id].fail = {};
-  if (!s[id].confirmed) s[id].confirmed = {};
-  return { s, rec: s[id] };
-}
-function hms(){
-  const d = new Date();
-  const p = n => String(n).padStart(2,'0');
-  return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-}
-function fieldBy(k){ return FIELDS.find(f => f.k===k); }
-function queueUids(){
-  const r = role();
-  const out = [];
-  BUCKETS.forEach(k => (r[k]||[]).forEach(t => { if (CABS[t.id]) out.push(t.uid); }));
-  return out;
-}
-function normDate(raw){
-  const s = String(raw??'').trim();
-  if (!/^\d{4}$/.test(s)) return { kind:'keep', v:s };
-  const mo = Number(s.slice(0,2)), da = Number(s.slice(2));
-  if (mo<1 || mo>12 || da<1 || da>31) return { kind:'bad', v:s };
-  return { kind:'ok', v: String(mo).padStart(2,'0')+'/'+String(da).padStart(2,'0') };
-}
-function ensureConfirmed(id){
-  const { s, rec } = cabRec(id);
-  if (rec.confirmedInit) return rec;
-  FIELDS.forEach(f => { if (f.g) rec.confirmed[f.k] = String(vals(id)[f.k]||''); });
-  Object.keys(DEFAULTS).forEach(k => { if (!String(vals(id)[k]||'').trim()) vals(id)[k] = DEFAULTS[k]; });
-  rec.confirmedInit = true;
-  s[id] = rec;
-  wbWrite(s);
-  return rec;
-}
-function setStamp(text, waiting){
-  const el = document.getElementById('saveStamp');
-  if (!el) return;
-  el.textContent = text;
-  el.classList.toggle('wait', !!waiting);
-}
-function showFieldErr(key, msg){
-  const fv = document.querySelector('.fv[data-k="'+key+'"]');
-  if (!fv) return;
-  let er = fv.querySelector('.field-err');
-  if (!er){ er = document.createElement('div'); er.className = 'field-err'; fv.appendChild(er); }
-  er.textContent = msg || '';
-  const input = fv.querySelector('[data-k]');
-  if (msg && input) input.focus({ preventScroll:true });
-}
-function clearFieldErr(key){
-  const er = document.querySelector('.fv[data-k="'+key+'"] .field-err');
-  if (er) er.textContent = '';
-}
-function showFail(cabId, key){
-  const { s, rec } = cabRec(cabId);
-  rec.fail[key] = true;
-  s[cabId] = rec;
-  wbWrite(s);
-  if (!current() || current().id!==cabId) return;
-  showFieldErr(key, '没存上，字还在。');
-  const fv = document.querySelector('.fv[data-k="'+key+'"]');
-  if (fv && !fv.querySelector('[data-act="retry"]')){
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'btn sm';
-    b.dataset.act = 'retry';
-    b.dataset.k = key;
-    b.textContent = '重试';
-    fv.appendChild(b);
-  }
-  const rec2 = wbStore()[cabId];
-  setStamp(rec2 && rec2.savedAt ? ('已保存 '+rec2.savedAt) : '未保存', !rec2 || !rec2.savedAt);
-}
-function commit(cabId, key, value, how){
-  const live = draft[cabId] && draft[cabId][key] !== undefined ? draft[cabId][key] : value;
-  if (live !== value) return;
-  if ((window.__bbtex && window.__bbtex.failNext) || window.__bbtexFailNext){
-    if (window.__bbtex) window.__bbtex.failNext = false;
-    window.__bbtexFailNext = false;
-    showFail(cabId, key);
-    return;
-  }
-  const { s, rec } = cabRec(cabId);
-  const prev = rec.values[key] != null ? rec.values[key] : '';
-  rec.values[key] = value;
-  vals(cabId)[key] = value;
-  const time = hms();
-  rec.savedAt = time;
-  if (!rec.history[key]) rec.history[key] = [];
-  rec.history[key].push({ who: role().name, how: how, from: prev, to: value, time: time });
-  if (rec.fail) delete rec.fail[key];
-  s[cabId] = rec;
-  wbWrite(s);
-  if (current() && current().id===cabId){
-    setStamp('已保存 '+time, false);
-    clearFieldErr(key);
-    const retry = document.querySelector('.fv[data-k="'+key+'"] [data-act="retry"]');
-    if (retry) retry.remove();
-  }
-}
-function schedule(cabId, key, value){
-  const slot = cabId+'|'+key;
-  clearTimeout(timers[slot]);
-  timers[slot] = setTimeout(() => {
-    timers[slot] = setTimeout(() => {
-      delete timers[slot];
-      const live = draft[cabId] && draft[cabId][key] !== undefined ? draft[cabId][key] : value;
-      if (live !== value) return;
-      commit(cabId, key, live, '自动保存');
-    }, FLIGHT_MS);
-  }, DEBOUNCE_MS);
-}
-function flushCab(cabId){
-  Object.keys(timers).forEach(slot => {
-    if (!slot.startsWith(cabId+'|')) return;
-    clearTimeout(timers[slot]);
-    delete timers[slot];
-    const key = slot.slice(cabId.length+1);
-    const live = draft[cabId] && draft[cabId][key] !== undefined ? draft[cabId][key] : String(vals(cabId)[key]||'');
-    commit(cabId, key, live, '自动保存');
-  });
-}
-function rememberEdit(cabId, key, value){
-  if (!draft[cabId]) draft[cabId] = {};
-  draft[cabId][key] = value;
-  vals(cabId)[key] = value;
-}
-function gatePendingNote(t){
-  if (!t || !CABS[t.id]) return '';
-  const rec = wbStore()[t.id];
-  if (!rec || !rec.confirmedInit) return '';
-  const keys = FIELDS.filter(f => f.g).map(f => f.k);
-  const hit = keys.filter(k => {
-    const val = String((draft[t.id] && draft[t.id][k] !== undefined ? draft[t.id][k] : vals(t.id)[k]) || '');
-    return val.trim() && String(rec.confirmed[k]||'') !== val;
-  });
-  if (!hit.length) return '';
-  return t.id+' 的门闩已记下，还没确认推进。字还在这一柜。';
-}
-function canEditCab(cab, t){
-  return !!(cab && t && editable(cab) && t.kind!=='none' && t.kind!=='ack');
-}
-function ctrlHTML(f, dis){
-  if (COMBO[f.k]) return '<div class="combo"><input data-k="'+f.k+'" data-combo="1" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" '+(dis?'disabled':'')+'><ul class="combo-list" hidden></ul></div>';
-  if (f.t==='check') return '<label class="cklab"><input type="checkbox" data-k="'+f.k+'" '+(dis?'disabled':'')+'><span>是</span></label>';
-  if (f.t==='file') return '<div class="file-row"><input data-k="'+f.k+'" '+(dis?'disabled':'')+'><button type="button" class="btn sm" data-act="upload" data-k="'+f.k+'">上传</button></div>';
-  const date = DATE_KEYS.has(f.k);
-  const cal = date ? '<input type="date" class="cal" data-cal="'+f.k+'" aria-label="日历，辅助" tabindex="-1">' : '';
-  return '<div class="file-row"><input data-k="'+f.k+'" '+(date?'data-date="1"':'')+' '+(dis?'disabled':'')+'>'+cal+'</div>';
-}
-function fieldBlock(f, open){
-  const tags = (f.g?'<i class="gate-tag">门闩</i>':'') + (AI[f.k] && !f.g ? '<i class="from-prev" data-ai-tag="'+f.k+'" hidden>AI 建议待确认</i>' : '');
-  const confirm = f.g ? '<button type="button" class="btn sm primary" data-act="confirm" data-k="'+f.k+'">确认推进</button>' : '';
-  const carry = CARRY.has(f.k) ? '<button type="button" class="btn sm" data-act="carry" data-k="'+f.k+'">带入上一柜</button>' : '';
-  const hist = '<button type="button" class="hist" data-act="hist" data-k="'+f.k+'">历史</button>';
-  const ai = AI[f.k] && !f.g ? '<div class="ai-sug" data-ai="'+f.k+'">AI 建议 <b>'+esc(AI[f.k])+'</b><span>来源 演示单证第 1 页 · 置信 0.8</span></div>' : '';
-  const from = '<i class="from-prev" data-from="'+f.k+'" hidden>来自上一柜</i>';
-  return '<label class="fv" data-k="'+f.k+'" data-step-open="'+(open?'1':'0')+'"><span class="lab">'+esc(f.l)+tags+from+'</span>'+ctrlHTML(f, false)+confirm+carry+hist+ai+'<div class="field-err"></div><div class="hist-pop" hidden></div></label>';
-}
-function blocks(list, openFlag){
-  let html = '';
-  for (let i = 0; i < list.length; i++){
-    const f = list[i], n = list[i+1];
-    if (n && /开始/.test(f.l) && /截止/.test(n.l)){
-      html += '<div class="pair" data-pair="1">'+fieldBlock(f, openFlag)+fieldBlock(n, openFlag)+'</div>';
-      i++;
-    } else html += fieldBlock(f, openFlag);
-  }
-  return html;
-}
-function formHTML(){
-  const sec = role().sec;
-  const open = OPEN[sec].map(fieldBy);
-  const rest = FIELDS.filter(f => f.sec===sec && OPEN[sec].indexOf(f.k)<0);
-  const fileKey = FILE_KEY[sec];
-  return '<div class="card" id="statusForm" data-role="'+sec+'" data-mode="form">'
-    + '<div class="save-stamp wait" id="saveStamp">还没有保存</div>'
-    + '<div class="switch-note" id="switchNote" hidden></div>'
-    + '<div class="kicker" id="heroKicker"></div>'
-    + '<h1 class="h-id" id="heroId"></h1>'
-    + '<div class="chips" id="heroChips"></div>'
-    + '<p class="meta" id="heroMeta"></p>'
-    + '<div id="stepFields">'+blocks(open, true)+'</div>'
-    + '<div class="file-reject" id="fileReject"><span id="fileName"></span><button type="button" class="btn sm" id="btnReject">驳回</button><span id="rejectBox" hidden><button type="button" class="btn sm" data-act="reason" data-reason="文件不清">文件不清</button><button type="button" class="btn sm" id="btnRejectOk">确认驳回</button></span><span id="rejectState"></span></div>'
-    + '<button type="button" class="btn sm" id="acceptAll">全部接受</button>'
-    + '<button type="button" class="rare-sum" id="rareTog" data-act="rare"></button>'
-    + '<div id="rareFields" hidden>'+blocks(rest, false)+'</div>'
-    + '<div id="unloadPane" hidden><h2 class="h-id">拆柜清单 · <span id="unloadCab"></span></h2><p class="meta">清单在这一屏打开，跟当前柜走。</p><button type="button" class="btn sm" data-act="unload-back">返回状态维护</button></div>'
-    + '<div class="batch" id="batchBar"></div>'
-    + (sec==='wh' ? '<button type="button" class="btn sm" data-act="unload">拆柜清单</button>' : '')
-    + '<div class="gfoot"><div class="nx">Alt+↑ 上一柜，Alt+↓ 下一柜。普通栏停止输入后自动保存。门闩要在该栏按 Enter，或点确认推进。</div></div>'
-    + '</div>';
-}
-function paintChrome(){
+function render(){
   const r = role();
   const cur = current();
   state.uid = cur ? cur.uid : '';
@@ -811,9 +539,9 @@ function paintChrome(){
     const list = r[s.k] || [];
     const fold = state.fold[s.k];
     const rows = list.length ? list.map(t => {
-      const ck = CABS[t.id] ? '<label class="cklab"><input class="ck" type="checkbox" data-act="sel" data-uid="'+t.uid+'" '+(state.sel.has(t.uid)?'checked':'')+' aria-label="选中 '+esc(t.id)+'"><span>选</span></label>' : '<span></span>';
+      const ck = CABS[t.id] ? '<input class="ck" type="checkbox" data-act="sel" data-uid="'+t.uid+'" '+(state.sel.has(t.uid)?'checked':'')+' aria-label="选中 '+esc(t.id)+'">' : '<span></span>';
       return '<div class="task'+(t.uid===state.uid?' on':'')+'">'+ck
-        + '<button type="button" class="hit" data-act="open" data-uid="'+t.uid+'"><span class="dot '+t.dot+'"></span><span class="mid"><span class="cid">'+esc(t.doc||t.id)+'</span><span class="sub">'+esc(t.line||t.action)+'</span></span><span class="tag '+t.tagKind+'">'+esc(t.tag)+'</span></button></div>';
+        + '<button type="button" class="hit" data-act="open" data-uid="'+t.uid+'"><span class="dot '+t.dot+'"></span><span class="mid"><span class="cid">'+esc(t.id)+'</span><span class="sub">'+esc(t.line||t.action)+'</span></span><span class="tag '+t.tagKind+'">'+esc(t.tag)+'</span></button></div>';
     }).join('') : '<div class="empty">这一组没有</div>';
     return '<button type="button" class="sec-h '+s.cls+(fold?' fold':'')+'" data-act="fold" data-sec="'+s.k+'"><span class="car">▾</span><span>'+s.n+'</span><span class="gc">'+list.length+'</span></button>'
       + '<div class="q-body'+(fold?'':' open')+'">'+rows+'</div>';
@@ -827,81 +555,136 @@ function paintChrome(){
   const C = 2*Math.PI*15, off = C*(1-Math.min(1,p));
   document.getElementById('ringBox').className = 'ringbox'+(clear?' clear':'');
   document.getElementById('ringBox').innerHTML = '<svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="#E3E6EB" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#2CA01C" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'" transform="rotate(-90 18 18)"/></svg><div class="rl">今日'+(clear?' 已清':'')+'<b id="ringLabel">'+done+'/'+total+'</b></div>';
-  const tools = r.tools.map(name => {
-    if (r.sec==='wh' && name==='拆柜单') return '<button type="button" class="tool" data-act="unload">拆柜清单录入<i>→</i></button>';
-    return '<button type="button" class="tool" data-act="tool" data-tool="'+esc(name)+'">'+esc(name)+'<i></i></button>';
-  }).join('');
-  const ai = cur ? cur.ai : '先看左边今天这一列。';
-  const msgs = r.msgs.map(m => '<div class="msg"><span class="av">'+esc(m.from.slice(0,1))+'</span><div class="tx"><b>'+esc(m.from)+'</b> <span class="tm">'+esc(m.t)+'</span><br>'+esc(m.text)+'</div></div>').join('');
-  document.getElementById('side').innerHTML = '<div class="card"><h3>小提示</h3><p class="ai"><b>建议</b>'+esc(ai)+'</p></div>'
-    + '<div class="card"><h3>同事提醒</h3>'+msgs+'</div>'
-    + '<div class="card"><h3>这段常用</h3><div class="tools">'+tools+'</div></div>'
-    + '<p class="note">工作台就是状态维护。点一柜只换栏里的字。柜号和客户代码都是虚构的。</p>';
+  document.getElementById('hero').innerHTML = cur ? heroHTML(cur) : '';
+  document.getElementById('side').innerHTML = sideHTML(r, cur);
+  const n = document.getElementById('nextField');
+  if (n) n.focus({preventScroll:true});
 }
-function paintValues(t){
-  const form = document.getElementById('statusForm');
-  if (!form || !t) return;
+
+function dotsHTML(node){
+  const row = NODES.map((name,i) => {
+    const fin = i===2 || i===9;
+    const cls = fin ? 'fin' : (i<node ? 'd' : (i===node ? 'c' : ''));
+    return '<i class="nd '+cls+'" title="'+esc(name)+'"></i>';
+  }).join('');
+  return '<div class="dots"><div class="row">'+row+'</div><span class="nm">'+esc(NODES[node]||'')+'</span></div>';
+}
+
+function fieldHTML(f, cab, v, canEdit, nextKey){
+  const val = v[f.k] ?? '';
+  const locked = !!(f.lock && cab.fh);
+  const dis = !canEdit || f.ro || locked;
+  const isNext = canEdit && !dis && f.k===nextKey;
+  const filled = String(val).trim()!=='';
+  let ctrl;
+  if (f.t==='sel'){
+    ctrl = '<select data-k="'+f.k+'" '+(dis?'disabled':'')+' '+(isNext?'id="nextField"':'')+'>'
+      + f.opts.map(o => '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
+  } else if (f.t==='file'){
+    ctrl = '<div class="file-row"><input data-k="'+f.k+'" '+(dis?'disabled':'readonly')+' value="'+esc(val)+'" placeholder="未上传" '+(isNext?'id="nextField"':'')+'>'
+      + (dis?'':'<button type="button" class="btn sm" data-act="upload" data-k="'+f.k+'">上传</button>')+'</div>';
+  } else if (f.t==='check'){
+    ctrl = '<input type="checkbox" data-k="'+f.k+'" data-check="1" '+(val==='是'?'checked':'')+' '+(dis?'disabled':'')+' '+(isNext?'id="nextField"':'')+'>';
+  } else {
+    const more = f.add ? (v.boxLines||[]).map((line,i) => '<input data-box="'+i+'" value="'+esc(line)+'" placeholder="空着" '+(dis?'disabled':'')+'>').join('') : '';
+    const addBtn = f.add && !dis ? '<button type="button" class="btn sm" data-act="addbox">+ 添加</button>' : '';
+    ctrl = '<div class="file-row"><input data-k="'+f.k+'" '+(dis?'disabled':'')+' value="'+esc(val)+'" placeholder="'+(filled?'':'空着')+'" '+(isNext?'id="nextField"':'')+'></div>'
+      + (f.add ? '<div class="file-row" style="margin-top:8px">'+more+addBtn+'</div>' : '');
+  }
+  const tags = (f.g?'<i class="gate-tag">门闩</i>':'') + (isNext?'<i class="next-tag">下一步填这里</i>':'');
+  return '<label class="fv'+(f.wide?' wide':'')+(filled?' filled':'')+(isNext?' next':'')+'"><span class="lab">'+esc(f.l)+tags+'</span>'+ctrl+'</label>';
+}
+
+function heroHTML(t){
   if (!CABS[t.id]){
-    document.getElementById('heroId').textContent = t.doc || t.id;
-    document.getElementById('heroMeta').textContent = '这是客户回访，不是某一柜的状态维护。';
-    return;
+    return '<div class="card"><div class="kicker">'+esc(secName(t.bucket))+'</div><h1 class="h-id">'+esc(t.doc||t.id)+'</h1><p class="action">'+esc(t.action)+'</p><p class="meta">这是客户回访，不是某一柜的状态维护。</p></div>';
   }
   const cab = CABS[t.id];
   const v = vals(t.id);
-  const rec = ensureConfirmed(t.id);
-  const can = canEditCab(cab, t);
-  document.getElementById('heroKicker').textContent = secName(t.bucket)+' · '+SECS.find(s => s.id===role().sec).title;
-  document.getElementById('heroId').textContent = t.id;
-  document.getElementById('heroChips').innerHTML = '<span class="chip '+t.tagKind+'">'+esc(t.tag)+'</span><span class="chip" id="nodeChip">'+esc(NODES[cab.node])+'</span>';
-  document.getElementById('heroMeta').textContent = cab.cc+' · '+cab.ty+' · '+cab.route+' · '+cab.co;
-  const note = document.getElementById('switchNote');
-  if (state.switchNote){ note.hidden = false; note.textContent = state.switchNote; }
-  else note.hidden = true;
-  form.querySelectorAll('.fv[data-k]').forEach(fv => {
-    const key = fv.dataset.k;
-    const f = fieldBy(key);
-    const input = fv.querySelector('[data-k]');
-    const locked = !!(f.lock && cab.fh);
-    const dis = !can || locked;
-    if (input){
-      input.disabled = dis;
-      if (document.activeElement !== input){
-        if (input.type==='checkbox') input.checked = String(v[key]||'')==='是';
-        else input.value = v[key] || '';
-      }
-    }
-    const from = fv.querySelector('[data-from]');
-    if (from) from.hidden = fv.dataset.carried !== '1';
-    fv.classList.toggle('filled', String(v[key]||'').trim()!=='');
-  });
-  const rest = FIELDS.filter(f => f.sec===role().sec && OPEN[role().sec].indexOf(f.k)<0);
-  const n = rest.filter(f => String(v[f.k]||'').trim()).length;
-  const rareBtn = document.getElementById('rareTog');
-  if (rareBtn) rareBtn.textContent = '很少填 · 已填 '+n+'/'+rest.length;
-  document.getElementById('rareFields').hidden = !state.rareOpen;
-  const fileKey = FILE_KEY[role().sec];
-  document.getElementById('fileName').textContent = (v[fileKey] || '未上传')+' · '+t.id;
-  document.getElementById('rejectBox').hidden = !state.rejectOpen;
-  document.getElementById('rejectState').textContent = state.rejected ? ('已驳回：'+(state.rejectReason||'')) : '';
-  document.getElementById('unloadCab').textContent = t.id;
-  document.getElementById('unloadPane').hidden = state.pane!=='unload';
-  document.getElementById('stepFields').hidden = state.pane==='unload';
-  const own = FIELDS.filter(f => f.sec===role().sec);
-  const opts = own.map(f => '<option value="'+f.k+'">'+esc(f.l)+'</option>').join('');
+  const ng = nextGate(t.id);
+  const can = editable(cab) && t.kind!=='none' && t.kind!=='ack';
+  const nextKey = (can && ng && FIELDS.find(f => f.k===ng.key).sec===role().sec) ? ng.key : '';
+  const order = [role().sec, ...SECS.map(s => s.id).filter(id => id!==role().sec)];
+  const nav = order.map(id => {
+    const sec = SECS.find(s => s.id===id);
+    const on = state.secOpen[id];
+    return '<button type="button" data-act="togglesec" data-sec="'+id+'" class="'+(on?'on':'')+'">'+sec.title+' <span class="muted">'+filledCount(t.id, id)+(id===role().sec?' · 我的段':' · 只读')+'</span></button>';
+  }).join('');
+  const blocks = order.map(id => {
+    const sec = SECS.find(s => s.id===id);
+    const own = id===role().sec;
+    const fields = FIELDS.filter(f => f.sec===id).map(f => fieldHTML(f, cab, v, own && can, nextKey)).join('');
+    const q = sec.buttons.map(b => {
+      if (b==='拆柜单') return '<a class="btn sm" href="../order-platform/13-order-mgmt-qb.html#/todo/orders/TEST1122334">拆柜清单录入</a>';
+      return '<button type="button" class="btn sm" data-act="quick" data-name="'+esc(b)+'">'+esc(b)+'</button>';
+    }).join('');
+    const open = state.secOpen[id];
+    return '<section class="block'+(own?' own':'')+(open?'':' shut')+'" data-sec-body="'+id+'"><div class="block-h"><span>'+sec.title+'</span><span class="sum">'+(own&&can?'这一段可以填':'只读')+' · 已填 '+filledCount(t.id, id)+'</span></div>'
+      + (q?'<div class="qbtns">'+q+'</div>':'') + '<div class="fgrid">'+fields+'</div></section>';
+  }).join('');
+  let banners = '';
+  if (cab.exc) banners += '<div class="banner hot">'+esc(cab.exc)+'</div>';
+  if (cab.insp) banners += '<div class="banner hot">'+esc(cab.insp)+'</div>';
+  if (cab.fh) banners += '<div class="banner lock">财控暂停。预计派送及以后先别填，请联系财务核实。</div>';
+  if (cab.doc) banners += '<div class="banner hot">'+esc(cab.doc)+'</div>';
+  const steps = t.steps ? '<div class="steps">'+t.steps.map((s,i)=>'<span class="st '+(i<t.stepAt?'d':(i===t.stepAt?'c':''))+'">'+esc(s)+'</span>').join('<i class="arr">→</i>')+'</div>' : '';
+  const ownFields = FIELDS.filter(f => f.sec===role().sec);
+  const opts = ownFields.map(f => '<option value="'+f.k+'"'+(f.k===(state.batchKey||nextKey)?' selected':'')+'>'+esc(f.l)+'</option>').join('');
   const picked = [...state.sel].map(find).filter(Boolean);
   const nodes = new Set(picked.map(x => cabOf(x) && cabOf(x).node));
-  const batchNote = !picked.length ? '勾上同一节点的柜，可以一起填下面这一格。' : (nodes.size>1 ? '选中的柜不在同一个节点，不能一起填。' : '已选 '+picked.length+' 柜。门闩只记下值，不在这里推进。');
-  document.getElementById('batchBar').innerHTML = '<span>'+batchNote+'</span><select id="batchKey" aria-label="批量填哪一格">'+opts+'</select><input id="batchVal" placeholder="填同一个值" aria-label="批量的值"><button type="button" class="btn sm" data-act="batch">填到选中的柜</button>';
-  if (rec.savedAt) setStamp('已保存 '+rec.savedAt, false);
-  else setStamp('还没有保存', true);
+  const batchNote = !picked.length ? '勾上同一节点的柜，可以一起填下面这一格。'
+    : (nodes.size>1 ? '选中的柜不在同一个节点，不能一起填。' : '已选 '+picked.length+' 柜，都在「'+(NODES[[...nodes][0]]||'')+'」。');
+  const foot = [];
+  foot.push('<div class="nx">Tab 换格。在「下一步填这里」按回车就保存。门闩齐了，状态往前走，今日进度加一。</div>');
+  if (t.kind==='park') foot.push('<button type="button" class="btn" data-act="park">转到等别人</button>');
+  if (t.kind==='ping') foot.push('<button type="button" class="btn" data-act="ping">提醒一声</button>');
+  if (t.kind==='ack') foot.push('<button type="button" class="btn" data-act="ack">知道了</button>');
+  if (t.kind==='do') foot.push('<button type="button" class="btn" data-act="do">发 DO</button>');
+  if (t.kind==='approve') foot.push('<button type="button" class="btn" data-act="approve">同意</button>');
+  if (can) foot.push('<button type="button" class="btn primary" id="btnSave" data-act="save">保存并推进</button>');
+  return '<div class="card" id="statusForm" data-fields="'+FIELDS.length+'"><div class="kicker">'+esc(secName(t.bucket))+' · 状态维护</div>'
+    + '<h1 class="h-id" id="heroId">'+esc(t.id)+'</h1>'
+    + '<div class="chips"><span class="chip '+t.tagKind+'">'+esc(t.tag)+'</span><span class="chip">'+esc(NODES[cab.node])+'</span>'+(t.due?'<span class="chip due">'+esc(t.due)+'</span>':'')+'</div>'
+    + '<p class="meta">'+esc(cab.cc+' · '+cab.ty+' · '+cab.route+' · '+cab.co)+'</p>'
+    + '<p class="action" id="heroAction">'+esc(t.action)+'</p>'
+    + steps + dotsHTML(cab.node) + banners
+    + '<div class="batch"><span>'+batchNote+'</span><select id="batchKey" aria-label="批量填哪一格">'+opts+'</select><input id="batchVal" placeholder="填同一个值" aria-label="批量的值"><button type="button" class="btn sm" data-act="batch">填到选中的柜</button></div>'
+    + '<div class="secnav">'+nav+'</div>'
+    + blocks
+    + '<div class="gfoot">'+foot.join('')+'</div></div>';
 }
+
 function secName(k){ return ({today:'今天',approve:'审批',change:'变更',tomorrow:'明天预告',wait:'等别人',done:'今天已完成'})[k]||''; }
+
+function sideHTML(r, cur){
+  const ai = cur ? cur.ai : '先看左边今天这一列。';
+  const msgs = r.msgs.map(m => '<div class="msg"><span class="av">'+esc(m.from.slice(0,1))+'</span><div class="tx"><b>'+esc(m.from)+'</b> <span class="tm">'+esc(m.t)+'</span><br>'+esc(m.text)+'</div></div>').join('');
+  const tools = r.tools.map(name => {
+    if (r.sec==='wh' && name==='拆柜单') return '<a class="tool" id="unloadLink" href="../order-platform/13-order-mgmt-qb.html#/todo/orders/TEST1122334">拆柜清单录入<i>→</i></a>';
+    return '<button type="button" class="tool" data-act="tool" data-tool="'+esc(name)+'">'+esc(name)+'<i></i></button>';
+  }).join('');
+  return '<div class="card"><h3>小提示</h3><p class="ai"><b>建议</b>'+esc(ai)+'</p></div>'
+    + '<div class="card"><h3>同事提醒</h3>'+msgs+'</div>'
+    + '<div class="card"><h3>这段常用</h3><div class="tools">'+tools+'</div></div>'
+    + '<p class="note">工作台就是状态维护。左边仍是今天、审批、变更、明天、等别人、已完成。点一柜，先展开你这一段。别的段收着，只能看。柜号和客户代码都是虚构的。</p>';
+}
+
 function toast(text){
   const el = document.getElementById('toast');
   el.textContent = text;
   el.classList.add('on');
   clearTimeout(toast._t);
   toast._t = setTimeout(() => el.classList.remove('on'), 2600);
+}
+function readForm(){
+  const t = current();
+  if (!t || !vals(t.id)) return;
+  document.querySelectorAll('#statusForm input[data-k], #statusForm select[data-k]').forEach(el => {
+    if (el.disabled) return;
+    vals(t.id)[el.dataset.k] = el.type==='checkbox' ? (el.checked ? '是' : '') : el.value;
+  });
+  const lines = [...document.querySelectorAll('#statusForm [data-box]')].filter(el => !el.disabled).map(el => el.value);
+  if (document.querySelector('#statusForm [data-box]')) vals(t.id).boxLines = lines;
 }
 function finish(t, how){
   const r = role();
@@ -938,200 +721,40 @@ function tryAdvance(t, quiet){
     if (empty.length){
       const field = FIELDS.find(f => f.k===empty[0]);
       if (!quiet){
-        if (!field || field.sec!==role().sec) toast('下一步不在你这段。');
+        if (field.sec!==role().sec) toast('下一步不在你这段。');
         else if (cab.fh && field.lock) toast('请联系财务核实。');
-        else toast('下一步还没填：'+field.l);
+        else toast('下一步还没填：'+field.l+'。这一组还差 '+(empty.map(k => FIELDS.find(f => f.k===k).l).join('、')));
       }
       return false;
     }
     const field = FIELDS.find(f => f.k===g.keys[0]);
-    if (!field || field.sec!==role().sec) { if (!quiet) toast('下一步不在你这段。'); return false; }
+    if (field.sec!==role().sec) { if (!quiet) toast('下一步不在你这段。'); return false; }
     if (cab.exc || (cab.insp && g.id==='pkdone')) {
       if (!quiet) toast('有异常或还在查验，这一格先记下，状态先不往前走。');
       return false;
     }
     cab.passed[g.id] = true;
     applyNode(cab, g);
+    if (!quiet) toast('已填「'+g.name+'」，状态往前走了。演示，没有写入真系统。');
     return true;
   }
+  if (!quiet) toast('这一柜的门闩已经齐了。');
   return false;
 }
-function focusStep(t){
-  if (!t || !CABS[t.id] || state.pane==='unload') return;
-  const v = vals(t.id);
-  const order = OPEN[role().sec];
-  const key = order.find(k => { const f = fieldBy(k); return f && (f.g || k==='consignee' || k==='term' || k==='devqty' || k==='decl') && !String(v[k]||'').trim(); }) || order.find(k => !String(v[k]||'').trim());
-  const input = key && document.querySelector('#stepFields input[data-k="'+key+'"], #stepFields textarea[data-k="'+key+'"]');
-  if (input && !input.disabled) input.focus({ preventScroll:true });
-}
-function render(){
-  const hero = document.getElementById('hero');
-  const y = hero.scrollTop;
-  paintChrome();
-  const form = document.getElementById('statusForm');
-  const same = form && form.dataset.role===role().sec;
-  if (!same){
-    hero.innerHTML = current() ? formHTML() : '';
-    state.rareOpen = false;
-    state.pane = 'form';
-  }
-  paintValues(current());
-  if (same) hero.scrollTop = y;
-  else focusStep(current());
-}
-function switchTo(uid){
-  const prev = current();
-  if (prev && CABS[prev.id]) flushCab(prev.id);
-  state.switchNote = gatePendingNote(prev);
-  state.uid = uid;
-  state.rejected = false;
-  state.rejectOpen = false;
-  const hero = document.getElementById('hero');
-  const y = hero.scrollTop;
-  paintChrome();
-  const form = document.getElementById('statusForm');
-  if (!form || form.dataset.role!==role().sec){
-    hero.innerHTML = formHTML();
-  }
-  paintValues(current());
-  hero.scrollTop = y;
-  focusStep(current());
-}
-function confirmGate(key){
-  const t = current();
-  if (!t || !CABS[t.id]) return;
-  flushCab(t.id);
-  const value = String(vals(t.id)[key]||'').trim();
-  if (!value){
-    showFieldErr(key, '这一栏还空着，还不能推进。');
-    return;
-  }
-  const f = fieldBy(key);
-  if (f && DATE_KEYS.has(key)){
-    const n = normDate(value);
-    if (n.kind==='bad'){ showFieldErr(key, '日期不是有效的月/日。'); return; }
-  }
-  clearFieldErr(key);
-  const before = CABS[t.id].node;
-  const ok = tryAdvance(t, true);
-  if (!ok || CABS[t.id].node===before && !CABS[t.id].passed[key]){
-    showFieldErr(key, '这一栏已记下。状态还没往前，因为这一步还没齐，或有异常。');
-    return;
-  }
-  const { s, rec } = cabRec(t.id);
-  rec.confirmed[key] = value;
-  s[t.id] = rec;
-  wbWrite(s);
-  const hist = rec.history[key] || [];
-  hist.push({ who: role().name, how: '人工', from: value, to: value+' · 已确认', time: hms() });
-  rec.history[key] = hist;
-  wbWrite(s);
-  const nodeNow = CABS[t.id].node;
-  if (ok){
-    finish(t, 'confirm');
-    toast('已确认「'+f.l+'」。节点现在是「'+NODES[nodeNow]+'」。');
-  }
-  const hero = document.getElementById('hero');
-  const y = hero.scrollTop;
-  paintChrome();
-  paintValues(current());
-  hero.scrollTop = y;
-}
-function applyInput(input){
-  const t = current();
-  if (!t || !CABS[t.id] || input.disabled) return;
-  const key = input.dataset.k;
-  let value = input.type==='checkbox' ? (input.checked ? '是' : '') : input.value;
-  if (input.dataset.date){
-    const n = normDate(value);
-    if (n.kind==='ok'){ value = n.v; input.value = value; clearFieldErr(key); }
-    else if (n.kind==='bad'){ rememberEdit(t.id, key, value); showFieldErr(key, '4 位数字没法变成月/日。'); return; }
-  }
-  rememberEdit(t.id, key, value);
-  const fv = input.closest('.fv');
-  if (fv) fv.classList.toggle('filled', String(value).trim()!=='');
-  schedule(t.id, key, value);
-}
-function acceptAll(){
-  const t = current();
-  if (!t || !CABS[t.id]) return;
-  const before = CABS[t.id].node;
-  OPEN[role().sec].forEach(k => {
-    const f = fieldBy(k);
-    if (!f || f.g || !AI[k]) return;
-    const input = document.querySelector('#stepFields input[data-k="'+k+'"], #stepFields textarea[data-k="'+k+'"]');
-    if (input) input.value = AI[k];
-    rememberEdit(t.id, k, AI[k]);
-    commit(t.id, k, AI[k], 'AI');
-    const tag = document.querySelector('[data-ai-tag="'+k+'"]');
-    if (tag) tag.hidden = true;
-  });
-  if (CABS[t.id].node!==before) CABS[t.id].node = before;
-}
-function openHist(key){
-  const t = current();
-  const pop = document.querySelector('.fv[data-k="'+key+'"] .hist-pop');
-  if (!pop || !t) return;
-  const rows = ((wbStore()[t.id]||{}).history||{})[key] || [];
-  pop.hidden = !pop.hidden;
-  pop.innerHTML = rows.length ? rows.map(r => esc(r.who)+' · '+esc(r.how)+' · '+esc(r.from||'（空）')+'→'+esc(r.to)+' · '+esc(r.time)).join('<br>') : '还没有记录';
-}
-function carryFromPrev(key){
-  const ids = queueUids();
-  const i = ids.indexOf(state.uid);
-  const prev = i>0 ? find(ids[i-1]) : null;
-  if (!prev || !CABS[prev.id]) { toast('没有上一柜。'); return; }
-  const value = String(vals(prev.id)[key]||'');
-  const input = document.querySelector('#statusForm input[data-k="'+key+'"], #statusForm textarea[data-k="'+key+'"]');
-  if (input) input.value = value;
-  rememberEdit(current().id, key, value);
-  const fv = document.querySelector('.fv[data-k="'+key+'"]');
-  if (fv){ fv.dataset.carried = '1'; const m = fv.querySelector('[data-from]'); if (m) m.hidden = false; }
-  schedule(current().id, key, value);
-}
-function showCombo(input){
-  const list = input.parentElement.querySelector('.combo-list');
-  const opts = COMBO[input.dataset.k] || [];
-  const q = input.value.trim().toLowerCase();
-  const shown = opts.filter(o => !q || o.toLowerCase().includes(q));
-  list.innerHTML = shown.map((o,i) => '<li><button type="button" data-act="pickopt" data-opt="'+esc(o)+'"'+(i===0?' class="on"':'')+'>'+esc(o)+'</button></li>').join('') || '<li><span>没有匹配</span></li>';
-  list.hidden = false;
-  input.setAttribute('aria-expanded','true');
-}
-function pickCombo(input, value){
-  input.value = value;
-  const list = input.parentElement.querySelector('.combo-list');
-  if (list) list.hidden = true;
-  input.setAttribute('aria-expanded','false');
-  applyInput(input);
-}
 
-document.body.addEventListener('focusout', (e) => {
-  const input = e.target.closest && e.target.closest('input[data-combo]');
-  if (!input) return;
-  setTimeout(() => {
-    const list = input.parentElement && input.parentElement.querySelector('.combo-list');
-    if (list && !input.parentElement.contains(document.activeElement)) list.hidden = true;
-  }, 0);
-});
 document.body.addEventListener('click', (e) => {
-  if (!e.target.closest('.combo')) document.querySelectorAll('.combo-list').forEach(ul => { ul.hidden = true; });
-  const el = e.target.closest('[data-act], #acceptAll, #btnReject, #btnRejectOk, #rareTog');
+  const el = e.target.closest('[data-act]');
   if (!el){
-    if (state.menu && !e.target.closest('.role-anchor')) { state.menu = false; paintChrome(); }
-    document.querySelectorAll('.combo-list').forEach(ul => { ul.hidden = true; });
+    if (state.menu && !e.target.closest('.role-anchor')) { state.menu = false; render(); }
     return;
   }
-  const act = el.dataset.act || (el.id==='acceptAll' ? 'accept-all' : el.id==='btnReject' ? 'reject-open' : el.id==='btnRejectOk' ? 'reject-ok' : '');
+  const act = el.dataset.act;
   if (act==='sel') return;
-  if (act==='role-menu'){ state.menu = !state.menu; paintChrome(); return; }
+  if (act==='role-menu'){ state.menu = !state.menu; render(); return; }
   if (act==='pick'){
-    const prev = current();
-    if (prev && CABS[prev.id]) flushCab(prev.id);
     state.role = el.dataset.role;
     state.menu = false;
     state.sel.clear();
-    state.pane = 'form';
     const r = role();
     const first = r.today[0] || r.done[0] || r.wait[0];
     state.uid = first ? first.uid : '';
@@ -1140,77 +763,51 @@ document.body.addEventListener('click', (e) => {
     render();
     return;
   }
-  if (act==='fold'){ state.fold[el.dataset.sec] = !state.fold[el.dataset.sec]; paintChrome(); return; }
-  if (act==='open'){ switchTo(el.dataset.uid); return; }
+  if (act==='fold'){ state.fold[el.dataset.sec] = !state.fold[el.dataset.sec]; render(); return; }
+  if (act==='open'){
+    readForm();
+    state.uid = el.dataset.uid;
+    state.menu = false;
+    ownOpen();
+    render();
+    return;
+  }
   if (act==='jump-first'){
     const first = role().today[0];
-    if (first) switchTo(first.uid);
+    if (first){ state.uid = first.uid; state.fold.today = false; ownOpen(); }
+    render();
     return;
   }
-  if (act==='rare'){ state.rareOpen = !state.rareOpen; document.getElementById('rareFields').hidden = !state.rareOpen; return; }
-  if (act==='unload'){
-    const t = current();
-    const hero = document.getElementById('hero');
-    state.savedScroll = hero.scrollTop;
-    state.pane = 'unload';
-    paintValues(t);
-    return;
-  }
-  if (act==='unload-back'){
-    const y = state.savedScroll || 0;
-    state.pane = 'form';
-    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-    paintValues(current());
-    const hero = document.getElementById('hero');
-    hero.scrollTop = y;
+  if (act==='togglesec'){
+    readForm();
+    state.secOpen[el.dataset.sec] = !state.secOpen[el.dataset.sec];
+    render();
     return;
   }
   if (act==='plat'){ toast('这是演示。订单平台在另一张样张里。'); return; }
   if (act==='tool' || act==='quick'){ toast('「'+(el.dataset.tool||el.dataset.name)+'」是演示，还没接真系统。'); return; }
-  if (act==='confirm'){ confirmGate(el.dataset.k); return; }
-  if (act==='retry'){
+  if (act==='ping'){ toast('已记一条提醒。演示，没有真的发出去。'); return; }
+  if (act==='addbox'){
+    readForm();
     const t = current();
-    const key = el.dataset.k;
-    const live = draft[t.id] && draft[t.id][key] !== undefined ? draft[t.id][key] : String(vals(t.id)[key]||'');
-    commit(t.id, key, live, '自动保存');
-    return;
-  }
-  if (act==='hist'){ openHist(el.dataset.k); return; }
-  if (act==='carry'){ carryFromPrev(el.dataset.k); return; }
-  if (act==='accept-all'){ acceptAll(); return; }
-  if (act==='reject-open'){ state.rejectOpen = true; paintValues(current()); return; }
-  if (act==='reason'){ state.rejectReason = el.dataset.reason; return; }
-  if (act==='reject-ok'){
-    state.rejected = true;
-    state.rejectOpen = false;
-    const t = current();
-    if (t && CABS[t.id]){
-      const key = FILE_KEY[role().sec];
-      const prev = String(vals(t.id)[key]||'');
-      const { s, rec } = cabRec(t.id);
-      if (!rec.history[key]) rec.history[key] = [];
-      rec.history[key].push({ who: role().name, how: '人工', from: prev, to: '驳回：'+(state.rejectReason||'未写原因'), time: hms() });
-      s[t.id] = rec; wbWrite(s);
-    }
-    paintValues(current());
-    return;
-  }
-  if (act==='pickopt'){
-    const input = el.closest('.combo').querySelector('input');
-    pickCombo(input, el.dataset.opt);
+    vals(t.id).boxLines = vals(t.id).boxLines || [];
+    vals(t.id).boxLines.push('');
+    render();
     return;
   }
   if (act==='upload'){
     const t = current();
-    const key = el.dataset.k;
-    rememberEdit(t.id, key, 'demo-上传.pdf');
-    const input = document.querySelector('.fv[data-k="'+key+'"] input[data-k]');
-    if (input) input.value = 'demo-上传.pdf';
-    commit(t.id, key, 'demo-上传.pdf', '人工');
+    vals(t.id)[el.dataset.k] = 'demo-上传.pdf';
+    render();
+    toast('已挂上 demo-上传.pdf。演示，没有真的传文件。');
     return;
   }
-  if (act==='ping'){ toast('已记一条提醒。演示，没有真的发出去。'); return; }
-  if (act==='ack'){ finish(current(), 'ack'); toast('已标成看过。不计入今日进度。'); render(); return; }
+  if (act==='ack'){
+    finish(current(), 'ack');
+    toast('已标成看过。不计入今日进度。');
+    render();
+    return;
+  }
   if (act==='park'){
     const t = current();
     const r = role();
@@ -1227,11 +824,30 @@ document.body.addEventListener('click', (e) => {
     render();
     return;
   }
-  if (act==='do'){ finish(current(), 'do'); toast('DO 已记下。演示，没有写入真系统。'); render(); return; }
-  if (act==='approve'){ finish(current(), 'approve'); toast('已同意。演示，没有写入真系统。'); render(); return; }
-  if (act==='batch'){
+  if (act==='do'){
     const t = current();
-    if (t && CABS[t.id]) flushCab(t.id);
+    readForm();
+    vals(t.id).trfile = vals(t.id).trfile || 'do-demo.pdf';
+    finish(t, 'do');
+    toast('DO 已记下。演示，没有写入真系统。');
+    render();
+    return;
+  }
+  if (act==='approve'){
+    finish(current(), 'approve');
+    toast('已同意。演示，没有写入真系统。');
+    render();
+    return;
+  }
+  if (act==='save'){
+    const t = current();
+    readForm();
+    if (tryAdvance(t)) finish(t, 'save');
+    render();
+    return;
+  }
+  if (act==='batch'){
+    readForm();
     const key = document.getElementById('batchKey').value;
     const value = document.getElementById('batchVal').value.trim();
     state.batchKey = key;
@@ -1240,101 +856,44 @@ document.body.addEventListener('click', (e) => {
     const nodes = new Set(picked.map(x => CABS[x.id].node));
     if (nodes.size>1){ toast('要同一节点的柜才能一起填。'); return; }
     if (!value){ toast('先写要填进去的值。'); return; }
-    const label = fieldBy(key).l;
+    const label = FIELDS.find(f => f.k===key).l;
+    picked.forEach(x => { vals(x.id)[key] = value; });
+    let moved = 0;
     picked.forEach(x => {
-      if (!draft[x.id]) draft[x.id] = {};
-      draft[x.id][key] = value;
-      vals(x.id)[key] = value;
-      commit(x.id, key, value, '自动保存');
+      if (x.bucket!=='today' || x.kind==='none' || x.kind==='ack') return;
+      if (tryAdvance(x, true)) { finish(x, 'save'); moved++; }
     });
-    toast('已把「'+label+'」填到 '+picked.length+' 柜。只记下值，没有推进节点。');
-    const hero = document.getElementById('hero');
-    const y = hero.scrollTop;
-    paintChrome();
-    paintValues(current());
-    hero.scrollTop = y;
-  }
-});
-document.body.addEventListener('change', (e) => {
-  const sel = e.target.closest('[data-act="sel"]');
-  if (sel){
-    if (sel.checked) state.sel.add(sel.dataset.uid);
-    else state.sel.delete(sel.dataset.uid);
-    const hero = document.getElementById('hero');
-    const y = hero.scrollTop;
-    paintChrome();
-    paintValues(current());
-    hero.scrollTop = y;
-    return;
-  }
-  const cal = e.target.closest('[data-cal]');
-  if (cal && cal.value){
-    const [y,m,d] = cal.value.split('-');
-    const input = document.querySelector('#statusForm input[data-k="'+cal.dataset.cal+'"]');
-    if (input){ input.value = m+'/'+d; applyInput(input); }
-  }
-});
-document.body.addEventListener('input', (e) => {
-  const input = e.target.closest('#statusForm input[data-k], #statusForm textarea[data-k]');
-  if (!input || input.disabled || input.dataset.cal) return;
-  if (input.dataset.combo){ showCombo(input); }
-  applyInput(input);
-});
-document.body.addEventListener('paste', (e) => {
-  const step = e.target.closest('#stepFields');
-  if (!step) return;
-  const text = (e.clipboardData && e.clipboardData.getData('text')) || '';
-  if (!text.includes('\t') && !text.includes(',')) return;
-  e.preventDefault();
-  const cells = text.trim().split(/\t|,/).map(s => s.trim());
-  const inputs = [...step.querySelectorAll('input[data-k]')];
-  if (cells.length !== inputs.length){
-    const n = Math.min(cells.length, inputs.length);
-    const miss = cells.length>inputs.length ? (n+1) : (cells.length+1);
-    showFieldErr(inputs[0].dataset.k, '第 '+miss+' 列没对上。已敲的字还在。');
-    return;
-  }
-  inputs.forEach((input, i) => { input.value = cells[i]; applyInput(input); });
-});
-document.body.addEventListener('keydown', (e) => {
-  if (e.altKey && (e.key==='ArrowUp' || e.key==='ArrowDown')){
-    const ids = queueUids();
-    const i = Math.max(0, ids.indexOf(state.uid));
-    const n = e.key==='ArrowDown' ? ids[Math.min(ids.length-1, i+1)] : ids[Math.max(0, i-1)];
-    if (n && n!==state.uid){ e.preventDefault(); switchTo(n); }
-    return;
-  }
-  const input = e.target.closest('#statusForm input[data-k]');
-  if (!input) return;
-  if (e.key==='ArrowDown' && input.dataset.combo){
-    e.preventDefault();
-    showCombo(input);
-    const first = input.parentElement.querySelector('.combo-list button');
-    if (first) first.focus();
-    return;
-  }
-  if (e.key==='Enter'){
-    e.preventDefault();
-    const f = fieldBy(input.dataset.k);
-    if (input.dataset.combo){
-      const on = input.parentElement.querySelector('.combo-list button.on') || input.parentElement.querySelector('.combo-list button');
-      if (on && !input.parentElement.querySelector('.combo-list').hidden){ pickCombo(input, on.dataset.opt); return; }
-    }
-    if (f && f.g){ confirmGate(f.k); return; }
-    const all = [...document.querySelectorAll('#stepFields input[data-k]:not([disabled])')];
-    const idx = all.indexOf(input);
-    const next = all[idx+1];
-    if (next) next.focus({ preventScroll:true });
-  }
-});
-document.body.addEventListener('keydown', (e) => {
-  if (e.key==='Enter' && e.target.dataset && e.target.dataset.act==='pickopt'){
-    e.preventDefault();
-    const input = e.target.closest('.combo').querySelector('input');
-    pickCombo(input, e.target.dataset.opt);
+    toast('已把「'+label+'」填到 '+picked.length+' 柜。'+(moved?moved+' 柜的状态往前走了。':'')+'演示，没有写入真系统。');
+    render();
   }
 });
 
+document.body.addEventListener('change', (e) => {
+  const el = e.target.closest('[data-act="sel"]');
+  if (!el) return;
+  if (el.checked) state.sel.add(el.dataset.uid);
+  else state.sel.delete(el.dataset.uid);
+  readForm();
+  render();
+});
+document.body.addEventListener('input', (e) => {
+  const inp = e.target.closest('#statusForm [data-k]');
+  if (!inp || inp.disabled) return;
+  const t = current();
+  if (!t || !vals(t.id)) return;
+  vals(t.id)[inp.dataset.k] = inp.value;
+  const fv = inp.closest('.fv');
+  if (fv) fv.classList.toggle('filled', !!inp.value.trim());
+});
+document.body.addEventListener('keydown', (e) => {
+  if (e.key==='Enter' && e.target.id==='nextField'){
+    e.preventDefault();
+    const btn = document.getElementById('btnSave');
+    if (btn) btn.click();
+  }
+});
+
+BBTEX.install(typeof DATA!=='undefined'?{page:'order',DATA,GATES,NODES,state,N}:{page:'wb',CABS,FIELDS,GATES,NODES,state});
 render();
 </script>
 </body>
