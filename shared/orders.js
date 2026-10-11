@@ -219,6 +219,36 @@
     return v;
   }
 
+  const LIST_OPTS = {
+    invest: ['自营-DEMO', '代理-DEMO', '待定-DEMO'],
+    bill: ['按柜-DEMO', '按方-DEMO', '待定-DEMO'],
+    otype: ['整柜', '散货']
+  };
+  const LIST_LABEL = {invest:'投资状态', bill:'计费类型', otype:'订单类型', eta:'ETA', notify:'通知地址'};
+
+  function listSeed(cab) {
+    const i = Math.max(0, LEGACY.findIndex(function (c) { return c.id === cab.id; }));
+    const eta = (cab.eta && /^\d{1,2}\/\d{1,2}/.test(cab.eta)) ? cab.eta : '10/08';
+    const route = cab.route || '';
+    const bits = route.split('→');
+    return {
+      invest: LIST_OPTS.invest[i % 3],
+      bill: LIST_OPTS.bill[i % 3],
+      notify: '通知地址-DEMO-' + String(i + 1).padStart(2, '0'),
+      otype: LIST_OPTS.otype[i % 2],
+      eta: eta,
+      pol: (bits[0] || '').trim(),
+      pod: (bits[1] || '').trim(),
+      qty: String(8 + (i % 5)),
+      kgs: String(200 + i),
+      cbm: String(3 + (i % 4)),
+      pallet: String(1 + (i % 3)),
+      desc: '描述-DEMO',
+      note: '备注-DEMO',
+      consignee: 'CONSIGNEE-DEMO'
+    };
+  }
+
   function blankOrder(cab) {
     return {
       id: cab.id,
@@ -235,6 +265,7 @@
       finOk: cab.node > 2,
       paid: !!cab.paid,
       fields: seedFields(cab),
+      list: listSeed(cab),
       ai: {},
       audit: [],
       label: '', sub: '', missing: [], note: ''
@@ -373,6 +404,7 @@
     c.exc = o.exc || '';
     c.fh = o.fh ? 1 : 0;
     c.mode = o.mode || c.mode;
+    if (!o.list) o.list = listSeed(o);
     c.label = o.label;
     c.sub = o.sub;
     const key = gateKey(o.node);
@@ -480,6 +512,17 @@
     o.audit.push({kind:'拒绝', who:who, k:k, text:who + ' 拒绝 · ' + label});
     persist();
     return fieldView(id, k);
+  }
+
+  function patchList(id, key, value, who) {
+    const o = order(id);
+    if (!o || !who || !LIST_LABEL[key]) return null;
+    if (!o.list) o.list = listSeed(o);
+    o.list[key] = value;
+    o.audit = o.audit || [];
+    o.audit.push({kind:'改', who:who, k:key, text:who + ' 改 · ' + LIST_LABEL[key]});
+    persist();
+    return o.list[key];
   }
 
   function acceptAll(id, sec, who, metas) {
@@ -889,7 +932,10 @@
     fieldView: fieldView,
     accept: accept,
     rejectAi: rejectAi,
-    acceptAll: acceptAll
+    acceptAll: acceptAll,
+    patchList: patchList,
+    LIST_OPTS: LIST_OPTS,
+    LIST_LABEL: LIST_LABEL
   };
   const root = typeof window !== 'undefined' ? window : globalThis;
   root.BBTEX = api;

@@ -145,6 +145,7 @@ a.id-link:hover{color:var(--accent);text-decoration-color:var(--accent)}
   --phi:1.618;
   --nav-plat:210px; /* 收起柜号列表后，侧栏缩回平台导航 */
   --side:360px; /* 13px 柜号 + 12px 标签 + 8px 间距，一行不挤 */
+  --listw:300px; /* 快速列表：订单号、柜号、当前状态、谁在处理 */
   --top-h:55px; /* ≈ 34+21 */
   --sp1:8px; --sp2:13px; --sp3:21px; --sp4:34px;
   --r:8px; --r-sm:6px; --r-lg:13px;
@@ -185,8 +186,10 @@ a{color:inherit;text-decoration:none}
 
 
 /* v1.3.15：两栏。侧栏只加宽到装得下柜号行；腾出的宽度给右边操作线。 */
-.app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh;min-width:1180px}
+.app{display:grid;grid-template-columns:var(--nav-plat) var(--listw) minmax(0,1fr);min-height:100vh;min-width:1180px}
+.app.list-full{--listw:min(720px, calc(100vw - var(--nav-plat) - 460px))}
 .app.collapsed{grid-template-columns:var(--nav-plat) minmax(0,1fr)}
+.app.collapsed .olist{display:none !important}
 .app.collapsed .order-nest{display:none !important}
 
 /* —— 深炭左导航（QB 色 · 老系统位置）：平台菜单 · 订单平台 ▸ 待办 / 全部 —— */
@@ -707,7 +710,35 @@ a{color:inherit;text-decoration:none}
 
 /* 工作台：同一份样张的 #/workbench。侧栏收回平台导航，右边整页是今天要处理的柜。 */
 .app.page-work{grid-template-columns:var(--nav-plat) minmax(0,1fr)}
-.app.page-work .order-nest{display:none !important}
+.app.page-work .olist,.app.page-work .order-nest{display:none !important}
+.olist{height:100vh;position:sticky;top:0;min-width:0;display:flex;padding:8px 0 8px 8px;background:var(--bg)}
+.olist .order-nest{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-card);overflow:hidden}
+.olist-tabs{display:flex;gap:6px;padding:8px 8px 0;flex:none}
+.olist .sub-ni{margin:0;height:32px;padding:0 10px;border-left:0;border-radius:8px;color:var(--t2);background:var(--sunken)}
+.olist .sub-ni.on{background:var(--accent-tint);color:var(--accent-text);font-weight:650;border-left:0}
+.olist .nest-panel.open{display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden}
+.olist #tree,.olist .vbody{flex:1;min-height:0;display:flex;flex-direction:column}
+.olist .cab-scroll{flex:1;min-height:0;overflow:auto}
+.lq{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;padding:8px;flex:none}
+.lq label{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--t3)}
+.lq input,.lq select{height:28px;border:1px solid var(--line);border-radius:6px;padding:0 6px;background:#fff;color:var(--t1);font-size:12px;min-width:0}
+.lq .q-kw{width:120px}
+.otable{border-collapse:collapse;font-size:12px;width:max-content;min-width:100%}
+.otable th,.otable td{padding:6px 8px;border-bottom:1px solid var(--line-soft);white-space:nowrap;text-align:left;vertical-align:middle}
+.otable th{font-size:11px;font-weight:650;color:var(--t3);background:#FAFAFB;position:sticky;top:0;z-index:1}
+.otable .unconf{display:block;font-weight:500;color:#B86E00;white-space:normal;max-width:140px}
+.orow{cursor:pointer}
+.orow.on{background:#E8F1FC}
+.orow select,.orow input[data-inline]{height:26px;border:1px solid var(--line);border-radius:6px;padding:0 4px;background:#fff;font-size:12px;max-width:120px}
+.pager{display:flex;align-items:center;gap:8px;padding:6px 8px;border-top:1px solid var(--line-soft);font-size:12px;color:var(--t3);flex:none}
+.pager button,#listMode,#qGo,#qReset,#btnBatchDel{height:28px;border:1px solid var(--line);border-radius:6px;background:#fff;padding:0 8px;cursor:pointer;font-size:12px}
+#btnBatchDel{color:#C62828;border-color:#F3C1C1}
+#cabFacts{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+#cabFacts label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--t3);min-width:140px}
+#cabFacts input,#cabFacts select{height:32px;border:1px solid var(--line);border-radius:6px;padding:0 8px;background:#fff;color:var(--t1)}
+#notifyNote{color:#B86E00;font-size:11px}
+.dt-stable{height:72px;overflow:hidden}
+.crumb{height:22px;overflow:hidden}
 .wb-lead{font-size:14px;color:var(--t3);margin:-8px 0 21px;line-height:1.5}
 .wb-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:21px}
 .wb-stat{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-card);padding:16px 18px;min-height:84px}
@@ -792,11 +823,6 @@ a{color:inherit;text-decoration:none}
   <a class="ni" id="navWorkbench" href="../workbench/14-op-workbench.html"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>工作台</span></a>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg><span>业务平台</span></a>
   <a class="ni on plat" data-plat="orders" id="platOrders" href="#/todo" title="展开 / 收起订单列表（快捷键 [ ）"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span>订单平台</span><span class="badge" id="nvTodo"></span><span class="pcar">▾</span></a>
-  <div class="order-nest" id="orderNest">
-  <a class="sub-ni on open" data-v="todo" id="tabTodo" href="#/todo">待办<span class="badge" id="tabTodoN"></span><span class="arrow">▾</span></a>
-  <div class="nest-panel open" id="nestPanel"><div id="tree" aria-label="订单列表（柜号）"></div></div>
-  <a class="sub-ni" data-v="all" id="tabAll" href="#/all">全部<span class="cnt" id="tabAllN"></span><span class="arrow">▾</span></a>
-  </div>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span>清关平台</span><span class="badge">1</span></a>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg><span>提柜平台</span><span class="badge alert">3</span></a>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12M6 14h12"/></svg><span>仓管平台</span></a>
@@ -813,6 +839,15 @@ a{color:inherit;text-decoration:none}
     <div class="pop role-pop" id="roleMenu"></div>
     <div class="me" id="roleBtn" role="button" tabindex="0"><div class="av">B</div><div><b>Brian</b><small id="roleLabel">操作经理 · 演示</small></div></div>
     </div>
+  </div>
+</aside>
+<aside class="olist" id="olist" aria-label="订单列表">
+  <div class="order-nest" id="orderNest">
+    <div class="olist-tabs">
+      <a class="sub-ni on open" data-v="todo" id="tabTodo" href="#/todo">待办<span class="badge" id="tabTodoN"></span></a>
+      <a class="sub-ni" data-v="all" id="tabAll" href="#/all">全部<span class="cnt" id="tabAllN"></span></a>
+    </div>
+    <div class="nest-panel open" id="nestPanel"><div id="tree" aria-label="订单列表"></div></div>
   </div>
 </aside>
   <main class="main">
@@ -921,7 +956,8 @@ const state = { view:'todo', filter:null, sort:'prio', q:'', fold:{node:true, fl
   coMenu: false,
   compact: (()=>{ try { const v = localStorage.getItem('bbtex13t.compact'); return v===null ? true : v==='1'; } catch(e){ return true; } })(),
   sel: new Set(), doneFold: true, bmenu: false,
-  allSort: 'status', allStage: null, allWho: null, allCc: null, allExc: false };
+  allSort: 'status', allStage: null, allWho: null, allCc: null, allExc: false,
+  listFull: false, listPage: 1, qWho: '', qFrom: '', qTo: '', hidden: new Set() };
 
 /* —— 今日进度：分母＝今早「今日该处理」那一组柜（当天固定）；当前节点做完一次 → done+1 —— */
 const TODAY_IDS = new Set(DATA.filter(c => (c.d < N && !NODES[c.d].fin) || c.dt).map(c => c.id));
@@ -1097,6 +1133,33 @@ function matchQ(c){
   if (!q) return true;
   return [c.id,c.cc,c.ord,c.mbl,c.cu,c.co].join(' ').toLowerCase().includes(q);
 }
+function mdNum(s){
+  const m = String(s||'').match(/^(\d{1,2})\/(\d{1,2})/);
+  if (!m) return null;
+  return (+m[1]) * 100 + (+m[2]);
+}
+function listMeta(c){
+  const o = (window.BBTEX && BBTEX.order) ? BBTEX.order(c.id) : null;
+  const L = (o && o.list) || {};
+  const bits = String(c.route||'').split('→');
+  return {
+    invest: L.invest || '', bill: L.bill || '', notify: L.notify || '', otype: L.otype || '',
+    eta: L.eta || '', pol: L.pol || (bits[0]||'').trim(), pod: L.pod || (bits[1]||'').trim(),
+    qty: L.qty || '', kgs: L.kgs || '', cbm: L.cbm || '', pallet: L.pallet || '',
+    desc: L.desc || '', note: L.note || '', consignee: L.consignee || ''
+  };
+}
+function matchExtra(c){
+  if (state.hidden && state.hidden.has(c.id)) return false;
+  if (state.qWho && handlerOf(c) !== state.qWho) return false;
+  const from = mdNum(state.qFrom), to = mdNum(state.qTo);
+  if (from===null && to===null) return true;
+  const eta = mdNum(listMeta(c).eta);
+  if (eta===null) return false;
+  if (from!==null && eta < from) return false;
+  if (to!==null && eta > to) return false;
+  return true;
+}
 /* 已完成 = 签收之后（催款回款 / 已回款）。进行中含中途的财务开票。 */
 function isDoneOrder(c){ return c.d >= N - 1; }
 /* 十个节点 → 阶段。已完成（催款 / 已回款）单独一色。全部是平铺，不按阶段分组。 */
@@ -1189,7 +1252,7 @@ function sortAll(a,b){
 function scoped(){
   let rows = state.view==='todo' ? DATA.filter(isTodo) : DATA.slice();
   if (state.filter && FILTERS[state.filter]) rows = rows.filter(FILTERS[state.filter]);
-  rows = rows.filter(matchQ);
+  rows = rows.filter(matchQ).filter(matchExtra);
   if (state.coFilter && state.coFilter!=='全部公司') rows = rows.filter(c => c.co===state.coFilter);
   if (state.view==='all') return rows.filter(matchAll);
   return rows.sort(sortFn);
@@ -1427,93 +1490,142 @@ function cabRowsHTML(rows, cur){
 
 function placeNest(){
   const panel = $('#nestPanel');
-  const anchor = state.view==='all' ? $('#tabAll') : $('#tabTodo');
-  if (panel && anchor && anchor.nextElementSibling !== panel) anchor.after(panel);
   const open = !!(state.nestOpen && !state.collapsed);
   if (panel) panel.classList.toggle('open', open);
   const nest = $('#orderNest');
   if (nest) nest.classList.toggle('shut', !open);
 }
+function statusText(c){
+  if (c.label) return c.sub ? (c.label+' · '+c.sub) : c.label;
+  if (c.d >= N) return '已回款';
+  return (NODES[c.d] && NODES[c.d].n) || '';
+}
+function optHTML(cur, options){
+  const list = options.slice();
+  if (cur && list.indexOf(cur)<0) list.unshift(cur);
+  return list.map(o => '<option'+(o===cur?' selected':'')+'>'+esc(o)+'</option>').join('');
+}
+function inlineSel(c, key, options){
+  const v = listMeta(c)[key] || '';
+  return '<td class="'+key+'"><select data-inline="'+key+'" data-id="'+c.id+'">'+optHTML(v, options)+'</select></td>';
+}
+function applyListWidth(){
+  const app = $('#app');
+  if (app) app.classList.toggle('list-full', !!state.listFull);
+}
+const LIST_PAGE = 6;
 function renderList(){
   placeNest();
+  applyListWidth();
   const cur = curId();
   const rows = scoped();
-  const strip = todayStripHTML();
-  const search = '<div class="nav-search"><input id="q" type="search" placeholder="搜柜号 / 客户代码" autocomplete="off" value="'+state.q.replace(/"/g,'&quot;')+'"><span class="kbd">/</span></div>';
-  const sortBar = state.view==='all'
-    ? '<div class="all-sort">'+['date','日期','eta','ETA','lfd','LFD','status','状态'].reduce((s,x,i,a)=>{
-        if (i%2) return s;
-        return s+'<button type="button" data-as="'+x+'"'+(state.allSort===x?' class="on"':'')+'>'+a[i+1]+'</button>';
-      },'')+'</div>'+stageChipsHTML()
-    : '';
+  const pages = Math.max(1, Math.ceil(rows.length / LIST_PAGE));
+  if (state.listPage > pages) state.listPage = pages;
+  if (state.listPage < 1) state.listPage = 1;
+  const slice = rows.slice((state.listPage-1)*LIST_PAGE, state.listPage*LIST_PAGE);
   const tree = $('#tree'); if (!tree) return;
   const oldScroll = $('#listRailBody') ? $('#listRailBody').scrollTop : 0;
-  const dn = DATA.filter(c => c.dt && inToday(c)).length;
-  const filtered = state.filter || (state.view==='all' && allFiltering());
-  const foot = '<div class="nest-foot"><span>共 <b>'+rows.length+'</b> 柜</span>'+(filtered?'<span>· 已筛选</span>':'')+'<span class="sp"></span><span>今日已推进 <b>'+dn+'</b> / '+todayTotal()+'</span></div>';
-  const vbody = '<div class="vbody" id="listRail">'
-    + '<div class="vhead">'+search+strip+sortBar+listToolsHTML(rows)+'<div class="filt-body" id="filtBody"></div></div>'
-    + '<div class="cab-scroll" id="listRailBody">'+cabRowsHTML(rows, cur)+'</div>'
-    + foot + '</div>';
-  tree.innerHTML = vbody;
-  const lb = $('#listRailBody'); if (lb) lb.scrollTop = oldScroll;
-  const ft = $('#filtTog'); if (ft) ft.onclick = (e) => { e.stopPropagation(); state.filtOpen = !state.filtOpen; renderFilt(); };
-  renderFilt();
-  const qi = $('#q');
-  if (qi){
-    qi.addEventListener('input', () => {
-      state.q = qi.value; renderList();
-      const q2 = $('#q'); if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
-    });
-  }
-  document.querySelectorAll('[data-ck]').forEach(el => el.onclick = (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const id = el.dataset.ck;
-    state.sel.has(id) ? state.sel.delete(id) : state.sel.add(id);
-    if (!state.sel.size) state.bmenu = false;
-    renderList();
+  const opts = (window.BBTEX && BBTEX.LIST_OPTS) || {invest:['自营-DEMO','代理-DEMO','待定-DEMO'], bill:['按柜-DEMO','按方-DEMO','待定-DEMO'], otype:['整柜','散货']};
+  const whos = [];
+  DATA.forEach(c => { const w = handlerOf(c); if (w && whos.indexOf(w)<0) whos.push(w); });
+  const whoOpts = '<option value="">全部</option>'+whos.map(w => '<option'+(state.qWho===w?' selected':'')+'>'+esc(w)+'</option>').join('');
+  const canDel = state.role === '操作经理';
+  const q = '<div class="lq" id="listQuery">'
+    + '<label>查询<input id="q" class="q-kw" type="search" placeholder="柜号 / 订单号" value="'+esc(state.q)+'"></label>'
+    + '<label>业务员<select id="qWho">'+whoOpts+'</select></label>'
+    + '<label>日期<input id="qFrom" placeholder="起 MM/DD" value="'+esc(state.qFrom)+'"></label>'
+    + '<label>至<input id="qTo" placeholder="止 MM/DD" value="'+esc(state.qTo)+'"></label>'
+    + '<button type="button" id="qGo">查询</button>'
+    + '<button type="button" id="qReset">重置</button>'
+    + '<button type="button" id="listMode">'+(state.listFull?'快速':'全列')+'</button>'
+    + (canDel ? '<button type="button" id="btnBatchDel">批量删除</button>' : '')
+    + '</div>';
+  const heads = ['订单号','柜号','当前状态','谁在处理'];
+  const fullHeads = state.listFull ? ['投资状态','订单类型','计费类型','运输方式','起运港','目的港','箱型','件数','重量','体积','托盘数','描述','订单备注','通知地址','CONSIGNEE','ETA'] : [];
+  let body = '';
+  slice.forEach(c => {
+    const L = listMeta(c);
+    const on = c.id===cur ? ' on' : '';
+    body += '<tr class="orow'+on+'" data-pick="'+c.id+'">'
+      + '<td class="ord">'+esc(c.ord)+'</td>'
+      + '<td class="cid"><input type="checkbox" data-ck="'+c.id+'"'+(state.sel.has(c.id)?' checked':'')+'> '+esc(c.id)+'</td>'
+      + '<td class="st">'+esc(statusText(c))+'</td>'
+      + '<td class="who">'+esc(handlerOf(c))+'</td>';
+    if (state.listFull){
+      body += inlineSel(c,'invest', opts.invest)
+        + inlineSel(c,'otype', opts.otype)
+        + inlineSel(c,'bill', opts.bill)
+        + '<td class="mode">'+esc(c.mode||'')+'</td>'
+        + '<td>'+esc(L.pol)+'</td><td>'+esc(L.pod)+'</td><td>'+esc(c.ty||'')+'</td>'
+        + '<td>'+esc(L.qty)+'</td><td>'+esc(L.kgs)+'</td><td>'+esc(L.cbm)+'</td><td>'+esc(L.pallet)+'</td>'
+        + '<td>'+esc(L.desc)+'</td><td>'+esc(L.note)+'</td>'
+        + '<td class="notify">'+esc(L.notify)+'</td>'
+        + '<td>'+esc(L.consignee)+'</td>'
+        + '<td class="eta"><input data-inline="eta" data-id="'+c.id+'" value="'+esc(L.eta)+'"></td>';
+    }
+    body += '</tr>';
   });
-  const ca = document.querySelector('[data-ckall]');
-  if (ca) ca.onclick = (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const ids = rows.map(c=>c.id);
-    const all = ids.length && ids.every(id=>state.sel.has(id));
-    ids.forEach(id => all ? state.sel.delete(id) : state.sel.add(id));
-    if (!state.sel.size) state.bmenu = false;
+  if (!slice.length) body = '<tr><td colspan="8">没有符合的柜</td></tr>';
+  const notifyHead = state.listFull
+    ? heads.concat(fullHeads).map(h => h==='通知地址'
+        ? '<th>通知地址<small class="unconf">与派送地址是否同一栏未确认</small></th>'
+        : '<th>'+h+'</th>').join('')
+    : heads.map(h => '<th>'+h+'</th>').join('');
+  tree.innerHTML = '<div class="vbody" id="listRail">'
+    + q
+    + '<div class="cab-scroll" id="listRailBody"><table class="otable" id="otable"><thead><tr>'+notifyHead+'</tr></thead><tbody>'+body+'</tbody></table></div>'
+    + '<div class="pager" id="pager"><button type="button" id="pgPrev"'+(state.listPage<=1?' disabled':'')+'>上一页</button>'
+    + '<span id="pgInfo">'+state.listPage+' / '+pages+' · 共 '+rows.length+' 柜</span>'
+    + '<button type="button" id="pgNext"'+(state.listPage>=pages?' disabled':'')+'>下一页</button></div>'
+    + '</div>';
+  const lb = $('#listRailBody'); if (lb) lb.scrollTop = oldScroll;
+  const readQ = () => {
+    const qi = $('#q'), w = $('#qWho'), a = $('#qFrom'), b = $('#qTo');
+    state.q = qi ? qi.value : '';
+    state.qWho = w ? w.value : '';
+    state.qFrom = a ? a.value.trim() : '';
+    state.qTo = b ? b.value.trim() : '';
+    state.listPage = 1;
     renderList();
   };
-  const bb = $('#btnBatch');
-  if (bb) bb.onclick = (e) => { e.stopPropagation(); state.bmenu = !state.bmenu; renderList(); };
-  const lc = $('#listCollapse');
-  if (lc) lc.onclick = (e) => { e.preventDefault(); e.stopPropagation(); toggleCollapsed(); };
-  const ctg = $('#compactTog');
-  if (ctg) ctg.onclick = (e) => { e.preventDefault(); e.stopPropagation(); toggleCompact(); };
-  document.querySelectorAll('[data-batch]').forEach(el => el.onclick = (e) => {
+  const go = $('#qGo'); if (go) go.onclick = (e) => { e.stopPropagation(); readQ(); };
+  const rs = $('#qReset'); if (rs) rs.onclick = (e) => {
     e.stopPropagation();
-    const n = state.sel.size;
-    toast(el.dataset.batch==='remind' ? '已给 '+n+' 柜的下一岗 / 供应商发提醒（演示，不改状态）' : '已导出 '+n+' 柜清单（演示）');
-    state.sel.clear(); state.bmenu = false; renderList();
-  });
-  const dtg = $('#doneTog');
-  if (dtg) dtg.onclick = (e) => { e.stopPropagation(); state.doneFold = !state.doneFold; renderList(); };
-  document.querySelectorAll('[data-as]').forEach(el => el.onclick = (e) => {
-    e.stopPropagation(); state.allSort = el.dataset.as; renderList();
-  });
-  document.querySelectorAll('[data-stage]').forEach(el => el.onclick = (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const id = el.dataset.stage;
-    state.allStage = state.allStage===id ? null : id;
+    state.q = ''; state.qWho = ''; state.qFrom = ''; state.qTo = ''; state.listPage = 1;
     renderList();
+  };
+  const mode = $('#listMode');
+  if (mode) mode.onclick = (e) => { e.stopPropagation(); state.listFull = !state.listFull; renderList(); };
+  const del = $('#btnBatchDel');
+  if (del) del.onclick = (e) => {
+    e.stopPropagation();
+    if (state.role !== '操作经理') return;
+    const n = state.sel.size;
+    if (!n) { toast('先勾选要删除的柜'); return; }
+    state.sel.forEach(id => state.hidden.add(id));
+    state.sel.clear();
+    toast('已删除 '+n+' 柜（演示）');
+    renderList();
+  };
+  document.querySelectorAll('[data-ck]').forEach(el => el.onclick = (e) => {
+    e.stopPropagation();
+    const id = el.dataset.ck;
+    if (el.checked) state.sel.add(id); else state.sel.delete(id);
   });
-  document.querySelectorAll('[data-today]').forEach(el => el.onclick = (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const id = el.dataset.today;
-    state.view = 'todo';
-    state.nestOpen = true;
-    if (id==='today-work') state.filter = null;
-    else state.filter = state.filter===id ? null : id;
-    setHash(null); render();
+  document.querySelectorAll('[data-pick]').forEach(tr => tr.onclick = (e) => {
+    if (e.target.closest('input, select, button, label')) return;
+    setHash(tr.dataset.pick);
   });
+  document.querySelectorAll('[data-inline]').forEach(el => el.onchange = (e) => {
+    e.stopPropagation();
+    if (!window.BBTEX || !BBTEX.patchList) return;
+    BBTEX.patchList(el.dataset.id, el.dataset.inline, el.value, state.role);
+    toast('已保存');
+    if (curId() === el.dataset.id) renderDetail();
+  });
+  const prev = $('#pgPrev'), next = $('#pgNext');
+  if (prev) prev.onclick = () => { if (state.listPage>1){ state.listPage--; renderList(); } };
+  if (next) next.onclick = () => { if (state.listPage<pages){ state.listPage++; renderList(); } };
 }
 
 function finInline(c){
@@ -2107,10 +2219,11 @@ function renderDetail(){
     return '<div class="tn '+k+(n.fin?' fn':'')+'"><div class="ix">'+(i<c.d?'✓':(i+1))+'</div><div class="bd"><b>'+n.n+(n.fin?' <span class="auto">财务</span>':'')+'</b>'+body+'</div></div>';
   }).join('');
 
+  const scrollBox = $('#detail');
+  const keepTop = scrollBox ? scrollBox.scrollTop : 0;
   $('#detail').innerHTML =
     '<div class="crumb"><a href="#/'+state.view+'">订单平台</a> / '+(state.view==='todo'?'待办':'全部')+' / '+c.id+'</div>'
-    + bannersHTML(c)
-    + '<div class="dt-hd"><div><h1>'+c.id+' '+prioChip(c.pr)+'</h1><div class="sub">'
+    + '<div class="dt-hd dt-stable"><div><h1>'+c.id+' '+prioChip(c.pr)+'</h1><div class="sub">'
     + '<span class="cotag"><i style="background:'+CO[c.co]+'"></i>'+c.co+'</span>'
     + '<span class="sep">·</span><span class="ccode">'+c.cc+'</span>'
     + '<span class="sep">·</span>'+c.ty+' · '+c.mode
@@ -2119,6 +2232,8 @@ function renderDetail(){
     + '</div></div><span class="sp"></span>'
     + '<a class="btn ghost sm" href="#">对照 12</a></div>'
     + '<div class="op-line">'
+    +   cabFactsHTML(c)
+    +   bannersHTML(c)
     +   '<div class="status-line '+st.cls+'">'+st.line+' '+finInline(c)+'</div>'
     +   '<div class="status-sub">'+st.sub+'</div>'
     +   '<div class="track"><div class="rail"></div><div class="fill" style="width:calc((100% - 100%/10) * '+fillPct+')"></div>'+stops+'</div>'
@@ -2131,7 +2246,17 @@ function renderDetail(){
     +   '</div>'
     + '</div>'
     + '<div class="scheme-note">订单平台 QB 13 · v1.3.18 · 订单审核仍是四组资料。到仓拆柜展开拆柜清单：31 个跟踪字段、装箱单明细、少件/多件。拆柜件数是这一步的门闩。演示数据全虚构。</div>';
+  if (scrollBox) scrollBox.scrollTop = keepTop;
   bind(c);
+}
+function cabFactsHTML(c){
+  const L = listMeta(c);
+  const opts = (window.BBTEX && BBTEX.LIST_OPTS) || {invest:['自营-DEMO','代理-DEMO','待定-DEMO'], bill:['按柜-DEMO','按方-DEMO','待定-DEMO']};
+  return '<div id="cabFacts">'
+    + '<label>投资状态<select data-fact="invest">'+optHTML(L.invest, opts.invest)+'</select></label>'
+    + '<label>计费类型<select data-fact="bill">'+optHTML(L.bill, opts.bill)+'</select></label>'
+    + '<label>通知地址<input data-fact="notify" value="'+esc(L.notify)+'"><small id="notifyNote">与派送地址是否同一栏未确认</small></label>'
+    + '</div>';
 }
 
 function readGate(c){
@@ -2213,6 +2338,11 @@ function bind(c){
     }
     toast('已驳回：'+c.rev.rejectReason.trim()+'（演示，没有写入真系统）');
   };
+  document.querySelectorAll('#cabFacts [data-fact]').forEach(el => el.onchange = () => {
+    if (window.BBTEX && BBTEX.patchList) BBTEX.patchList(c.id, el.dataset.fact, el.value, state.role);
+    toast('已保存');
+    renderDetail();
+  });
   bindUnload(c);
 }
 
