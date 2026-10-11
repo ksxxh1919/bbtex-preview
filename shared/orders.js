@@ -112,6 +112,26 @@
     deliver: {car:'car', nt:'trucknt', plan:'pdel', arr:'dlarr', sign:'sign', pod:'ipod'}
   };
 
+  const AI_SRC = {
+    bl: {name:'提单', loc:'提单第 2 页'},
+    pl: {name:'装箱单', loc:'装箱单第 1 页'},
+    an: {name:'到港通知', loc:'A/N 抬头'}
+  };
+  const GATE_KEYS = {
+    recisf:1, isdone:1, arr:1, av:1, plan:1, pkdone:1, indate:1, devand:1,
+    trarr:1, loadd:1, outd:1, cd:1, raild:1, carno:1, seal2:1, lock:1, depart:1, pdel:1,
+    isco:1, isfile:1, term:1, an:1, lfd:1, xd:1, etacdmex:1, trucknt:1, dlarr:1, unload:1, sign:1, ipod:1
+  };
+  const DEMO_AI = {
+    TEST2468024: [
+      {k:'ordnote', label:'订单备注', value:'装箱单备注-DEMO', src:'pl', conf:'91%'},
+      {k:'laemail', label:'LA出仓邮件', value:'提单已通知-DEMO', src:'bl', conf:'74%'},
+      {k:'isdone', label:'ISF完成', value:'10/02', src:'bl', conf:'88%'},
+      {k:'isco', label:'ISF申报公司', value:'DEMO-ISF-AI', src:'an', conf:'80%'},
+      {k:'isdate', label:'ISF回执日期', value:'10/03', src:''}
+    ]
+  };
+
   const LEGACY = [
     {id:'TEST1234560', node:4, empty:'pkdone', mode:'火车', cc:'DEMO-A01', ty:'40HQ', co:'保利通', route:'LAX → MTY', lfd:'10/05', ord:'S2610-1001', mbl:'MBL-DEMO-0001', cu:'客户A', pr:'特急', eta:'10/08', inv:'INV-DEMO-0401'},
     {id:'TEST4455667', node:7, empty:'cd', mode:'卡车', cc:'DEMO-A01', ty:'40HQ', co:'总公司', route:'LAX → MTY', ord:'S2610-1012', mbl:'MBL-DEMO-0012', cu:'客户A', pr:'紧急', eta:'10/06', lfd:'09/29', inv:'INV-DEMO-0402'},
@@ -215,6 +235,8 @@
       finOk: cab.node > 2,
       paid: !!cab.paid,
       fields: seedFields(cab),
+      ai: {},
+      audit: [],
       label: '', sub: '', missing: [], note: ''
     };
   }
@@ -241,7 +263,10 @@
       return (c.node < 10 && !fin[c.node]) || !!c.dt;
     }).map(function (c) { return c.id; });
     db = {v:1, orders:orders, todayIds:todayIds};
-    Object.keys(orders).forEach(function (id) { applyDerived(orders[id]); });
+    Object.keys(orders).forEach(function (id) {
+      applyDerived(orders[id]);
+      seedAi(orders[id]);
+    });
     return db;
   }
 
@@ -395,6 +420,80 @@
     persist();
   }
 
+  function isGate(k) { return !!GATE_KEYS[k]; }
+  function canonKey(section, k) {
+    const map = ORDER_MAP[section];
+    return (map && map[k]) || k;
+  }
+
+  function seedAi(o) {
+    if (!o.ai) o.ai = {};
+    if (!o.audit) o.audit = [];
+    (DEMO_AI[o.id] || []).forEach(function (row) {
+      if (has(o.fields, row.k) || o.ai[row.k]) return;
+      o.ai[row.k] = {value:row.value, src:row.src || '', conf:row.conf || '', label:row.label || row.k};
+      if (row.src && AI_SRC[row.src]) {
+        o.audit.push({kind:'建议', who:'AI', k:row.k, text:'AI 建议 · ' + row.label + ' · ' + AI_SRC[row.src].name + ' · ' + row.conf});
+      }
+    });
+  }
+
+  function fieldView(id, k) {
+    const o = order(id);
+    const gate = isGate(k);
+    if (!o) return {state:'empty', value:'', source:'', loc:'', conf:'', gate:gate, label:k};
+    const sug = o.ai && o.ai[k];
+    const sourced = sug && sug.src && AI_SRC[sug.src];
+    if (sourced && !has(o.fields, k)) {
+      return {state:'suggest', value:sug.value, source:AI_SRC[sug.src].name, loc:AI_SRC[sug.src].loc, conf:sug.conf || '', gate:gate, label:sug.label || k};
+    }
+    if (has(o.fields, k)) return {state:'human', value:o.fields[k], source:'', loc:'', conf:'', gate:gate, label:(sug && sug.label) || k};
+    return {state:'empty', value:'', source:'', loc:'', conf:'', gate:gate, label:(sug && sug.label) || k};
+  }
+
+  function accept(id, k, who, edited) {
+    const o = order(id);
+    if (!o || !who) return null;
+    const sug = o.ai && o.ai[k];
+    const sourced = sug && sug.src && AI_SRC[sug.src];
+    if (!sourced && !edited) return null;
+    const val = edited || (sourced ? sug.value : '');
+    if (!val) return null;
+    o.fields[k] = val;
+    const label = (sug && sug.label) || k;
+    if (o.ai) delete o.ai[k];
+    const kind = edited ? '改' : '接受';
+    o.audit = o.audit || [];
+    o.audit.push({kind:kind, who:who, k:k, text:who + ' ' + kind + ' · ' + label});
+    persist();
+    return fieldView(id, k);
+  }
+
+  function rejectAi(id, k, who) {
+    const o = order(id);
+    if (!o || !who) return null;
+    const view = fieldView(id, k);
+    const label = view.label || k;
+    if (o.ai) delete o.ai[k];
+    o.fields[k] = '';
+    o.audit = o.audit || [];
+    o.audit.push({kind:'拒绝', who:who, k:k, text:who + ' 拒绝 · ' + label});
+    persist();
+    return fieldView(id, k);
+  }
+
+  function acceptAll(id, sec, who, metas) {
+    const taken = [];
+    (metas || []).forEach(function (m) {
+      if (!m || m.sec !== sec) return;
+      if (m.gate || isGate(m.k)) return;
+      const view = fieldView(id, m.k);
+      if (view.state !== 'suggest') return;
+      if (accept(id, m.k, who, '')) taken.push(m.k);
+    });
+    return taken;
+  }
+
   function paint(id) {
     const o = id ? order(id) : null;
     const t = today();
@@ -454,13 +553,134 @@
       const id = window.curId ? window.curId() : '';
       paint(id);
     };
+    function paintOrderAi(c) {
+      if (!c || !ctx.NODES || !ctx.NODES[c.d] || ctx.NODES[c.d].fin) return;
+      const section = ctx.NODES[c.d].k || '';
+      document.querySelectorAll('#gatePanel .fv').forEach(function (fv) {
+        const inp = fv.querySelector('input[data-k], select[data-k]');
+        if (!inp) return;
+        const canon = canonKey(section, inp.dataset.k);
+        inp.dataset.canon = canon;
+        const view = fieldView(c.id, canon);
+        fv.dataset.state = view.state;
+        fv.classList.remove('st-empty', 'st-human', 'st-suggest');
+        fv.classList.add(view.state === 'suggest' ? 'st-suggest' : view.state === 'human' ? 'st-human' : 'st-empty');
+        let tag = fv.querySelector('.ai-state');
+        if (!tag) {
+          tag = document.createElement('i');
+          tag.className = 'ai-state';
+          const lab = fv.querySelector('label');
+          if (lab) lab.appendChild(tag);
+        }
+        tag.textContent = view.state === 'suggest' ? 'AI建议待确认' : view.state === 'human' ? '人工已填' : '空';
+        const prev = fv.querySelector('.ai-row');
+        if (prev) prev.remove();
+        if (view.state === 'suggest' && view.source) {
+          const row = document.createElement('div');
+          row.className = 'ai-row';
+          const val = document.createElement('span');
+          val.className = 'ai-val';
+          val.textContent = view.value;
+          row.appendChild(val);
+          ['ai-src', 'ai-ok', 'ai-edit', 'ai-no'].forEach(function (act) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'btn secondary sm';
+            b.dataset.act = act;
+            b.dataset.k = canon;
+            b.textContent = act === 'ai-src' ? (view.source + ' · ' + view.conf) : act === 'ai-ok' ? '接受' : act === 'ai-edit' ? '改' : '拒绝';
+            row.appendChild(b);
+          });
+          fv.appendChild(row);
+        }
+      });
+      const host = document.querySelector('.op-line .tn.c .bd');
+      if (!host) return;
+      let loc = document.getElementById('aiLoc');
+      if (!loc) {
+        loc = document.createElement('div');
+        loc.id = 'aiLoc';
+        loc.hidden = true;
+        host.appendChild(loc);
+      }
+      let all = document.getElementById('aiAll');
+      if (!all) {
+        all = document.createElement('button');
+        all.type = 'button';
+        all.id = 'aiAll';
+        all.className = 'btn secondary sm';
+        all.dataset.act = 'ai-all';
+        all.textContent = '全部接受';
+        host.appendChild(all);
+      }
+      let log = document.getElementById('aiLog');
+      if (!log) {
+        log = document.createElement('ul');
+        log.id = 'aiLog';
+        host.appendChild(log);
+      }
+      while (log.firstChild) log.removeChild(log.firstChild);
+      const o = order(c.id);
+      ((o && o.audit) || []).forEach(function (a) {
+        const li = document.createElement('li');
+        li.textContent = a.text;
+        log.appendChild(li);
+      });
+    }
     window.renderDetail = function () {
       const id = window.curId ? window.curId() : '';
       const c = DATA.filter(function (x) { return x.id === id; })[0];
       if (c) overlay(c);
       origDetail();
       paint(id);
+      paintOrderAi(c);
     };
+    document.body.addEventListener('click', function (e) {
+      const el = e.target.closest('[data-act]');
+      if (!el) return;
+      const act = el.dataset.act;
+      if (act !== 'ai-src' && act !== 'ai-ok' && act !== 'ai-edit' && act !== 'ai-no' && act !== 'ai-all') return;
+      const id = window.curId ? window.curId() : '';
+      const c = DATA.filter(function (x) { return x.id === id; })[0];
+      if (!c) return;
+      const who = (ctx.NODES[c.d] && ctx.NODES[c.d].who) || '';
+      const section = (ctx.NODES[c.d] && ctx.NODES[c.d].k) || '';
+      if (act === 'ai-src') {
+        const view = fieldView(id, el.dataset.k);
+        const box = document.getElementById('aiLoc');
+        if (box) { box.hidden = false; box.textContent = '来源位置：' + (view.loc || ''); }
+        return;
+      }
+      if (act === 'ai-edit') {
+        const view = fieldView(id, el.dataset.k);
+        const inp = document.querySelector('#gatePanel [data-canon="' + el.dataset.k + '"]');
+        if (inp) { inp.value = view.value || ''; inp.focus(); }
+        return;
+      }
+      if (act === 'ai-ok') {
+        const sug = ((order(id) || {}).ai || {})[el.dataset.k];
+        const inp = document.querySelector('#gatePanel [data-canon="' + el.dataset.k + '"]');
+        const typed = inp ? String(inp.value || '').trim() : '';
+        accept(id, el.dataset.k, who, typed && (!sug || typed !== sug.value) ? typed : '');
+        overlay(c);
+        window.renderDetail();
+        return;
+      }
+      if (act === 'ai-no') {
+        rejectAi(id, el.dataset.k, who);
+        overlay(c);
+        window.renderDetail();
+        return;
+      }
+      const metas = [];
+      document.querySelectorAll('#gatePanel input[data-k], #gatePanel select[data-k]').forEach(function (inp) {
+        const canon = canonKey(section, inp.dataset.k);
+        metas.push({k:canon, sec:section, gate:isGate(canon)});
+      });
+      acceptAll(id, section, who, metas);
+      overlay(c);
+      window.renderDetail();
+    });
     window.bind = function (c) {
       origBind(c);
       const save = document.getElementById('btnSave');
@@ -663,7 +883,13 @@
     pushUnload: pushUnload,
     install: install,
     selfCheck: selfCheck,
-    paint: paint
+    paint: paint,
+    isGate: isGate,
+    canonKey: canonKey,
+    fieldView: fieldView,
+    accept: accept,
+    rejectAi: rejectAi,
+    acceptAll: acceptAll
   };
   const root = typeof window !== 'undefined' ? window : globalThis;
   root.BBTEX = api;

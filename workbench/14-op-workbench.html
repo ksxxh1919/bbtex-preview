@@ -146,7 +146,18 @@ button{cursor:pointer}
 .gate-tag,.next-tag{font-style:normal;font-weight:650;font-size:13px;color:var(--accent-text)}
 .next-tag{background:var(--accent);color:#fff;border-radius:4px;padding:0 6px;line-height:20px}
 .fv input,.fv select{height:34px;padding:0 10px;border-radius:6px;border:1px dashed var(--line);background:#fff;font-size:14px;width:100%;min-width:0;outline:none}
-.fv.filled input,.fv.filled select{border-style:solid;border-color:#B7D7A8;background:#F6FBF6}
+.fv.filled input,.fv.filled select,.fv.st-human input,.fv.st-human select{border-style:solid;border-color:#B7D7A8;background:#F6FBF6}
+.fv.st-empty input,.fv.st-empty select{border-style:dashed;border-color:#C5CDD8;background:#fff}
+.fv.st-suggest{background:#FFF8E8;border-radius:8px;padding:6px}
+.fv.st-suggest input,.fv.st-suggest select{border-style:solid;border-color:#E0B44A;background:#FFFDF6}
+.em-tag,.hu-tag,.ai-tag{font-style:normal;font-weight:650;font-size:13px;border-radius:4px;padding:0 6px;line-height:20px}
+.em-tag{color:#5C6370;background:#F3F4F6}
+.hu-tag{color:#1F7A1A;background:#E5F6E1}
+.ai-tag{color:#8A5A00;background:#FFE8B0}
+.ai-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
+.ai-row .ai-val{font-size:14px;font-weight:650;color:#8A5A00}
+#aiLoc{margin-top:10px;padding:8px 10px;border-radius:8px;background:#FFF8E8;font-size:14px;color:#1A1D23}
+#aiLog{margin:8px 0 0;padding-left:18px;font-size:13px;color:#1A1D23;line-height:1.5}
 .fv.next input,.fv.next select{border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,123,229,.15);background:#fff}
 .fv input:focus,.fv select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,123,229,.12)}
 .fv input:disabled,.fv select:disabled{background:var(--sunken);color:var(--t2);border-style:solid}
@@ -570,12 +581,14 @@ function dotsHTML(node){
   return '<div class="dots"><div class="row">'+row+'</div><span class="nm">'+esc(NODES[node]||'')+'</span></div>';
 }
 
-function fieldHTML(f, cab, v, canEdit, nextKey){
-  const val = v[f.k] ?? '';
+function fieldHTML(f, cab, v, canEdit, nextKey, id){
+  const view = (window.BBTEX && BBTEX.fieldView) ? BBTEX.fieldView(id, f.k) : null;
+  const state = view ? view.state : (String(v[f.k]||'').trim() ? 'human' : 'empty');
+  const val = state==='suggest' ? '' : (v[f.k] ?? '');
   const locked = !!(f.lock && cab.fh);
   const dis = !canEdit || f.ro || locked;
-  const isNext = canEdit && !dis && f.k===nextKey;
-  const filled = String(val).trim()!=='';
+  const isNext = canEdit && !dis && f.k===nextKey && state!=='suggest';
+  const filled = state==='human' && String(val).trim()!=='';
   let ctrl;
   if (f.t==='sel'){
     ctrl = '<select data-k="'+f.k+'" '+(dis?'disabled':'')+' '+(isNext?'id="nextField"':'')+'>'
@@ -591,8 +604,20 @@ function fieldHTML(f, cab, v, canEdit, nextKey){
     ctrl = '<div class="file-row"><input data-k="'+f.k+'" '+(dis?'disabled':'')+' value="'+esc(val)+'" placeholder="'+(filled?'':'空着')+'" '+(isNext?'id="nextField"':'')+'></div>'
       + (f.add ? '<div class="file-row" style="margin-top:8px">'+more+addBtn+'</div>' : '');
   }
-  const tags = (f.g?'<i class="gate-tag">门闩</i>':'') + (isNext?'<i class="next-tag">下一步填这里</i>':'');
-  return '<label class="fv'+(f.wide?' wide':'')+(filled?' filled':'')+(isNext?' next':'')+'"><span class="lab">'+esc(f.l)+tags+'</span>'+ctrl+'</label>';
+  const tags = (f.g?'<i class="gate-tag">门闩</i>':'') + (isNext?'<i class="next-tag">下一步填这里</i>':'')
+    + (state==='suggest'?'<i class="ai-tag">AI建议待确认</i>':state==='human'?'<i class="hu-tag">人工已填</i>':'<i class="em-tag">空</i>');
+  let ai = '';
+  if (state==='suggest' && view && view.source){
+    ai = '<div class="ai-row"><span class="ai-val">'+esc(view.value)+'</span>'
+      + '<button type="button" class="btn sm" data-act="ai-src" data-k="'+f.k+'">'+esc(view.source)+' · '+esc(view.conf)+'</button>'
+      + (canEdit && !dis
+        ? '<button type="button" class="btn sm" data-act="ai-ok" data-k="'+f.k+'">接受</button>'
+          + '<button type="button" class="btn sm" data-act="ai-edit" data-k="'+f.k+'">改</button>'
+          + '<button type="button" class="btn sm" data-act="ai-no" data-k="'+f.k+'">拒绝</button>'
+        : '')
+      + '</div>';
+  }
+  return '<div class="fv '+(state==='suggest'?'st-suggest':state==='human'?'st-human':'st-empty')+(f.wide?' wide':'')+(filled?' filled':'')+(isNext?' next':'')+'" data-state="'+state+'"><span class="lab">'+esc(f.l)+tags+'</span>'+ctrl+ai+'</div>';
 }
 
 function heroHTML(t){
@@ -613,13 +638,14 @@ function heroHTML(t){
   const blocks = order.map(id => {
     const sec = SECS.find(s => s.id===id);
     const own = id===role().sec;
-    const fields = FIELDS.filter(f => f.sec===id).map(f => fieldHTML(f, cab, v, own && can, nextKey)).join('');
+    const fields = FIELDS.filter(f => f.sec===id).map(f => fieldHTML(f, cab, v, own && can, nextKey, t.id)).join('');
     const q = sec.buttons.map(b => {
       if (b==='拆柜单') return '<a class="btn sm" href="../order-platform/13-order-mgmt-qb.html#/todo/orders/TEST1122334">拆柜清单录入</a>';
       return '<button type="button" class="btn sm" data-act="quick" data-name="'+esc(b)+'">'+esc(b)+'</button>';
     }).join('');
     const open = state.secOpen[id];
-    return '<section class="block'+(own?' own':'')+(open?'':' shut')+'" data-sec-body="'+id+'"><div class="block-h"><span>'+sec.title+'</span><span class="sum">'+(own&&can?'这一段可以填':'只读')+' · 已填 '+filledCount(t.id, id)+'</span></div>'
+    const allBtn = (own && can) ? '<button type="button" class="btn sm" data-act="ai-all">全部接受</button>' : '';
+    return '<section class="block'+(own?' own':'')+(open?'':' shut')+'" data-sec-body="'+id+'"><div class="block-h"><span>'+sec.title+'</span>'+allBtn+'<span class="sum">'+(own&&can?'这一段可以填':'只读')+' · 已填 '+filledCount(t.id, id)+'</span></div>'
       + (q?'<div class="qbtns">'+q+'</div>':'') + '<div class="fgrid">'+fields+'</div></section>';
   }).join('');
   let banners = '';
@@ -651,7 +677,14 @@ function heroHTML(t){
     + '<div class="batch"><span>'+batchNote+'</span><select id="batchKey" aria-label="批量填哪一格">'+opts+'</select><input id="batchVal" placeholder="填同一个值" aria-label="批量的值"><button type="button" class="btn sm" data-act="batch">填到选中的柜</button></div>'
     + '<div class="secnav">'+nav+'</div>'
     + blocks
-    + '<div class="gfoot">'+foot.join('')+'</div></div>';
+    + '<div class="gfoot">'+foot.join('')+'</div>'
+    + '<div id="aiLoc" hidden></div><ul id="aiLog">'+auditHTML(t.id)+'</ul></div>';
+}
+
+function auditHTML(id){
+  const o = window.BBTEX && BBTEX.order(id);
+  const rows = (o && o.audit) || [];
+  return rows.map(a => '<li>'+esc(a.text)+'</li>').join('');
 }
 
 function secName(k){ return ({today:'今天',approve:'审批',change:'变更',tomorrow:'明天预告',wait:'等别人',done:'今天已完成'})[k]||''; }
@@ -836,6 +869,42 @@ document.body.addEventListener('click', (e) => {
   if (act==='approve'){
     finish(current(), 'approve');
     toast('已同意。演示，没有写入真系统。');
+    render();
+    return;
+  }
+  if (act==='ai-src' || act==='ai-ok' || act==='ai-edit' || act==='ai-no' || act==='ai-all'){
+    const t = current();
+    if (!t || !window.BBTEX) return;
+    const who = role().name;
+    if (act==='ai-src'){
+      const view = BBTEX.fieldView(t.id, el.dataset.k);
+      const box = document.getElementById('aiLoc');
+      if (box){ box.hidden = false; box.textContent = '来源位置：' + (view.loc || ''); }
+      return;
+    }
+    if (act==='ai-edit'){
+      const view = BBTEX.fieldView(t.id, el.dataset.k);
+      const inp = document.querySelector('#statusForm [data-k="'+el.dataset.k+'"]');
+      if (inp){ inp.value = view.value || ''; inp.focus(); }
+      return;
+    }
+    if (act==='ai-ok'){
+      const sug = (BBTEX.order(t.id).ai || {})[el.dataset.k];
+      const inp = document.querySelector('#statusForm [data-k="'+el.dataset.k+'"]');
+      const typed = inp ? String(inp.value||'').trim() : '';
+      const edited = typed && (!sug || typed !== sug.value) ? typed : '';
+      BBTEX.accept(t.id, el.dataset.k, who, edited);
+      render();
+      return;
+    }
+    if (act==='ai-no'){
+      BBTEX.rejectAi(t.id, el.dataset.k, who);
+      render();
+      return;
+    }
+    const metas = FIELDS.map(f => ({k:f.k, sec:f.sec, gate:!!f.g}));
+    BBTEX.acceptAll(t.id, role().sec, who, metas);
+    toast('已接受本步普通栏。门闩仍待逐栏确认。');
     render();
     return;
   }
