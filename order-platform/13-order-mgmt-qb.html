@@ -737,6 +737,15 @@ a{color:inherit;text-decoration:none}
 #cabFacts label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--t3);min-width:140px}
 #cabFacts input,#cabFacts select{height:32px;border:1px solid var(--line);border-radius:6px;padding:0 8px;background:#fff;color:var(--t1)}
 #notifyNote{color:#B86E00;font-size:11px}
+#reviewBoard{margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+#reviewBoard h2{font-size:15px;margin:0 0 8px}
+#fileList ul,#reviewLog{margin:6px 0 0;padding-left:18px;font-size:13px}
+#reviewBoard .rej{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:8px}
+#reviewBoard .rej textarea{min-height:48px;min-width:180px;border:1px solid var(--line);border-radius:6px;padding:6px}
+#critAsk{margin-top:8px;padding:8px 10px;background:#FFF8E8;border-radius:8px}
+#btnApprove:disabled{opacity:.45}
+#rejErr:empty{display:none}
+#rejErr{color:#C62828;font-size:12px;width:100%}
 .dt-stable{height:72px;overflow:hidden}
 .crumb{height:22px;overflow:hidden}
 .wb-lead{font-size:14px;color:var(--t3);margin:-8px 0 21px;line-height:1.5}
@@ -1637,7 +1646,8 @@ function finInline(c){
 
 function esc(s){ return String(s??'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 function reviewModel(c){
-  if (!c.rev) c.rev = {
+  if (!c.rev) {
+    c.rev = {
     cc:c.cc, otype:'整柜', mode:c.mode||'火车', bl:c.mbl, cn:c.id,
     sail:'09/28', arr:'10/06', eta:c.eta==='今天'?'10/05':(c.eta||''), spec:c.ty, pol:(c.route||'').split('→')[0].trim()||'LGB', pod:(c.route||'').split('→')[1]?.trim()||'',
     svc:['ISF申报','提柜','转关','拆柜','装柜','派送'],
@@ -1648,6 +1658,9 @@ function reviewModel(c){
     gps:'https://demo.example/gps', email:'demo@example.com', zip:'', whTime:'09:00–17:00', recvNote:'',
     rush: c.pr==='特急'?'特急':(c.pr==='紧急'?'紧急':'正常'), rejectReason:''
   };
+    const saved = (window.BBTEX && BBTEX.order(c.id) && BBTEX.order(c.id).review) || null;
+    if (saved) Object.keys(saved).forEach(k => { c.rev[k] = saved[k]; });
+  }
   return c.rev;
 }
 function rv(rev, key, label, opt){
@@ -1656,9 +1669,9 @@ function rv(rev, key, label, opt){
   const req = opt.req ? ' <i class="req">必填</i>' : '';
   const bad = opt.bad ? '<div class="hint-bad">'+esc(opt.bad)+'</div>' : '';
   let ctrl;
-  if (opt.sel) ctrl = '<select data-rev="'+key+'">'+opt.sel.map(o => '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
-  else if (opt.area) ctrl = '<textarea data-rev="'+key+'">'+esc(val)+'</textarea>';
-  else ctrl = '<input data-rev="'+key+'" value="'+esc(val)+'">';
+  if (opt.sel) ctrl = '<select data-rev="'+key+'" data-label="'+esc(label)+'">'+opt.sel.map(o => '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
+  else if (opt.area) ctrl = '<textarea data-rev="'+key+'" data-label="'+esc(label)+'">'+esc(val)+'</textarea>';
+  else ctrl = '<input data-rev="'+key+'" data-label="'+esc(label)+'" value="'+esc(val)+'">';
   return '<label class="fv'+(opt.cls?' '+opt.cls:'')+(opt.bad?' bad':'')+'"><span>'+esc(label)+req+'</span>'+ctrl+bad+'</label>';
 }
 const REVIEW_REQ = [
@@ -1672,11 +1685,11 @@ function reviewMissing(rev){
 }
 function readReview(c){
   const rev = reviewModel(c);
-  document.querySelectorAll('#gatePanel [data-rev]').forEach(el => { rev[el.dataset.rev] = el.value; });
-  const on = [...document.querySelectorAll('#gatePanel [data-svc]:checked')].map(el => el.dataset.svc);
-  if (document.querySelector('#gatePanel [data-svc]')) rev.svc = on;
-  const tariffs = [...document.querySelectorAll('#gatePanel [data-tariff]')].map(el => el.value.trim()).filter(Boolean);
-  if (document.querySelector('#gatePanel [data-tariff]')) rev.tariffs = tariffs.length ? tariffs : [''];
+  document.querySelectorAll('#reviewBoard [data-rev]').forEach(el => { rev[el.dataset.rev] = el.value; });
+  const on = [...document.querySelectorAll('#reviewBoard [data-svc]:checked')].map(el => el.dataset.svc);
+  if (document.querySelector('#reviewBoard [data-svc]')) rev.svc = on;
+  const tariffs = [...document.querySelectorAll('#reviewBoard [data-tariff]')].map(el => el.value.trim()).filter(Boolean);
+  if (document.querySelector('#reviewBoard [data-tariff]')) rev.tariffs = tariffs.length ? tariffs : [''];
 }
 function reviewInner(c){
   const rev = reviewModel(c);
@@ -1744,12 +1757,51 @@ function reviewInner(c){
     + rv(rev,'rush','加急等级',{req:1,sel:['正常','紧急','特急']})
     + rv(rev,'recvNote','收货备注',{cls:'span2'})
     + '</div></section>'
-    + '<div class="gfoot"><div class="nx">通过后进入 ISF。驳回要写原因。</div>'
-    + rv(rev,'rejectReason','驳回原因',{cls:'span2'}).replace('class="fv span2"','class="fv" style="min-width:220px;margin:0"')
-    + '<button type="button" class="btn secondary sm" id="btnTicket">提交工单</button>'
-    + '<button type="button" class="btn secondary sm" data-reject>驳回</button>'
-    + '<button type="button" class="btn primary" id="btnApprove">审核通过</button></div>'
     + '</div>';
+}
+function reviewBlocked(rev){
+  const miss = reviewMissing(rev);
+  const bad = [];
+  if (String(rev.bl||'').trim() && String(rev.mbl||'').trim() && rev.bl.trim()!==rev.mbl.trim()) bad.push('提单号与 MBL# 不一致');
+  return {miss, bad, ok:!miss.length && !bad.length};
+}
+const REVIEW_CRIT = {};
+REVIEW_REQ.forEach(([k]) => { REVIEW_CRIT[k] = 1; });
+let critPending = null;
+function reviewBoardHTML(c){
+  const rev = reviewModel(c);
+  const block = reviewBlocked(rev);
+  const o = window.BBTEX && BBTEX.order(c.id);
+  const passed = !!(o && o.reviewOk);
+  const files = (o && o.files) || [];
+  const fileRows = files.map(f => '<li data-file="'+esc(f.name)+'">'+esc(f.kind)+' '+esc(f.name)
+    +' <span class="fst">'+(f.status==='驳回'?'驳回':'未驳回')+'</span>'
+    +(f.reason?' <span class="fr">'+esc(f.reason)+'</span>':'')+'</li>').join('');
+  const opts = files.map(f => '<option value="'+esc(f.name)+'">'+esc(f.kind)+' '+esc(f.name)+'</option>').join('');
+  const log = ((o && o.audit) || []).filter(a => a.text && /改 ·|驳回文件|整单退回|审核通过/.test(a.text))
+    .map(a => '<li>'+esc(a.text)+'</li>').join('');
+  const approveDis = (block.ok && !passed) ? '' : ' disabled';
+  const blockMsg = block.ok ? '' : '<p id="reviewBlock">不符合标准，只能驳回。'+esc(block.miss.concat(block.bad).join('、'))+'</p>';
+  return '<div id="reviewBoard">'
+    + '<h2>审核四组</h2>'
+    + reviewInner(c)
+    + '<div id="fileList"><b>文件</b><ul>'+fileRows+'</ul></div>'
+    + '<div class="rej">'
+    + '<label>驳回方式<select id="rejMode"><option value="file">只驳这一份文件</option><option value="order">整单退回</option></select></label>'
+    + '<label>文件<select id="rejFile">'+opts+'</select></label>'
+    + '<label>原因<textarea id="rejReason"></textarea></label>'
+    + '<p id="rejErr"></p>'
+    + '<button type="button" class="btn secondary sm" id="btnReject">驳回</button>'
+    + '</div>'
+    + blockMsg
+    + '<button type="button" class="btn primary" id="btnApprove"'+approveDis+'>审核通过</button>'
+    + '<div id="critAsk" hidden><b></b><button type="button" id="critYes">确认</button><button type="button" id="critNo">取消</button></div>'
+    + '<ul id="reviewLog">'+log+'</ul>'
+    + '</div>';
+}
+function commitReviewField(c, key, label, prev, next, critical){
+  reviewModel(c)[key] = next;
+  if (window.BBTEX && BBTEX.saveReviewField) BBTEX.saveReviewField(c.id, key, label, prev, next, state.role, !!critical);
 }
 const UL_GROUPS = [
   {id:'port', title:'到港 / 入仓', fields:[
@@ -2112,7 +2164,7 @@ function bindUnload(c){
 }
 function gateInner(c){
   const key = NODES[c.d]?.k;
-  if (c.d === 0) return reviewInner(c);
+  if (c.d === 0) return '<div class="grule">四组资料在这张白卡里。不符合标准时只能驳回。</div>';
   if (key === 'devan') return unloadInner(c);
   if (NODES[c.d]?.fin) {
     if (NODES[c.d].early) return '<div class="grule">开票在转运前由财务完成。订单平台只看状态，不操作金额。</div>'
@@ -2233,6 +2285,7 @@ function renderDetail(){
     + '<a class="btn ghost sm" href="#">对照 12</a></div>'
     + '<div class="op-line">'
     +   cabFactsHTML(c)
+    +   reviewBoardHTML(c)
     +   bannersHTML(c)
     +   '<div class="status-line '+st.cls+'">'+st.line+' '+finInline(c)+'</div>'
     +   '<div class="status-sub">'+st.sub+'</div>'
@@ -2299,14 +2352,67 @@ function bind(c){
     if (c.exc) { state.gateOpen = true; renderDetail(); toast('门闩字段已保存 · 有未解决异常，推进已锁'); return; }
     advance(c);
   };
+  document.querySelectorAll('#reviewBoard [data-rev]').forEach(el => {
+    el.dataset.prev = el.value;
+    el.addEventListener('focus', () => { el.dataset.prev = el.value; });
+    el.addEventListener('change', () => {
+      const prev = el.dataset.prev ?? '';
+      const next = el.value;
+      if (next === prev) return;
+      const o = window.BBTEX && BBTEX.order(c.id);
+      if (REVIEW_CRIT[el.dataset.rev] && o && o.reviewOk) {
+        el.value = prev;
+        critPending = {key:el.dataset.rev, label:el.dataset.label, prev, next};
+        const ask = $('#critAsk');
+        if (ask) {
+          ask.hidden = false;
+          const b = ask.querySelector('b');
+          if (b) b.textContent = '关键栏「'+el.dataset.label+'」'+(prev||'空')+'→'+(next||'空')+'。确认修改？';
+        }
+        return;
+      }
+      commitReviewField(c, el.dataset.rev, el.dataset.label, prev, next, false);
+      renderDetail();
+    });
+  });
+  const yes = $('#critYes');
+  if (yes) yes.onclick = () => {
+    if (!critPending) return;
+    commitReviewField(c, critPending.key, critPending.label, critPending.prev, critPending.next, true);
+    critPending = null;
+    renderDetail();
+  };
+  const no = $('#critNo');
+  if (no) no.onclick = () => { critPending = null; const ask = $('#critAsk'); if (ask) ask.hidden = true; };
+  const rj = $('#btnReject');
+  if (rj) rj.onclick = () => {
+    const reason = ($('#rejReason') && $('#rejReason').value || '').trim();
+    const err = $('#rejErr');
+    if (!reason) { if (err) err.textContent = '要写原因'; return; }
+    const mode = $('#rejMode') ? $('#rejMode').value : 'file';
+    if (mode === 'order') {
+      const back = BBTEX.returnReviewOrder(c.id, reason, state.role);
+      if (!back) { if (err) err.textContent = '要写原因'; return; }
+      toast('已整单退回。订单停在「'+back.label+'」。');
+      render();
+      return;
+    }
+    const name = $('#rejFile') ? $('#rejFile').value : '';
+    const file = BBTEX.rejectReviewFile(c.id, name, reason, state.role);
+    if (!file) { if (err) err.textContent = '要写原因'; return; }
+    toast('已驳回这一份文件，订单继续。');
+    renderDetail();
+  };
   const ap = $('#btnApprove');
   if (ap) ap.onclick = () => {
-    if (c.d===0) {
-      readReview(c);
-      const miss = reviewMissing(c.rev);
-      if (miss.length) { state.reviewFold = false; renderDetail(); toast('还有必填没填：'+miss.join('、')); return; }
-    }
-    const from = c.d; c.d = 1; c.v = {}; state.gateOpen = false; markDone(c, from); toast('审核通过 · 状态推进到「ISF 申报」'+progressSuffix()); render();
+    readReview(c);
+    const block = reviewBlocked(c.rev);
+    if (!block.ok) { renderDetail(); toast('不符合标准，只能驳回'); return; }
+    const o = BBTEX.passReview(c.id, state.role);
+    if (!o) return;
+    state.gateOpen = false;
+    toast('审核通过。现在是「'+o.label+'」。');
+    render();
   };
   const u = document.querySelector('[data-undo]');
   if (u) u.onclick = () => {
@@ -2326,18 +2432,6 @@ function bind(c){
   };
   const e = document.querySelector('[data-exc]');
   if (e) e.onclick = () => { c.exc = '人工上报异常 · 待核实'; toast('已标记异常 · 推进已锁'); render(); };
-  const rj = document.querySelector('[data-reject]');
-  if (rj) rj.onclick = () => {
-    if (c.d!==0) { toast('已驳回（演示）'); return; }
-    readReview(c);
-    if (!String(c.rev.rejectReason||'').trim()) {
-      const el = document.querySelector('[data-rev="rejectReason"]');
-      if (el) el.closest('.fv')?.classList.add('bad');
-      toast('驳回要写原因');
-      return;
-    }
-    toast('已驳回：'+c.rev.rejectReason.trim()+'（演示，没有写入真系统）');
-  };
   document.querySelectorAll('#cabFacts [data-fact]').forEach(el => el.onchange = () => {
     if (window.BBTEX && BBTEX.patchList) BBTEX.patchList(c.id, el.dataset.fact, el.value, state.role);
     toast('已保存');

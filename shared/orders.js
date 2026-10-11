@@ -266,6 +266,11 @@
       paid: !!cab.paid,
       fields: seedFields(cab),
       list: listSeed(cab),
+      files: [
+        {name:'bl-demo.pdf', kind:'提单', status:'', reason:''},
+        {name:'packing-list-demo.pdf', kind:'装箱单', status:'', reason:''}
+      ],
+      review: null,
       ai: {},
       audit: [],
       label: '', sub: '', missing: [], note: ''
@@ -512,6 +517,68 @@
     o.audit.push({kind:'拒绝', who:who, k:k, text:who + ' 拒绝 · ' + label});
     persist();
     return fieldView(id, k);
+  }
+
+  function localStamp() {
+    const t = new Date();
+    const p = function (x) { return String(x).padStart(2, '0'); };
+    return p(t.getMonth() + 1) + '/' + p(t.getDate()) + ' ' + p(t.getHours()) + ':' + p(t.getMinutes());
+  }
+
+  function pushAudit(o, who, kind, k, text) {
+    o.audit = o.audit || [];
+    o.audit.push({kind:kind, who:who, k:k, text:text});
+    persist();
+  }
+
+  function saveReviewField(id, key, label, from, to, who, critical) {
+    const o = order(id);
+    if (!o || !who) return null;
+    if (!o.review) o.review = {};
+    o.review[key] = to;
+    const when = localStamp();
+    const mark = critical ? '关键栏 · ' : '';
+    const left = String(from || '').trim() ? from : '空';
+    const right = String(to || '').trim() ? to : '空';
+    pushAudit(o, who, '改', key, who + ' 改 · ' + mark + label + ' · ' + left + '→' + right + ' · ' + when);
+    return when;
+  }
+
+  function rejectReviewFile(id, name, reason, who) {
+    const o = order(id);
+    const why = String(reason || '').trim();
+    if (!o || !who || !why) return null;
+    if (!o.files) o.files = [];
+    const f = o.files.filter(function (x) { return x.name === name; })[0];
+    if (!f) return null;
+    const when = localStamp();
+    f.status = '驳回';
+    f.reason = why;
+    f.who = who;
+    f.at = when;
+    pushAudit(o, who, '驳回', name, who + ' 驳回文件 · ' + f.kind + ' ' + f.name + ' · ' + why + ' · ' + when);
+    return f;
+  }
+
+  function returnReviewOrder(id, reason, who) {
+    const o = order(id);
+    const why = String(reason || '').trim();
+    if (!o || !who || !why) return null;
+    o.reviewOk = false;
+    applyDerived(o);
+    const when = localStamp();
+    pushAudit(o, who, '退回', 'order', who + ' 整单退回 · ' + why + ' · ' + when);
+    return o;
+  }
+
+  function passReview(id, who) {
+    const o = order(id);
+    if (!o || !who || o.reviewOk) return null;
+    o.reviewOk = true;
+    applyDerived(o);
+    const when = localStamp();
+    pushAudit(o, who, '通过', 'order', who + ' 审核通过 · ' + when);
+    return o;
   }
 
   function patchList(id, key, value, who) {
@@ -935,7 +1002,11 @@
     acceptAll: acceptAll,
     patchList: patchList,
     LIST_OPTS: LIST_OPTS,
-    LIST_LABEL: LIST_LABEL
+    LIST_LABEL: LIST_LABEL,
+    saveReviewField: saveReviewField,
+    rejectReviewFile: rejectReviewFile,
+    returnReviewOrder: returnReviewOrder,
+    passReview: passReview
   };
   const root = typeof window !== 'undefined' ? window : globalThis;
   root.BBTEX = api;
