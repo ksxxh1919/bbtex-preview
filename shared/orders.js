@@ -549,7 +549,30 @@
     ['internal', 'customer', 'supplier'].forEach(function (k) {
       if (!o.chatFiles[k]) o.chatFiles[k] = [];
     });
+    if (!o.chatRead) o.chatRead = {internal:0, customer:0, supplier:0};
     return o.chat;
+  }
+
+  function markChatRead(id, channel) {
+    const o = order(id);
+    if (!o || (channel !== 'internal' && channel !== 'customer' && channel !== 'supplier')) return null;
+    ensureChat(o);
+    const n = (o.chat[channel] || []).length;
+    if ((o.chatRead[channel] || 0) === n) return o.chatRead;
+    o.chatRead[channel] = n;
+    persist();
+    return o.chatRead;
+  }
+
+  function sendChatText(id, channel, who, text) {
+    const o = order(id);
+    const msg = String(text || '').trim();
+    if (!o || !who || !msg) return null;
+    if (channel !== 'internal' && channel !== 'customer' && channel !== 'supplier') return null;
+    ensureChat(o);
+    o.chat[channel].push({id:'say-' + o.chat[channel].length, who:who, text:msg, at:localStamp(), sys:0});
+    persist();
+    return o.chat[channel];
   }
 
   function pushStatusChat(o, before) {
@@ -607,6 +630,8 @@
     if (!o.review) o.review = {};
     o.review[key] = to;
     const when = localStamp();
+    if (!o.reviewAt) o.reviewAt = {};
+    o.reviewAt[key] = when;
     const mark = critical ? '关键栏 · ' : '';
     const left = String(from || '').trim() ? from : '空';
     const right = String(to || '').trim() ? to : '空';
@@ -678,25 +703,28 @@
     return taken;
   }
 
+  function statusHost() {
+    return document.getElementById('topStatus') || document.querySelector('.top') || document.body;
+  }
+
   function paint(id) {
     const o = id ? order(id) : null;
     const t = today();
+    const host = statusHost();
     let todayEl = document.getElementById('bbtex-today');
     if (!todayEl) {
       todayEl = document.createElement('span');
       todayEl.id = 'bbtex-today';
-      const host = document.querySelector('.top') || document.body;
-      host.appendChild(todayEl);
     }
+    if (todayEl.parentElement !== host) host.appendChild(todayEl);
     todayEl.textContent = '今日应处理 ' + t.total + ' / 已推进 ' + t.done;
     if (!o) return;
     let box = document.getElementById('bbtex-status');
     if (!box) {
       box = document.createElement('div');
       box.id = 'bbtex-status';
-      const host = document.querySelector('.top') || document.body;
-      host.appendChild(box);
     }
+    if (box.parentElement !== host) host.appendChild(box);
     box.innerHTML = '<span id="bbtex-label"></span><span id="bbtex-missing"></span><span id="bbtex-note"></span>';
     document.getElementById('bbtex-label').textContent = o.label + (o.sub ? ' · ' + o.sub : '');
     document.getElementById('bbtex-missing').textContent = (o.missing || []).map(function (m) { return m.l; }).join('、');
@@ -1083,7 +1111,9 @@
     passReview: passReview,
     chatShare: chatShare,
     setChatShare: setChatShare,
-    sendChatFile: sendChatFile
+    sendChatFile: sendChatFile,
+    markChatRead: markChatRead,
+    sendChatText: sendChatText
   };
   const root = typeof window !== 'undefined' ? window : globalThis;
   root.BBTEX = api;

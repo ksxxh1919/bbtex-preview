@@ -398,8 +398,11 @@ a{color:inherit;text-decoration:none}
 /* —— 主区（浅灰画布 + 白卡片） —— */
 .main{display:flex;flex-direction:column;min-width:0;background:var(--bg)}
 .test-bar{height:0;display:none}
-.top{height:var(--top-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:var(--sp2);padding:0 var(--sp3) 0 var(--sp3);position:sticky;top:0;z-index:10;min-width:0}
-#bbtex-today,#bbtex-status{min-width:0;flex:1 1 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.top{height:auto;min-height:var(--top-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;position:sticky;top:0;z-index:10;min-width:0}
+.top-bar{height:var(--top-h);display:flex;align-items:center;gap:var(--sp2);padding:0 var(--sp3);min-width:0}
+.top-status{display:flex;align-items:center;gap:16px;min-height:32px;padding:2px var(--sp3) 8px;min-width:0;border-top:1px solid var(--line-soft)}
+#bbtex-today,#bbtex-status{min-width:28px;flex:1 1 auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:13px;color:var(--t2)}
+#bbtex-today{flex:0 1 auto;max-width:46%}
 .test-badge{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:4px;background:#FDF3E1;color:var(--warn);font-size:11.5px;font-weight:600;border:1px solid #F5DDB0}
 .top-co{font-size:13px;font-weight:650;letter-spacing:.04em;color:var(--t1);text-transform:uppercase;white-space:nowrap}
 .search{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;background:var(--sunken);color:var(--t4);font-size:13px;min-width:240px;flex:1;max-width:420px}
@@ -408,7 +411,7 @@ a{color:inherit;text-decoration:none}
 .top-actions{display:flex;align-items:center;gap:var(--sp1)}
 .rev-pill{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:4px;background:var(--ok-bg);color:var(--ok);font-size:11px;font-weight:700;border:1px solid #BFE5C8}
 
-.dt{padding:var(--sp3) var(--sp4) 48px;min-width:0;overflow-y:auto;max-height:calc(100vh - var(--top-h));max-width:none}
+.dt{padding:var(--sp3) var(--sp4) 48px;min-width:0;overflow-y:auto;max-height:calc(100vh - var(--top-h) - 40px);max-width:none}
 .crumb{font-size:13px;color:var(--t4);margin-bottom:var(--sp2)}
 .crumb a{color:var(--t3)}
 .dt-hd{display:flex;align-items:flex-start;gap:var(--sp2);margin-bottom:var(--sp3)}
@@ -486,6 +489,11 @@ a{color:inherit;text-decoration:none}
 .rev .fv textarea{height:64px;padding:8px 9px;resize:vertical}
 .rev .fv.bad input,.rev .fv.bad select,.rev .fv.bad textarea{border-color:var(--danger);background:#FFF8F8}
 .hint-bad{font-size:13px;color:var(--danger);line-height:1.4;margin-top:3px}
+.hint-ok{font-size:12px;color:#1F7A1A;line-height:1.4;margin-top:3px}
+.seq-n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#EEF2F6;color:var(--t2);font-size:11px;font-weight:700;font-style:normal;font-variant-numeric:tabular-nums}
+.rev .fv.saved input,.rev .fv.saved select,.rev .fv.saved textarea{border-color:#1F7A1A;background:#F6FBF6}
+.rev .fv.bad .seq-n{background:#FDECEC;color:var(--danger)}
+.rev .fv.saved .seq-n{background:#E5F6E8;color:#1F7A1A}
 .svc{display:flex;flex-wrap:wrap;gap:8px 13px}
 .rev .svc label{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t1)}
 .tariffs{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -535,7 +543,7 @@ a{color:inherit;text-decoration:none}
 .chat-locked{font-size:13px;color:var(--t3)}
 @media (max-width:1280px){
   .search{min-width:0}
-  #bbtex-today,#bbtex-status{min-width:28px;flex:1 1 28px}
+  #bbtex-today,#bbtex-status{min-width:28px;flex:1 1 auto}
   .cab-chat{width:44px;min-width:44px;max-width:44px;min-height:0;height:auto;max-height:none;overflow:visible;border-left:0;background:transparent}
   .cab-chat .chat-body{display:none}
   .chat-fold{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:44px;min-height:96px;border:0;border-radius:8px 0 0 8px;background:var(--accent);color:#fff;cursor:pointer;padding:10px 0;font-size:14px;font-weight:700;box-shadow:0 6px 16px rgba(46,123,229,.28)}
@@ -743,8 +751,19 @@ a{color:inherit;text-decoration:none}
 .me:hover{background:rgba(255,255,255,.06)}
 
 /* 工作台：同一份样张的 #/workbench。侧栏收回平台导航，右边整页是今天要处理的柜。 */
-.app.page-work{grid-template-columns:var(--nav-plat) minmax(0,1fr)}
-.app.page-work .olist,.app.page-work .order-nest{display:none !important}
+.app.page-work,.app.page-chat{grid-template-columns:var(--nav-plat) minmax(0,1fr)}
+.app.page-work .olist,.app.page-work .order-nest,.app.page-chat .olist,.app.page-chat .order-nest{display:none !important}
+.chat-desk{display:flex;gap:0;min-height:calc(100vh - 180px);background:#fff;border-radius:var(--r-lg);box-shadow:var(--sh-card);overflow:hidden}
+.chat-rooms{width:240px;flex:none;border-right:1px solid var(--line);overflow:auto;padding:12px;background:#FAFBFC}
+.chat-rooms h2{font-size:14px;font-weight:700;margin-bottom:8px}
+.room-btn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;font:inherit;color:var(--t1)}
+.room-btn.on{background:var(--accent-tint);font-weight:650}
+.room-btn .room-n{margin-left:auto;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#EDEDF0;font-size:11px;line-height:18px;text-align:center}
+.room-btn.on .room-n{background:#fff}
+.chat-pane{flex:1;min-width:0;display:flex;flex-direction:column;padding:14px 16px;gap:8px}
+.chat-pane .chat-log{flex:1;overflow:auto;min-height:180px}
+.desk-say{display:flex;gap:8px;align-items:center}
+.desk-say input{flex:1;height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px}
 .olist{height:100vh;position:sticky;top:0;min-width:0;display:flex;padding:8px 0 8px 8px;background:var(--bg)}
 .olist .order-nest{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-card);overflow:hidden}
 .olist-tabs{display:flex;gap:6px;padding:8px 8px 0;flex:none}
@@ -866,6 +885,7 @@ a{color:inherit;text-decoration:none}
   <a class="ni" id="navWorkbench" href="../workbench/14-op-workbench.html"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>工作台</span></a>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg><span>业务平台</span></a>
   <a class="ni on plat" data-plat="orders" id="platOrders" href="#/todo" title="展开 / 收起订单列表（快捷键 [ ）"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span>订单平台</span><span class="badge" id="nvTodo"></span><span class="pcar">▾</span></a>
+  <a class="ni" id="navChat" href="#/chat"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>聊天</span><span class="badge alert" id="navChatN">0</span></a>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span>清关平台</span><span class="badge">1</span></a>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg><span>提柜平台</span><span class="badge alert">3</span></a>
   <a class="ni" href="#"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12M6 14h12"/></svg><span>仓管平台</span></a>
@@ -895,6 +915,7 @@ a{color:inherit;text-decoration:none}
 </aside>
   <main class="main">
     <div class="top">
+      <div class="top-bar">
       <button type="button" class="btn ghost side-tog" id="sideTog" title="收起订单列表（快捷键 [ ）" aria-label="收起订单列表"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M7.5 3.5v13"/></svg><span class="side-tog-label" id="sideTogLabel">展开列表</span></button>
       <span class="collapsed-hint" id="colHint">订单列表已收起 · 按 [ 或点「订单平台」展开</span>
       <span class="test-badge">测试环境</span>
@@ -903,10 +924,12 @@ a{color:inherit;text-decoration:none}
       <div class="top-sp"></div>
       <div class="top-actions">
         <button type="button" class="ring-chip" id="ring" title="今日进度"></button>
-        <button class="btn ghost sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+        <button class="btn ghost sm" title="通知"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
         <button class="btn ghost sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 3v4M16 7l-2.5 2.5M21 12h-4M16 17l-2.5-2.5M12 21v-4M8 17l2.5-2.5M3 12h4M8 7l2.5 2.5"/></svg> AI</button>
         <span class="rev-pill">QB 13 · v1.3.19</span>
       </div>
+      </div>
+      <div class="top-status" id="topStatus"></div>
     </div>
     <section class="dt" id="detail"></section>
   </main>
@@ -1001,7 +1024,7 @@ const state = { view:'todo', filter:null, sort:'prio', q:'', fold:{node:true, fl
   sel: new Set(), doneFold: true, bmenu: false,
   allSort: 'status', allStage: null, allWho: null, allCc: null, allExc: false,
   listFull: false, listPage: 1, qWho: '', qFrom: '', qTo: '', hidden: new Set(),
-  chatOpen: false, chatChan: 'internal' };
+  chatOpen: false, chatChan: 'internal', chatRoom: '' };
 
 /* —— 今日进度：分母＝今早「今日该处理」那一组柜（当天固定）；当前节点做完一次 → done+1 —— */
 const TODAY_IDS = new Set(DATA.filter(c => (c.d < N && !NODES[c.d].fin) || c.dt).map(c => c.id));
@@ -1060,10 +1083,17 @@ const $ = (s) => document.querySelector(s);
 function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),2400); }
 function parseHash(){
   const h = location.hash.replace(/^#\/?/, '');
-  const parts = h.split('/');
-  state.page = parts[0]==='workbench' ? 'workbench' : 'orders';
+  const parts = h.split('/').filter(Boolean);
+  if (parts[0]==='workbench') state.page = 'workbench';
+  else if (parts[0]==='chat') state.page = 'chat';
+  else state.page = 'orders';
   if (parts[0]==='all' || parts[0]==='todo') state.view = parts[0];
   else if (!parts[0]) state.view = 'todo';
+  if (state.page==='chat') {
+    const id = parts[1];
+    if (id && DATA.some(c => c.id===id)) state.chatRoom = id;
+    return state.chatRoom && DATA.some(c => c.id===state.chatRoom) ? state.chatRoom : null;
+  }
   const m = h.match(/orders\/(\w+)/);
   return m ? m[1] : null;
 }
@@ -1406,11 +1436,19 @@ function renderAllFilt(body){
 
 function renderNav(){
   document.querySelectorAll('.ni[data-plat]').forEach(a => {
-    a.classList.toggle('on', a.dataset.plat==='orders' && state.page!=='workbench');
-    a.setAttribute('aria-expanded', state.page==='workbench' ? 'false' : (state.collapsed ? 'false' : 'true'));
+    a.classList.toggle('on', a.dataset.plat==='orders' && state.page==='orders');
+    a.setAttribute('aria-expanded', state.page==='orders' ? (state.collapsed ? 'false' : 'true') : 'false');
   });
   const wb = $('#navWorkbench');
   if (wb) wb.classList.toggle('on', state.page==='workbench');
+  const chatNav = $('#navChat');
+  if (chatNav) chatNav.classList.toggle('on', state.page==='chat');
+  const chatN = $('#navChatN');
+  if (chatN) {
+    const n = chatUnreadTotal();
+    chatN.textContent = String(n);
+    chatN.className = 'badge' + (n ? ' alert' : '');
+  }
   document.querySelectorAll('.sub-ni').forEach(a => {
     const on = a.dataset.v===state.view;
     a.classList.toggle('on', on);
@@ -1698,16 +1736,49 @@ function reviewModel(c){
   }
   return c.rev;
 }
-function rv(rev, key, label, opt){
+const REVIEW_ORDER = ['cc','otype','mode','bl','cn','sail','arr','eta','spec','pol','pod','cargo','ctns','qty','kgs','lb','cbm','pallet','note','desc','mbl','mblscac','ams','amsscac','carrier','shipper','consignee','coName','coAddr','person','phone','rfc','gps','email','zip','whTime','rush','recvNote'];
+const SEC_LAST = {pod:1, desc:1, consignee:1};
+function seqOf(key){ const i = REVIEW_ORDER.indexOf(key); return i<0 ? 0 : i+1; }
+function nextRevKey(key){ const i = REVIEW_ORDER.indexOf(key); return (i>=0 && i<REVIEW_ORDER.length-1) ? REVIEW_ORDER[i+1] : null; }
+function savedStamp(c, key){
+  const o = window.BBTEX && BBTEX.order(c.id);
+  if (o && o.reviewAt && o.reviewAt[key]) return o.reviewAt[key];
+  return '10/05 09:00';
+}
+function fieldError(rev, key, val){
+  const v = String(val ?? '').trim();
+  const req = REVIEW_REQ.some(([k]) => k===key);
+  if (req && !v) return '还没填';
+  if (key==='cc' && v && !/^DEMO-/.test(v)) return '客户编码要以 DEMO- 开头';
+  if ((key==='sail' || key==='arr' || key==='eta') && v && !/^\d{1,2}\/\d{1,2}$/.test(v) && v!=='已送达') return '日期要写成月/日，例如 10/05';
+  if (['ctns','qty','kgs','lb','cbm','pallet'].indexOf(key)>=0 && v && !/^\d+(\.\d+)?$/.test(v)) return '要填数字';
+  if (key==='email' && v && v.indexOf('@')<0) return '邮箱要有 @';
+  if (key==='zip' && v && !/^\d{5}$/.test(v)) return '邮编要 5 位数字';
+  if (key==='bl' || key==='mbl') {
+    const bl = key==='bl' ? v : String(rev.bl||'').trim();
+    const mbl = key==='mbl' ? v : String(rev.mbl||'').trim();
+    if (bl && mbl && bl!==mbl) return '提单号与 MBL# 不一致';
+  }
+  return '';
+}
+function rv(c, rev, key, label, opt){
   opt = opt || {};
   const val = rev[key] ?? '';
+  const seq = seqOf(key);
+  const err = fieldError(rev, key, val);
+  const filled = String(val).trim() !== '';
+  const saved = !err && filled;
+  const when = saved ? savedStamp(c, key) : '';
   const req = opt.req ? ' <i class="req">必填</i>' : '';
-  const bad = opt.bad ? '<div class="hint-bad">'+esc(opt.bad)+'</div>' : '';
+  const bad = err ? '<div class="hint-bad">'+esc(err)+'</div>' : '';
+  const ok = saved ? '<div class="hint-ok">已保存 ✓ '+esc(when)+'</div>' : '';
+  const tab = seq ? ' tabindex="'+seq+'" data-seq="'+seq+'"' : '';
   let ctrl;
-  if (opt.sel) ctrl = '<select data-rev="'+key+'" data-label="'+esc(label)+'">'+opt.sel.map(o => '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
-  else if (opt.area) ctrl = '<textarea data-rev="'+key+'" data-label="'+esc(label)+'">'+esc(val)+'</textarea>';
-  else ctrl = '<input data-rev="'+key+'" data-label="'+esc(label)+'" value="'+esc(val)+'">';
-  return '<label class="fv'+(opt.cls?' '+opt.cls:'')+(opt.bad?' bad':'')+'"><span>'+esc(label)+req+'</span>'+ctrl+bad+'</label>';
+  if (opt.sel) ctrl = '<select data-rev="'+key+'" data-label="'+esc(label)+'"'+tab+'>'+opt.sel.map(o => '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
+  else if (opt.area) ctrl = '<textarea data-rev="'+key+'" data-label="'+esc(label)+'"'+tab+'>'+esc(val)+'</textarea>';
+  else ctrl = '<input data-rev="'+key+'" data-label="'+esc(label)+'" value="'+esc(val)+'"'+tab+'>';
+  const cls = (opt.cls?' '+opt.cls:'')+(err?' bad':'')+(saved?' saved':'');
+  return '<label class="fv'+cls+'"><span><i class="seq-n">'+seq+'</i>'+esc(label)+req+'</span>'+ctrl+bad+ok+'</label>';
 }
 const REVIEW_REQ = [
   ['cc','客户编码'],['otype','订单类型'],['mode','运输方式'],['bl','提单号'],['cn','集装箱号'],
@@ -1745,52 +1816,52 @@ function reviewInner(c){
     + '<div class="src"><b>装箱单</b><div class="fn">packing-list-demo.pdf</div><pre>PACKING LIST DEMO\nCTNS '+esc(rev.ctns)+'\n件数 '+esc(rev.qty)+'</pre></div>'
     + '</div>'
     + '<section class="rev-sec"><h3>基本信息</h3><div class="rev-grid">'
-    + rv(rev,'cc','客户编码',{req:1})
-    + rv(rev,'otype','订单类型',{req:1,sel:['整柜','散货']})
-    + rv(rev,'mode','运输方式',{req:1,sel:['火车','卡车']})
-    + rv(rev,'bl','提单号',{req:1,bad:badBl})
-    + rv(rev,'cn','集装箱号',{req:1})
-    + rv(rev,'sail','开船日期')
-    + rv(rev,'arr','抵港日期')
-    + rv(rev,'eta','ETA',{req:1})
-    + rv(rev,'spec','集装箱规格',{req:1})
-    + rv(rev,'pol','起运港',{req:1})
-    + rv(rev,'pod','目的港',{req:1})
+    + rv(c, rev,'cc','客户编码',{req:1})
+    + rv(c, rev,'otype','订单类型',{req:1,sel:['整柜','散货']})
+    + rv(c, rev,'mode','运输方式',{req:1,sel:['火车','卡车']})
+    + rv(c, rev,'bl','提单号',{req:1,bad:badBl})
+    + rv(c, rev,'cn','集装箱号',{req:1})
+    + rv(c, rev,'sail','开船日期')
+    + rv(c, rev,'arr','抵港日期')
+    + rv(c, rev,'eta','ETA',{req:1})
+    + rv(c, rev,'spec','集装箱规格',{req:1})
+    + rv(c, rev,'pol','起运港',{req:1})
+    + rv(c, rev,'pod','目的港',{req:1})
     + '<div class="fv spanall"><span>订单服务</span><div class="svc">'+svc+'</div></div>'
     + '</div></section>'
     + '<section class="rev-sec"><h3>装运信息</h3><div class="rev-grid">'
-    + rv(rev,'cargo','货物类型',{req:1,sel:['普货','其它','C类货']})
-    + rv(rev,'ctns','CTNS',{req:1})
-    + rv(rev,'qty','实际装柜件数')
-    + rv(rev,'kgs','KGS')
-    + rv(rev,'lb','LB')
-    + rv(rev,'cbm','CBM')
-    + rv(rev,'pallet','Pallet')
-    + rv(rev,'note','订单备注',{cls:'span2',area:1})
-    + rv(rev,'desc','货物描述',{cls:'span2',area:1})
+    + rv(c, rev,'cargo','货物类型',{req:1,sel:['普货','其它','C类货']})
+    + rv(c, rev,'ctns','CTNS',{req:1})
+    + rv(c, rev,'qty','实际装柜件数')
+    + rv(c, rev,'kgs','KGS')
+    + rv(c, rev,'lb','LB')
+    + rv(c, rev,'cbm','CBM')
+    + rv(c, rev,'pallet','Pallet')
+    + rv(c, rev,'note','订单备注',{cls:'span2',area:1})
+    + rv(c, rev,'desc','货物描述',{cls:'span2',area:1})
     + '</div></section>'
     + '<section class="rev-sec"><h3>ISF 申报信息</h3><div class="rev-grid">'
-    + rv(rev,'mbl','MBL#',{req:1,bad:badBl})
-    + rv(rev,'mblscac','MBL SCAC#')
-    + rv(rev,'ams','AMS#')
-    + rv(rev,'amsscac','AMS SCAC#')
-    + rv(rev,'carrier','Carrier name')
-    + rv(rev,'shipper','Shipper name + Address',{cls:'span2'})
-    + rv(rev,'consignee','Consignee')
+    + rv(c, rev,'mbl','MBL#',{req:1,bad:badBl})
+    + rv(c, rev,'mblscac','MBL SCAC#')
+    + rv(c, rev,'ams','AMS#')
+    + rv(c, rev,'amsscac','AMS SCAC#')
+    + rv(c, rev,'carrier','Carrier name')
+    + rv(c, rev,'shipper','Shipper name + Address',{cls:'span2'})
+    + rv(c, rev,'consignee','Consignee')
     + '<div class="fv spanall"><span>Tariff #\'s</span><div class="tariffs">'+tariffs+'<button type="button" class="btn secondary sm" id="addTariff">+ 新增</button></div></div>'
     + '</div></section>'
     + '<section class="rev-sec"><h3>派送地址</h3><div class="rev-grid">'
-    + rv(rev,'coName','公司名称',{req:1})
-    + rv(rev,'coAddr','公司地址',{req:1,cls:'span2'})
-    + rv(rev,'person','姓名')
-    + rv(rev,'phone','电话')
-    + rv(rev,'rfc','RFC')
-    + rv(rev,'gps','GPS LINK',{cls:'span2'})
-    + rv(rev,'email','邮箱')
-    + rv(rev,'zip','邮编',{req:1,bad:zipMiss?'邮编缺失':''})
-    + rv(rev,'whTime','仓库收货时间')
-    + rv(rev,'rush','加急等级',{req:1,sel:['正常','紧急','特急']})
-    + rv(rev,'recvNote','收货备注',{cls:'span2'})
+    + rv(c, rev,'coName','公司名称',{req:1})
+    + rv(c, rev,'coAddr','公司地址',{req:1,cls:'span2'})
+    + rv(c, rev,'person','姓名')
+    + rv(c, rev,'phone','电话')
+    + rv(c, rev,'rfc','RFC')
+    + rv(c, rev,'gps','GPS LINK',{cls:'span2'})
+    + rv(c, rev,'email','邮箱')
+    + rv(c, rev,'zip','邮编',{req:1,bad:zipMiss?'邮编缺失':''})
+    + rv(c, rev,'whTime','仓库收货时间')
+    + rv(c, rev,'rush','加急等级',{req:1,sel:['正常','紧急','特急']})
+    + rv(c, rev,'recvNote','收货备注',{cls:'span2'})
     + '</div></section>'
     + '</div>';
 }
@@ -2422,6 +2493,84 @@ function readGate(c){
     if (v) c.v[inp.dataset.k] = v; else delete c.v[inp.dataset.k];
   });
 }
+function paintRevState(el, err, when){
+  const lab = el.closest('.fv');
+  if (!lab) return;
+  lab.classList.toggle('bad', !!err);
+  lab.classList.toggle('saved', !err && !!when);
+  let bad = lab.querySelector('.hint-bad');
+  let ok = lab.querySelector('.hint-ok');
+  if (err) {
+    if (!bad) { bad = document.createElement('div'); bad.className = 'hint-bad'; lab.appendChild(bad); }
+    bad.textContent = err;
+    if (ok) ok.remove();
+  } else {
+    if (bad) bad.remove();
+    if (when) {
+      if (!ok) { ok = document.createElement('div'); ok.className = 'hint-ok'; lab.appendChild(ok); }
+      ok.textContent = '已保存 ✓ ' + when;
+    } else if (ok) ok.remove();
+  }
+}
+function handleReviewChange(c, el, opt){
+  opt = opt || {};
+  const key = el.dataset.rev;
+  const prev = el.dataset.prev ?? '';
+  const next = el.value;
+  const rev = reviewModel(c);
+  const err = fieldError(rev, key, next);
+  const nxt = nextRevKey(key);
+  if (err) {
+    paintRevState(el, err, '');
+    return null;
+  }
+  if (next === prev) {
+    paintRevState(el, '', String(next).trim() ? savedStamp(c, key) : '');
+    return opt.fromEnter ? nxt : null;
+  }
+  const o = window.BBTEX && BBTEX.order(c.id);
+  if (REVIEW_CRIT[key] && o && o.reviewOk) {
+    el.value = prev;
+    critPending = {key:key, label:el.dataset.label, prev:prev, next:next};
+    const ask = $('#critAsk');
+    if (ask) {
+      ask.hidden = false;
+      const b = ask.querySelector('b');
+      if (b) b.textContent = '关键栏「'+el.dataset.label+'」'+(prev||'空')+'→'+(next||'空')+'。确认修改？';
+    }
+    return null;
+  }
+  commitReviewField(c, key, el.dataset.label, prev, next, false);
+  const boundary = !!SEC_LAST[key];
+  renderDetail();
+  if (opt.fromEnter) return nxt;
+  if (boundary && nxt) {
+    const n = document.querySelector('#reviewBoard [data-rev="'+nxt+'"]');
+    if (n) n.focus();
+  }
+  return null;
+}
+function roleSeesChan(k){
+  if (state.role==='操作经理') return !!CHAN_NAME[k];
+  if (state.role==='客服') return k!=='supplier' && chatCanRead(state.role, k);
+  return k==='internal';
+}
+function roomUnread(o){
+  if (!o || !o.chat) return 0;
+  const read = o.chatRead || {};
+  let n = 0;
+  Object.keys(CHAN_NAME).forEach(k => {
+    if (!roleSeesChan(k)) return;
+    n += Math.max(0, (o.chat[k]||[]).length - (read[k]||0));
+  });
+  return n;
+}
+function chatUnreadTotal(){
+  if (!window.BBTEX) return 0;
+  let n = 0;
+  DATA.forEach(c => { n += roomUnread(BBTEX.order(c.id)); });
+  return n;
+}
 function bind(c){
   const gt = $('#gateTog');
   if (gt) gt.onclick = () => {
@@ -2459,25 +2608,16 @@ function bind(c){
   document.querySelectorAll('#reviewBoard [data-rev]').forEach(el => {
     el.dataset.prev = el.value;
     el.addEventListener('focus', () => { el.dataset.prev = el.value; });
-    el.addEventListener('change', () => {
-      const prev = el.dataset.prev ?? '';
-      const next = el.value;
-      if (next === prev) return;
-      const o = window.BBTEX && BBTEX.order(c.id);
-      if (REVIEW_CRIT[el.dataset.rev] && o && o.reviewOk) {
-        el.value = prev;
-        critPending = {key:el.dataset.rev, label:el.dataset.label, prev, next};
-        const ask = $('#critAsk');
-        if (ask) {
-          ask.hidden = false;
-          const b = ask.querySelector('b');
-          if (b) b.textContent = '关键栏「'+el.dataset.label+'」'+(prev||'空')+'→'+(next||'空')+'。确认修改？';
-        }
-        return;
-      }
-      commitReviewField(c, el.dataset.rev, el.dataset.label, prev, next, false);
-      renderDetail();
+    el.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      if (el.tagName === 'TEXTAREA' && e.shiftKey) return;
+      e.preventDefault();
+      const dest = handleReviewChange(c, el, {fromEnter:true});
+      if (!dest) return;
+      const n = document.querySelector('#reviewBoard [data-rev="'+dest+'"]');
+      if (n) n.focus();
     });
+    el.addEventListener('change', () => { handleReviewChange(c, el, {fromEnter:false}); });
   });
   const yes = $('#critYes');
   if (yes) yes.onclick = () => {
@@ -2653,14 +2793,80 @@ function renderWorkbench(){
     + '<div class="scheme-note">完整工作台在旁边那一页（四个岗位的状态维护）。左边「工作台」直接过去。这一页的 #/workbench 只是旧的今日列表。</div>';
   document.title = '工作台 · BBTEX';
 }
+function renderChatDesk(){
+  const id = (state.chatRoom && DATA.some(c => c.id===state.chatRoom)) ? state.chatRoom : DATA[0].id;
+  state.chatRoom = id;
+  const tabs = chatTabs(state.role);
+  let chan = state.chatChan || 'internal';
+  if (tabs.indexOf(chan) < 0) chan = tabs[0] || 'internal';
+  state.chatChan = chan;
+  if (window.BBTEX && BBTEX.markChatRead) BBTEX.markChatRead(id, chan);
+  const o = window.BBTEX && BBTEX.order(id);
+  const chat = (o && o.chat) || {internal:[], customer:[], supplier:[], card:''};
+  const files = (o && o.chatFiles) || {internal:[], customer:[], supplier:[]};
+  const rooms = DATA.map(c => {
+    const ox = BBTEX.order(c.id);
+    const n = roomUnread(ox);
+    return '<button type="button" class="room-btn'+(c.id===id?' on':'')+'" data-room="'+esc(c.id)+'"><b class="id">'+esc(c.id)+'</b><span class="room-n">'+n+'</span></button>';
+  }).join('');
+  const tabBtns = tabs.map(k => '<button type="button" data-desk-chan="'+k+'" class="'+(k===chan?'on':'')+'">'+CHAN_NAME[k]+'</button>').join('');
+  const open = chatCanRead(state.role, chan);
+  let body = '';
+  if (state.role === '客服' && o) {
+    body += '<div class="chan-stats">'
+      + '<span>内部 · '+chat.internal.length+' 条</span>'
+      + '<span>客户 · '+chat.customer.length+' 条</span>'
+      + '<span>供应商 · '+chat.supplier.length+' 条</span></div>';
+  }
+  if (state.role === '操作经理' && window.BBTEX && BBTEX.chatShare) {
+    const share = BBTEX.chatShare();
+    body += '<div id="deskShare"><span>对客服开放内容</span>'
+      + '<label><input type="checkbox" data-desk-share="internal"'+(share.internal?' checked':'')+'>内部</label>'
+      + '<label><input type="checkbox" data-desk-share="customer"'+(share.customer?' checked':'')+'>客户</label>'
+      + '<small>供应商通道暂时只给操作经理</small></div>';
+  }
+  if (open) {
+    const msgs = (chat[chan] || []).map(m => '<p class="chat-msg"><b>'+esc(m.who)+' · '+esc(m.at)+'</b>'+esc(m.text)+'</p>').join('');
+    body += '<div class="chat-log" id="deskLog">'+msgs+'</div>';
+    if (chat.card) body += '<button type="button" class="chat-card" id="deskCard" data-chat-card="'+esc(chat.card)+'"><b>'+esc(chat.card)+'</b><span>打开这一柜的订单</span></button>';
+    const list = (files[chan] || []).map(f => '<li>'+esc(f.name)+' · '+esc(f.who)+' · '+esc(f.at)+' · '+CHAN_NAME[chan]+'</li>').join('');
+    body += '<div id="deskFiles"><b>'+CHAN_NAME[chan]+'文件</b><ul>'+list+'</ul></div>';
+    body += '<div class="desk-say"><input id="deskSay" placeholder="写一句演示消息" aria-label="消息"><button type="button" class="btn secondary sm" id="deskSend">发送</button></div>';
+  } else {
+    body += '<p class="chat-locked">这一通道的内容未开放</p>';
+  }
+  $('#detail').innerHTML = '<div class="crumb">聊天</div>'
+    + '<div class="dt-hd"><div><h1>聊天</h1><div class="sub"><span>'+esc(state.role)+'</span><span class="sep">·</span><span>内部 / 客户 / 供应商</span></div></div></div>'
+    + '<div class="chat-desk" id="chatDesk">'
+    + '<aside class="chat-rooms" id="chatRooms"><h2>柜号</h2>'+rooms+'</aside>'
+    + '<section class="chat-pane"><div id="deskRoom">聊天 · '+esc(id)+'</div><div class="chan-row">'+tabBtns+'</div>'+body+'</section>'
+    + '</div>';
+  document.querySelectorAll('#chatRooms [data-room]').forEach(b => b.onclick = () => { location.hash = '#/chat/' + b.dataset.room; });
+  document.querySelectorAll('#chatDesk [data-desk-chan]').forEach(b => b.onclick = () => { state.chatChan = b.dataset.deskChan; render(); });
+  document.querySelectorAll('#deskShare [data-desk-share]').forEach(el => el.onchange = () => {
+    if (window.BBTEX && BBTEX.setChatShare) BBTEX.setChatShare(el.dataset.deskShare, el.checked);
+  });
+  const card = $('#deskCard');
+  if (card) card.onclick = () => setHash(card.dataset.chatCard);
+  const send = $('#deskSend');
+  if (send) send.onclick = () => {
+    const input = $('#deskSay');
+    const text = input ? input.value : '';
+    if (window.BBTEX && BBTEX.sendChatText) BBTEX.sendChatText(id, chan, state.role, text);
+    render();
+  };
+  document.title = '聊天 · BBTEX';
+}
 function render(){
   parseHash();
   $('#app').classList.toggle('page-work', state.page==='workbench');
+  $('#app').classList.toggle('page-chat', state.page==='chat');
   renderRing();
-  renderNav();
   renderList();
   if (state.page==='workbench') renderWorkbench();
+  else if (state.page==='chat') renderChatDesk();
   else { renderDetail(); document.title = '订单平台 · QuickBooks 模式 · BBTEX'; }
+  renderNav();
   applyCollapsed();
   renderSwitchers();
 }
