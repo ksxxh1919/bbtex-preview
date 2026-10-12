@@ -398,7 +398,8 @@ a{color:inherit;text-decoration:none}
 /* —— 主区（浅灰画布 + 白卡片） —— */
 .main{display:flex;flex-direction:column;min-width:0;background:var(--bg)}
 .test-bar{height:0;display:none}
-.top{height:var(--top-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:var(--sp2);padding:0 var(--sp3) 0 var(--sp3);position:sticky;top:0;z-index:10}
+.top{height:var(--top-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:var(--sp2);padding:0 var(--sp3) 0 var(--sp3);position:sticky;top:0;z-index:10;min-width:0}
+#bbtex-today,#bbtex-status{min-width:0;flex:1 1 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .test-badge{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:4px;background:#FDF3E1;color:var(--warn);font-size:11.5px;font-weight:600;border:1px solid #F5DDB0}
 .top-co{font-size:13px;font-weight:650;letter-spacing:.04em;color:var(--t1);text-transform:uppercase;white-space:nowrap}
 .search{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;background:var(--sunken);color:var(--t4);font-size:13px;min-width:240px;flex:1;max-width:420px}
@@ -511,7 +512,40 @@ a{color:inherit;text-decoration:none}
 .gfoot .nx b{color:var(--t2)}
 .gfoot .btn.primary{height:34px;padding:0 16px;font-size:13.5px;font-weight:650;border-radius:var(--r)}
 
-.op-line{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-card);padding:var(--sp3) var(--sp3) var(--sp2);margin-bottom:var(--sp2)}
+.op-line{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-card);padding:var(--sp3) var(--sp3) var(--sp2);margin-bottom:var(--sp2);position:relative}
+.op-split{display:flex;align-items:flex-start;gap:12px;min-width:0}
+.op-flow{flex:1;min-width:0}
+.cab-chat{width:320px;min-width:320px;max-width:320px;flex:none;box-sizing:border-box;align-self:stretch;border-left:1px solid var(--line-soft);display:flex;flex-direction:column;min-height:280px;max-height:calc(100vh - 220px);background:transparent}
+.chat-fold{display:none}
+.chat-body{overflow:auto;min-height:0;flex:1;padding-left:12px}
+#chatRoom{font-size:13px;font-weight:700;margin-bottom:8px}
+.chan-row{display:flex;gap:4px;margin-bottom:8px}
+.chan-row button{height:26px;padding:0 8px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:12px;cursor:pointer}
+.chan-row button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chat-msg{margin:0 0 8px;font-size:13px}
+.chat-msg b{display:block;font-size:12px;font-weight:650;color:var(--t3)}
+.chat-card{display:block;width:100%;text-align:left;margin:8px 0;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.chat-card b{display:block}
+#chatFileList{margin-top:8px;font-size:12px}
+#chatFileList ul{margin:4px 0 0;padding-left:16px}
+#chatShare{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-bottom:8px;font-size:12px;color:var(--t3)}
+#orderStatusAll{margin-bottom:8px;font-size:12px}
+#orderStatusAll ul{margin:4px 0 0;padding-left:16px;max-height:120px;overflow:auto}
+.chan-stats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;font-size:12px;color:var(--t2)}
+.chat-locked{font-size:13px;color:var(--t3)}
+@media (max-width:1280px){
+  .search{min-width:0}
+  #bbtex-today,#bbtex-status{min-width:28px;flex:1 1 28px}
+  .cab-chat{width:44px;min-width:44px;max-width:44px;min-height:180px;max-height:none;overflow:hidden}
+  .cab-chat .chat-body{display:none}
+  .chat-fold{display:flex;flex-direction:column;align-items:center;gap:8px;width:44px;border:0;background:transparent;cursor:pointer;padding:8px 0;color:var(--t2);font-size:12px;font-weight:650}
+  .chat-fold-id{writing-mode:vertical-rl;letter-spacing:.04em}
+  .chat-fold-n{min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;line-height:18px;text-align:center}
+  .op-line.chat-open .cab-chat{position:absolute;right:12px;top:132px;width:280px;min-width:280px;max-width:280px;max-height:calc(100% - 148px);overflow:auto;background:#fff;z-index:4;border:1px solid var(--line-soft);border-radius:8px;padding:8px}
+  .op-line.chat-open .cab-chat .chat-body{display:block}
+  .op-line.chat-open .chat-fold{flex-direction:row;width:100%;justify-content:space-between}
+  .op-line.chat-open .chat-fold-id{writing-mode:horizontal-tb}
+}
 .fv.st-empty input,.fv.st-empty select{border-style:dashed}
 .fv.st-human input,.fv.st-human select{border-style:solid;border-color:#B7D7A8;background:#F6FBF6}
 .fv.st-suggest{background:#FFF8E8;border-radius:8px}
@@ -966,7 +1000,8 @@ const state = { view:'todo', filter:null, sort:'prio', q:'', fold:{node:true, fl
   compact: (()=>{ try { const v = localStorage.getItem('bbtex13t.compact'); return v===null ? true : v==='1'; } catch(e){ return true; } })(),
   sel: new Set(), doneFold: true, bmenu: false,
   allSort: 'status', allStage: null, allWho: null, allCc: null, allExc: false,
-  listFull: false, listPage: 1, qWho: '', qFrom: '', qTo: '', hidden: new Set() };
+  listFull: false, listPage: 1, qWho: '', qFrom: '', qTo: '', hidden: new Set(),
+  chatOpen: false, chatChan: 'internal' };
 
 /* —— 今日进度：分母＝今早「今日该处理」那一组柜（当天固定）；当前节点做完一次 → done+1 —— */
 const TODAY_IDS = new Set(DATA.filter(c => (c.d < N && !NODES[c.d].fin) || c.dt).map(c => c.id));
@@ -2235,6 +2270,72 @@ function plainStatus(c){
   return {line:td.txt, cls:'', sub:NODES[c.d].n+' · 第 '+(c.d+1)+'/'+N+' 步'+(c.lfd?' · LFD '+c.lfd:'')+(c.eta?' · ETA '+c.eta:'')};
 }
 
+const CHAN_NAME = {internal:'内部', customer:'客户', supplier:'供应商'};
+function chatTabs(role){
+  if (role === '操作经理') return ['internal','customer','supplier'];
+  if (role === '客服') return ['internal','customer'];
+  return ['internal'];
+}
+function chatCanRead(role, chan){
+  if (role === '操作经理') return !!CHAN_NAME[chan];
+  if (role === '客服'){
+    if (chan === 'supplier') return false;
+    const share = (window.BBTEX && BBTEX.chatShare) ? BBTEX.chatShare() : {};
+    return !!share[chan];
+  }
+  return chan === 'internal';
+}
+function chatHTML(c){
+  const o = window.BBTEX && BBTEX.order(c.id);
+  if (!o || !o.chat) return '';
+  const chat = o.chat;
+  const files = o.chatFiles || {internal:[], customer:[], supplier:[]};
+  const tabs = chatTabs(state.role);
+  let chan = state.chatChan || 'internal';
+  if (tabs.indexOf(chan) < 0) chan = 'internal';
+  state.chatChan = chan;
+  const open = chatCanRead(state.role, chan);
+  const unread = (chat.internal||[]).length + (chat.customer||[]).length + (chat.supplier||[]).length;
+  const tabBtns = tabs.map(k => '<button type="button" data-chan="'+k+'" class="'+(k===chan?'on':'')+'">'+CHAN_NAME[k]+'</button>').join('');
+  let body = '';
+  if (state.role === '客服'){
+    const rows = DATA.map(x => {
+      const ox = BBTEX.order(x.id);
+      if (!ox || !ox.chat) return '';
+      const line = (ox.label || '') + (ox.sub ? ' · '+ox.sub : '');
+      return '<li>'+esc(x.id)+' '+esc(line)+' · 内部 '+ox.chat.internal.length+' · 客户 '+ox.chat.customer.length+' · 供应商 '+ox.chat.supplier.length+'</li>';
+    }).join('');
+    body += '<div id="orderStatusAll"><b>订单现状</b><ul>'+rows+'</ul></div>'
+      + '<div class="chan-stats">'
+      + '<span data-chan-stat="internal">内部 · '+chat.internal.length+' 条</span>'
+      + '<span data-chan-stat="customer">客户 · '+chat.customer.length+' 条</span>'
+      + '<span data-chan-stat="supplier">供应商 · '+chat.supplier.length+' 条</span>'
+      + '</div>';
+  }
+  if (state.role === '操作经理'){
+    const share = BBTEX.chatShare ? BBTEX.chatShare() : {internal:false, customer:false};
+    body += '<div id="chatShare"><span>对客服开放内容</span>'
+      + '<label><input type="checkbox" data-share="internal"'+(share.internal?' checked':'')+'>内部</label>'
+      + '<label><input type="checkbox" data-share="customer"'+(share.customer?' checked':'')+'>客户</label>'
+      + '<small>供应商通道暂时只给操作经理</small></div>';
+  }
+  if (open){
+    const msgs = (chat[chan] || []).map(m => '<p class="chat-msg" data-sys="'+(m.sys?1:0)+'"><b>'+esc(m.who)+' · '+esc(m.at)+'</b>'+esc(m.text)+'</p>').join('');
+    body += '<div class="chat-log">'+msgs+'</div>';
+    const cardOrder = chat.card && BBTEX.order(chat.card);
+    const cardLine = cardOrder ? ((cardOrder.label || '') + (cardOrder.sub ? ' · '+cardOrder.sub : '')) : '';
+    if (chat.card) body += '<button type="button" class="chat-card" data-chat-card="'+esc(chat.card)+'"><b>'+esc(chat.card)+'</b><span>'+esc(cardLine)+'</span></button>';
+    const list = (files[chan] || []).map(f => '<li>'+esc(f.name)+' · '+esc(f.who)+' · '+esc(f.at)+' · '+CHAN_NAME[chan]+'</li>').join('');
+    body += '<div id="chatFileList" data-channel="'+chan+'"><b>'+CHAN_NAME[chan]+'文件列表</b><ul>'+list+'</ul></div>';
+    body += '<button type="button" class="btn secondary sm" id="chatSendFile">发送演示文件</button>';
+  } else {
+    body += '<p class="chat-locked">这一通道的内容未开放</p>';
+  }
+  return '<aside id="cabChat" class="cab-chat">'
+    + '<button type="button" id="chatFold" class="chat-fold"><span class="chat-fold-id">'+esc(c.id)+'</span><span class="chat-fold-n">'+unread+'</span></button>'
+    + '<div class="chat-body"><div id="chatRoom">'+esc(c.id)+'</div><div class="chan-row">'+tabBtns+'</div>'+body+'</div>'
+    + '</aside>';
+}
 function renderDetail(){
   const id = curId();
   const c = DATA.find(x=>x.id===id) || scoped()[0] || DATA[0];
@@ -2283,7 +2384,8 @@ function renderDetail(){
     + '<span class="sep">·</span><span class="id">'+c.mbl+'</span>'
     + '</div></div><span class="sp"></span>'
     + '<a class="btn ghost sm" href="#">对照 12</a></div>'
-    + '<div class="op-line">'
+    + '<div class="op-line'+(state.chatOpen?' chat-open':'')+'">'
+    + '<div class="op-split"><div class="op-flow">'
     +   cabFactsHTML(c)
     +   reviewBoardHTML(c)
     +   bannersHTML(c)
@@ -2298,6 +2400,8 @@ function renderDetail(){
     +     '<span>客服 <b>李明</b></span>'
     +   '</div>'
     + '</div>'
+    + chatHTML(c)
+    + '</div></div>'
     + '<div class="scheme-note">订单平台 QB 13 · v1.3.18 · 订单审核仍是四组资料。到仓拆柜展开拆柜清单：31 个跟踪字段、装箱单明细、少件/多件。拆柜件数是这一步的门闩。演示数据全虚构。</div>';
   if (scrollBox) scrollBox.scrollTop = keepTop;
   bind(c);
@@ -2436,6 +2540,25 @@ function bind(c){
     if (window.BBTEX && BBTEX.patchList) BBTEX.patchList(c.id, el.dataset.fact, el.value, state.role);
     toast('已保存');
     renderDetail();
+  });
+  const fold = $('#chatFold');
+  if (fold) fold.onclick = () => {
+    state.chatOpen = !state.chatOpen;
+    const line = document.querySelector('.op-line');
+    if (line) line.classList.toggle('chat-open', state.chatOpen);
+  };
+  document.querySelectorAll('#cabChat [data-chan]').forEach(b => b.onclick = () => {
+    state.chatChan = b.dataset.chan;
+    renderDetail();
+  });
+  document.querySelectorAll('#cabChat [data-chat-card]').forEach(b => b.onclick = () => setHash(b.dataset.chatCard));
+  const sendFile = $('#chatSendFile');
+  if (sendFile) sendFile.onclick = () => {
+    if (window.BBTEX && BBTEX.sendChatFile) BBTEX.sendChatFile(c.id, state.chatChan || 'internal', state.role);
+    renderDetail();
+  };
+  document.querySelectorAll('#chatShare [data-share]').forEach(el => el.onchange = () => {
+    if (window.BBTEX && BBTEX.setChatShare) BBTEX.setChatShare(el.dataset.share, el.checked);
   });
   bindUnload(c);
 }

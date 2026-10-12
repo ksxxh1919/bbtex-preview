@@ -249,6 +249,17 @@
     };
   }
 
+  function chatSeed(cab) {
+    const i = Math.max(0, LEGACY.findIndex(function (c) { return c.id === cab.id; }));
+    const other = LEGACY[(i + 1) % LEGACY.length].id;
+    return {
+      internal: [{id:'seed-in', who:'陈静', text:'内部备注-DEMO', at:'10/05 09:00', sys:0}],
+      customer: [{id:'seed-cu', who:'客服-DEMO', text:'客户问候-DEMO', at:'10/05 09:10', sys:0}],
+      supplier: [{id:'seed-su', who:'供应商-DEMO', text:'供应商回传-DEMO', at:'10/05 09:20', sys:0}],
+      card: other
+    };
+  }
+
   function blankOrder(cab) {
     return {
       id: cab.id,
@@ -273,6 +284,8 @@
       review: null,
       ai: {},
       audit: [],
+      chat: chatSeed(cab),
+      chatFiles: {internal:[], customer:[], supplier:[]},
       label: '', sub: '', missing: [], note: ''
     };
   }
@@ -298,7 +311,7 @@
     const todayIds = LEGACY.filter(function (c) {
       return (c.node < 10 && !fin[c.node]) || !!c.dt;
     }).map(function (c) { return c.id; });
-    db = {v:1, orders:orders, todayIds:todayIds};
+    db = {v:1, orders:orders, todayIds:todayIds, chatShare:{internal:false, customer:false}};
     Object.keys(orders).forEach(function (id) {
       applyDerived(orders[id]);
       seedAi(orders[id]);
@@ -340,6 +353,7 @@
     const beforeNode = o.node;
     const beforeSub = o.sub;
     const beforeLabel = o.label;
+    const beforeLine = statusLine(o);
     if (o.exc) {
       persist();
       return {leaveToday:false, sayAdvanced:false, message:'有异常，字段已留下，状态先不往前走。', label:o.label, missing:o.missing || []};
@@ -348,6 +362,7 @@
       /* 财控锁预计派送及以后，不在这里改锁的范围 */
     }
     applyDerived(o);
+    pushStatusChat(o, beforeLine);
     const nodeMoved = o.node !== beforeNode;
     if (nodeMoved && !o.dt && db.todayIds.indexOf(id) >= 0) o.dt = hhmm();
     persist();
@@ -519,6 +534,56 @@
     return fieldView(id, k);
   }
 
+  function statusLine(o) {
+    return (o.label || '') + (o.sub ? ' · ' + o.sub : '');
+  }
+
+  function ensureChat(o) {
+    if (!o.chat || !o.chat.internal || !o.chat.customer || !o.chat.supplier) o.chat = chatSeed(o);
+    if (!o.chatFiles) o.chatFiles = {internal:[], customer:[], supplier:[]};
+    ['internal', 'customer', 'supplier'].forEach(function (k) {
+      if (!o.chatFiles[k]) o.chatFiles[k] = [];
+    });
+    return o.chat;
+  }
+
+  function pushStatusChat(o, before) {
+    const now = statusLine(o);
+    if (!before || now === before) return;
+    ensureChat(o);
+    o.chat.internal.push({
+      id: 'sys-' + o.chat.internal.length,
+      who: '订单',
+      text: o.id + ' ' + now,
+      at: localStamp(),
+      sys: 1
+    });
+  }
+
+  function chatShare() {
+    if (!db.chatShare) db.chatShare = {internal:false, customer:false};
+    return {internal: !!db.chatShare.internal, customer: !!db.chatShare.customer};
+  }
+
+  function setChatShare(chan, on) {
+    if (chan !== 'internal' && chan !== 'customer') return chatShare();
+    chatShare();
+    db.chatShare[chan] = !!on;
+    persist();
+    return chatShare();
+  }
+
+  function sendChatFile(id, channel, who) {
+    const o = order(id);
+    if (!o || !who) return null;
+    if (channel !== 'internal' && channel !== 'customer' && channel !== 'supplier') return null;
+    ensureChat(o);
+    const row = {name:'聊天文件-DEMO.pdf', who:who, at:localStamp(), channel:channel};
+    o.chatFiles[channel].push(row);
+    persist();
+    return row;
+  }
+
   function localStamp() {
     const t = new Date();
     const p = function (x) { return String(x).padStart(2, '0'); };
@@ -564,8 +629,10 @@
     const o = order(id);
     const why = String(reason || '').trim();
     if (!o || !who || !why) return null;
+    const beforeLine = statusLine(o);
     o.reviewOk = false;
     applyDerived(o);
+    pushStatusChat(o, beforeLine);
     const when = localStamp();
     pushAudit(o, who, '退回', 'order', who + ' 整单退回 · ' + why + ' · ' + when);
     return o;
@@ -574,8 +641,10 @@
   function passReview(id, who) {
     const o = order(id);
     if (!o || !who || o.reviewOk) return null;
+    const beforeLine = statusLine(o);
     o.reviewOk = true;
     applyDerived(o);
+    pushStatusChat(o, beforeLine);
     const when = localStamp();
     pushAudit(o, who, '通过', 'order', who + ' 审核通过 · ' + when);
     return o;
@@ -1006,7 +1075,10 @@
     saveReviewField: saveReviewField,
     rejectReviewFile: rejectReviewFile,
     returnReviewOrder: returnReviewOrder,
-    passReview: passReview
+    passReview: passReview,
+    chatShare: chatShare,
+    setChatShare: setChatShare,
+    sendChatFile: sendChatFile
   };
   const root = typeof window !== 'undefined' ? window : globalThis;
   root.BBTEX = api;
