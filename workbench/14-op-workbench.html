@@ -242,6 +242,7 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none;color:inherit}
 </div>
 <div class="toast" id="toast" role="status"></div>
 <script src="../shared/orders.js"></script>
+<script src="../shared/legacy-adapter.js"></script>
 <script>
 const NODES = ['订单审核','ISF 申报','财务开票','转关到港','提柜完成','到仓拆柜','转装出仓','清关过境','派送签收','催款回款'];
 const TODAY_LABEL = '2026-10-05';
@@ -538,6 +539,15 @@ function filledCount(id, sec){
 
 function render(){
   const r = role();
+  const q = (window.LegacyLookup && LegacyLookup.state.roleQ) || '';
+  if (q && window.LegacyLookup) {
+    const cur0 = current();
+    if (!cur0 || !LegacyLookup.taskVisible(cur0, state.role, q)) {
+      let next = null;
+      BUCKETS.forEach(k => { if (!next) next = (r[k]||[]).find(t => LegacyLookup.taskVisible(t, state.role, q)) || null; });
+      if (next) state.uid = next.uid;
+    }
+  }
   const cur = current();
   state.uid = cur ? cur.uid : '';
   document.getElementById('roleAv').textContent = r.initial;
@@ -549,12 +559,13 @@ function render(){
   document.getElementById('nest').innerHTML = QSECS.map(s => {
     const list = r[s.k] || [];
     const fold = state.fold[s.k];
-    const rows = list.length ? list.map(t => {
+    const shown = list.filter(t => !window.LegacyLookup || LegacyLookup.taskVisible(t, state.role, q));
+    const rows = shown.length ? shown.map(t => {
       const ck = CABS[t.id] ? '<input class="ck" type="checkbox" data-act="sel" data-uid="'+t.uid+'" '+(state.sel.has(t.uid)?'checked':'')+' aria-label="选中 '+esc(t.id)+'">' : '<span></span>';
       return '<div class="task'+(t.uid===state.uid?' on':'')+'">'+ck
         + '<button type="button" class="hit" data-act="open" data-uid="'+t.uid+'"><span class="dot '+t.dot+'"></span><span class="mid"><span class="cid">'+esc(t.id)+'</span><span class="sub">'+esc(t.line||t.action)+'</span></span><span class="tag '+t.tagKind+'">'+esc(t.tag)+'</span></button></div>';
-    }).join('') : '<div class="empty">这一组没有</div>';
-    return '<button type="button" class="sec-h '+s.cls+(fold?' fold':'')+'" data-act="fold" data-sec="'+s.k+'"><span class="car">▾</span><span>'+s.n+'</span><span class="gc">'+list.length+'</span></button>'
+    }).join('') : '<div class="empty">'+(q?'没有符合本岗查询的柜':'这一组没有')+'</div>';
+    return '<button type="button" class="sec-h '+s.cls+(fold?' fold':'')+'" data-act="fold" data-sec="'+s.k+'"><span class="car">▾</span><span>'+s.n+'</span><span class="gc">'+(q?shown.length:list.length)+'</span></button>'
       + '<div class="q-body'+(fold?'':' open')+'">'+rows+'</div>';
   }).join('');
   const first = r.today[0];
@@ -566,7 +577,10 @@ function render(){
   const C = 2*Math.PI*15, off = C*(1-Math.min(1,p));
   document.getElementById('ringBox').className = 'ringbox'+(clear?' clear':'');
   document.getElementById('ringBox').innerHTML = '<svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="#E3E6EB" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#2CA01C" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'" transform="rotate(-90 18 18)"/></svg><div class="rl">今日'+(clear?' 已清':'')+'<b id="ringLabel">'+done+'/'+total+'</b></div>';
-  document.getElementById('hero').innerHTML = cur ? heroHTML(cur) : '';
+  const shownCur = !q || !window.LegacyLookup || (cur && LegacyLookup.taskVisible(cur, state.role, q));
+  const orderId = (shownCur && cur && CABS[cur.id]) ? cur.id : '';
+  const head = window.LegacyLookup ? LegacyLookup.quickCardHTML(orderId || 'TEST2468024') + LegacyLookup.roleToolsHTML({roleId:r.sec, who:r.name, orderId:orderId}) + (r.sec==='wh' ? LegacyLookup.poolCardHTML() : '') : '';
+  document.getElementById('hero').innerHTML = head + (shownCur && cur ? heroHTML(cur) : '<div class="card"><p class="action">没有符合本岗查询的柜。</p></div>');
   document.getElementById('side').innerHTML = sideHTML(r, cur);
   const n = document.getElementById('nextField');
   if (n) n.focus({preventScroll:true});
@@ -668,7 +682,7 @@ function heroHTML(t){
   if (t.kind==='do') foot.push('<button type="button" class="btn" data-act="do">发 DO</button>');
   if (t.kind==='approve') foot.push('<button type="button" class="btn" data-act="approve">同意</button>');
   if (can) foot.push('<button type="button" class="btn primary" id="btnSave" data-act="save">保存并推进</button>');
-  return '<div class="card" id="statusForm" data-fields="'+FIELDS.length+'"><div class="kicker">'+esc(secName(t.bucket))+' · 状态维护</div>'
+  return '<div class="card" id="statusForm" data-fields="'+FIELDS.length+'"><div class="kicker">'+esc(secName(t.bucket))+' · 状态维护详情</div>'
     + '<h1 class="h-id" id="heroId">'+esc(t.id)+'</h1>'
     + '<div class="chips"><span class="chip '+t.tagKind+'">'+esc(t.tag)+'</span><span class="chip">'+esc(NODES[cab.node])+'</span>'+(t.due?'<span class="chip due">'+esc(t.due)+'</span>':'')+'</div>'
     + '<p class="meta">'+esc(cab.cc+' · '+cab.ty+' · '+cab.route+' · '+cab.co)+'</p>'
@@ -962,6 +976,17 @@ document.body.addEventListener('keydown', (e) => {
   }
 });
 
+function wbOpenId(id){
+  const r = role();
+  let hit = null;
+  BUCKETS.forEach(k => { if (!hit) hit = (r[k]||[]).find(t => t.id===id) || null; });
+  if (!hit) return false;
+  state.uid = hit.uid;
+  ownOpen();
+  render();
+  return true;
+}
+window.wbOpenId = wbOpenId;
 BBTEX.install(typeof DATA!=='undefined'?{page:'order',DATA,GATES,NODES,state,N}:{page:'wb',CABS,FIELDS,GATES,NODES,state});
 render();
 </script>

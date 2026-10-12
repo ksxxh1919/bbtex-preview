@@ -936,6 +936,7 @@ a{color:inherit;text-decoration:none}
 </div>
 <div class="toast" id="toast"></div>
 <script src="../shared/orders.js"></script>
+<script src="../shared/legacy-adapter.js"></script>
 <script>
 
 /* ===== 订单平台 13 · QB 模式 v1.3.14：老系统主从——深炭导航（订单平台 ▸ 待办/全部）+ 中间订单列表（柜号）+ 右操作线 ===== */
@@ -2404,7 +2405,9 @@ function chatHTML(c){
   }
   return '<aside id="cabChat" class="cab-chat">'
     + '<button type="button" id="chatFold" class="chat-fold"><span class="chat-fold-id">聊天</span><span class="chat-fold-n">'+unread+'</span></button>'
-    + '<div class="chat-body"><div id="chatRoom">聊天 · '+esc(c.id)+'</div><div class="chan-row">'+tabBtns+'</div>'+body+'</div>'
+    + '<div class="chat-body"><div id="chatRoom">聊天 · '+esc(c.id)+'</div>'
+    + (window.LegacyLookup ? LegacyLookup.chatLookupHTML(c.id) : '')
+    + '<div class="chan-row">'+tabBtns+'</div>'+body+'</div>'
     + '</aside>';
 }
 function renderDetail(){
@@ -2457,6 +2460,7 @@ function renderDetail(){
     + '<a class="btn ghost sm" href="#">对照 12</a></div>'
     + '<div class="op-line'+(state.chatOpen?' chat-open':'')+'">'
     + '<div class="op-split"><div class="op-flow">'
+    +   (window.LegacyLookup ? LegacyLookup.orderPanelsHTML(c.id) : '')
     +   cabFactsHTML(c)
     +   reviewBoardHTML(c)
     +   bannersHTML(c)
@@ -2758,13 +2762,17 @@ function wbRows(){
     .sort((a,b) => rank(a)-rank(b) || PRANK[a.pr]-PRANK[b.pr] || (a.id<b.id?-1:1));
 }
 function renderWorkbench(){
-  const rows = wbRows();
+  let rows = wbRows();
+  const opRole = (window.LegacyLookup && LegacyLookup.state.opRole) || 'isf';
+  if (window.LegacyLookup && LegacyLookup.state.roleQ) {
+    rows = rows.filter(c => LegacyLookup.orderVisible(c.id, opRole, LegacyLookup.state.roleQ));
+  }
   const matchCo = c => !state.coFilter || state.coFilter==='全部公司' || c.co===state.coFilter;
   const nDue = DATA.filter(c => isDueToday(c) && matchCo(c)).length;
   const nExc = DATA.filter(c => !!c.exc && isActive(c) && matchCo(c)).length;
   const plats = ['订单平台','清关平台','提柜平台','仓管平台','派送平台','客服平台','财务平台'];
   let body = '';
-  if (!rows.length) body = '<div class="wb-empty">这家公司今天没有待处理的柜。</div>';
+  if (!rows.length) body = '<div class="wb-empty">'+(window.LegacyLookup && LegacyLookup.state.roleQ ? '没有符合本岗查询的柜。' : '这家公司今天没有待处理的柜。')+'</div>';
   plats.forEach(p => {
     const list = rows.filter(c => NODES[c.d] && NODES[c.d].p===p);
     if (!list.length) return;
@@ -2780,10 +2788,14 @@ function renderWorkbench(){
         + '</a>';
     });
   });
+  const wbFocus = (rows[0] || wbRows()[0] || DATA[0] || {}).id || '';
+  const who = (window.LegacyLookup && (LegacyLookup.ROLES.find(r => r.id===opRole) || {}).name) || '';
   $('#detail').innerHTML = '<div class="crumb">工作台</div>'
     + '<div class="dt-hd"><div><h1>今天要处理的</h1>'
     + '<div class="sub"><span>'+state.role+'</span><span class="sep">·</span><span>2026-10-05</span><span class="sep">·</span><span>演示数据</span></div></div></div>'
-    + '<p class="wb-lead">按平台分开。点柜号，进入这一柜的操作线。</p>'
+    + (window.LegacyLookup ? LegacyLookup.roleToolsHTML({roleId:opRole, who:who, orderId:wbFocus, showRoles:true}) : '')
+    + (window.LegacyLookup ? LegacyLookup.orderPanelsHTML(wbFocus) : '')
+    + '<p class="wb-lead">按平台分开。点柜号，进入这一柜的操作线。上面是四个岗位的查询和自动录入，以及只读快查。</p>'
     + '<div class="wb-stats">'
     +   '<div class="wb-stat"><span class="k">今日剩</span><span class="v">'+rows.length+'</span></div>'
     +   '<div class="wb-stat due"><span class="k">今日截止</span><span class="v">'+nDue+'</span></div>'
@@ -2839,7 +2851,9 @@ function renderChatDesk(){
     + '<div class="dt-hd"><div><h1>聊天</h1><div class="sub"><span>'+esc(state.role)+'</span><span class="sep">·</span><span>内部 / 客户 / 供应商</span></div></div></div>'
     + '<div class="chat-desk" id="chatDesk">'
     + '<aside class="chat-rooms" id="chatRooms"><h2>柜号</h2>'+rooms+'</aside>'
-    + '<section class="chat-pane"><div id="deskRoom">聊天 · '+esc(id)+'</div><div class="chan-row">'+tabBtns+'</div>'+body+'</section>'
+    + '<section class="chat-pane"><div id="deskRoom">聊天 · '+esc(id)+'</div>'
+    + (window.LegacyLookup ? LegacyLookup.chatLookupHTML(id) : '')
+    + '<div class="chan-row">'+tabBtns+'</div>'+body+'</section>'
     + '</div>';
   document.querySelectorAll('#chatRooms [data-room]').forEach(b => b.onclick = () => { location.hash = '#/chat/' + b.dataset.room; });
   document.querySelectorAll('#chatDesk [data-desk-chan]').forEach(b => b.onclick = () => { state.chatChan = b.dataset.deskChan; render(); });

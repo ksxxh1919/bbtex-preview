@@ -336,6 +336,11 @@
     ls.setItem(KEY, JSON.stringify(db));
   }
 
+  function ids() {
+    if (!db) load();
+    return Object.keys(db.orders);
+  }
+
   function order(id) {
     if (!db) load();
     const o = db.orders[id] || null;
@@ -495,6 +500,23 @@
     });
   }
 
+  function suggest(id, k, row) {
+    const o = order(id);
+    if (!o || !k || !row || !row.value) return null;
+    const src = row.src && AI_SRC[row.src] ? row.src : '';
+    if (!src) return null;
+    if (has(o.fields, k)) return fieldView(id, k);
+    o.ai = o.ai || {};
+    o.ai[k] = {value:String(row.value), src:src, conf:row.conf || '演示', label:row.label || k, auto:1};
+    o.audit = o.audit || [];
+    o.audit.push({
+      kind:'建议', who:'自动录入', k:k,
+      text:'自动录入建议 · ' + (row.label || k) + ' · ' + AI_SRC[src].name + ' · ' + (row.conf || '演示') + ' · 待确认'
+    });
+    persist();
+    return fieldView(id, k);
+  }
+
   function fieldView(id, k) {
     const o = order(id);
     const gate = isGate(k);
@@ -520,8 +542,9 @@
     const label = (sug && sug.label) || k;
     if (o.ai) delete o.ai[k];
     const kind = edited ? '改' : '接受';
+    const whoLine = (sug && sug.auto) ? (' · 确认人 ' + who) : '';
     o.audit = o.audit || [];
-    o.audit.push({kind:kind, who:who, k:k, text:who + ' ' + kind + ' · ' + label});
+    o.audit.push({kind:kind, who:who, k:k, text:who + ' ' + kind + ' · ' + label + whoLine});
     persist();
     return fieldView(id, k);
   }
@@ -1085,7 +1108,9 @@
     NODES: NODES,
     load: load,
     reset: function () { ls.removeItem(KEY); fresh(); persist(); return db; },
+    ids: ids,
     order: order,
+    suggest: suggest,
     commit: commit,
     recompute: recompute,
     today: today,
