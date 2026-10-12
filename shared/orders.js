@@ -338,7 +338,12 @@
 
   function order(id) {
     if (!db) load();
-    return db.orders[id] || null;
+    const o = db.orders[id] || null;
+    if (o && (!o.chat || !o.chat.internal || !o.chatFiles)) {
+      ensureChat(o);
+      persist();
+    }
+    return o;
   }
 
   function hhmm() {
